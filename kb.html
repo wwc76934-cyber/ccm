@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>知识库｜我的学习站</title>
+    <meta name="description" content="个人知识库：笔记、标签、搜索与复盘模板。" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="bg"></div>
+    <header class="topbar">
+      <div class="container topbar__inner">
+        <div class="brand">
+          <div class="brand__logo">LS</div>
+          <div class="brand__text">
+            <div class="brand__title">我的学习站</div>
+            <div class="brand__subtitle">信息技术 × 金融</div>
+          </div>
+        </div>
+
+        <nav class="nav">
+          <a class="nav__link" href="./index.html" data-route="home">首页</a>
+          <a class="nav__link is-active" href="./kb.html" data-route="kb">知识库</a>
+          <a class="nav__link" href="./it.html" data-route="it">信息技术</a>
+          <a class="nav__link" href="./finance.html" data-route="finance">金融</a>
+          <a class="nav__link" href="./sql.html" data-route="sql">SQL练习</a>
+        </nav>
+
+        <div class="actions">
+          <button id="btnExport" class="btn btn--ghost" type="button" title="导出本地数据">导出</button>
+          <label class="btn btn--ghost filebtn" title="导入本地数据">
+            导入
+            <input id="importFile" type="file" accept="application/json" />
+          </label>
+          <button id="btnLogout" class="btn btn--ghost" type="button">退出</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="container main">
+      <section class="card page kbLayout">
+        <aside class="kbSidebar">
+          <div class="kbSidebar__head">
+            <div>
+              <h2 class="page__title">知识库导航</h2>
+              <p class="page__desc">按板块查看内容，避免所有信息堆在一个页面里。</p>
+            </div>
+            <button id="btnNewNote" class="btn btn--primary" type="button">新建笔记</button>
+          </div>
+
+          <nav class="kbNav" aria-label="知识库板块导航">
+            <button class="kbNav__item is-active" type="button" data-kb-section="notes">我的笔记</button>
+            <button class="kbNav__item" type="button" data-kb-section="pinned">今日置顶</button>
+            <button class="kbNav__item" type="button" data-kb-section="resources">学习资源</button>
+            <button class="kbNav__item" type="button" data-kb-section="assistant">AI 助手</button>
+          </nav>
+
+          <div class="kbSidebar__tips">
+            <div class="kbSidebar__tipTitle">使用方式</div>
+            <div class="kbSidebar__tipText">先选板块，再在中间区域查看对应内容；AI 助手固定在右侧，随时可问。</div>
+          </div>
+        </aside>
+
+        <section class="kbMain">
+          <div class="kbHead">
+            <div>
+              <h2 class="page__title">知识库</h2>
+              <p class="page__desc">把学习变成可复用资产：每个概念一页，写清楚“是什么/为什么/怎么用/常见坑/练习/复盘”。</p>
+            </div>
+          </div>
+
+          <div class="kbFilters">
+            <input id="kbSearch" class="input kbSearch" placeholder="搜索标题/内容/标签（例如：窗口函数、DCF、现金流）" />
+            <select id="kbCategory" class="input kbSelect">
+              <option value="all">全部</option>
+              <option value="it">信息技术</option>
+              <option value="finance">金融</option>
+              <option value="general">通用</option>
+            </select>
+          </div>
+
+          <div class="kbPanels">
+            <div class="kbPanel is-active" data-kb-panel="notes">
+              <div class="section">
+                <div class="section__titleRow">
+                  <div class="section__title">我的笔记</div>
+                  <div class="section__meta">点击左侧导航切换板块</div>
+                </div>
+                <div id="kbNotesList" class="list"></div>
+              </div>
+            </div>
+
+            <div class="kbPanel" data-kb-panel="pinned">
+              <div id="kbPinned" class="kbPinned"></div>
+            </div>
+
+            <div class="kbPanel" data-kb-panel="resources">
+              <div id="kbResources" class="kbResources"></div>
+            </div>
+
+            <div class="kbPanel" data-kb-panel="assistant">
+              <div id="kbAssistant" class="kbAssistant"></div>
+            </div>
+          </div>
+        </section>
+      </section>
+
+      <dialog id="noteDialog" class="modal">
+        <form method="dialog" class="modal__card">
+          <div class="modal__head">
+            <div>
+              <div class="modal__title" id="noteDialogTitle">编辑笔记</div>
+              <div class="modal__desc">支持纯文本/Markdown 写作；标签用逗号分隔。</div>
+            </div>
+            <button class="btn btn--ghost btn--sm" value="cancel" type="submit">关闭</button>
+          </div>
+
+          <div class="kbEditGrid">
+            <div class="formrow">
+              <label class="label" for="noteTitle">标题</label>
+              <input id="noteTitle" class="input" placeholder="例如：窗口函数：ROW_NUMBER 的常见写法" />
+            </div>
+            <div class="formrow">
+              <label class="label" for="noteCat">分类</label>
+              <select id="noteCat" class="input">
+                <option value="it">信息技术</option>
+                <option value="finance">金融</option>
+                <option value="general">通用</option>
+              </select>
+            </div>
+            <div class="formrow">
+              <label class="label" for="noteTags">标签</label>
+              <input id="noteTags" class="input" placeholder="SQL,窗口函数,复盘" />
+            </div>
+          </div>
+
+          <textarea id="noteBody" class="textarea" rows="14" placeholder="推荐模板：&#10;## 一句话理解&#10;&#10;## 关键概念/公式&#10;&#10;## 例子&#10;&#10;## 常见坑&#10;&#10;## 练习&#10;&#10;## 我的复盘"></textarea>
+
+          <div class="modal__actions kbEditActions">
+            <button id="btnDeleteNote" class="btn btn--ghost" type="button">删除</button>
+            <button id="btnSaveNote" class="btn btn--primary" value="ok" type="submit">保存</button>
+          </div>
+        </form>
+      </dialog>
+    </main>
+
+    <footer class="footer">
+      <div class="container footer__inner muted">
+        <span>知识库优先｜先沉淀再拓展</span>
+        <span id="buildInfo"></span>
+      </div>
+    </footer>
+
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>
+

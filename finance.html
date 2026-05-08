@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>金融｜我的学习站</title>
+    <meta name="description" content="金融学习路线：报表、市场产品、估值与就业。" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="bg"></div>
+    <header class="topbar">
+      <div class="container topbar__inner">
+        <div class="brand">
+          <div class="brand__logo">LS</div>
+          <div class="brand__text">
+            <div class="brand__title">我的学习站</div>
+            <div class="brand__subtitle">信息技术 × 金融</div>
+          </div>
+        </div>
+
+        <nav class="nav">
+          <a class="nav__link" href="./index.html" data-route="home">首页</a>
+          <a class="nav__link" href="./kb.html" data-route="kb">知识库</a>
+          <a class="nav__link" href="./it.html" data-route="it">信息技术</a>
+          <a class="nav__link is-active" href="./finance.html" data-route="finance">金融</a>
+          <a class="nav__link" href="./sql.html" data-route="sql">SQL练习</a>
+        </nav>
+
+        <div class="actions">
+          <button id="btnExport" class="btn btn--ghost" type="button" title="导出本地数据">导出</button>
+          <label class="btn btn--ghost filebtn" title="导入本地数据">
+            导入
+            <input id="importFile" type="file" accept="application/json" />
+          </label>
+          <button id="btnLogout" class="btn btn--ghost" type="button">退出</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="container main">
+      <section class="card page">
+        <h2 class="page__title">金融路线</h2>
+        <p class="page__desc">目标：能读懂公司、理解市场、讲清估值，并把能力翻译成岗位语言。</p>
+        <div class="section">
+          <div id="financeRoadmapFull" class="list"></div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="container footer__inner muted">
+        <span>本地 MVP｜后续可迁移到 Next.js + 数据库</span>
+        <span id="buildInfo"></span>
+      </div>
+    </footer>
+
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>
+

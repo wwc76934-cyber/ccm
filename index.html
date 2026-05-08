@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>我的学习站｜信息技术 × 金融</title>
+    <meta name="description" content="研究生阶段个人学习网站：SQL、AI/大模型、金融就业知识与练习。" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="bg"></div>
+    <header class="topbar">
+      <div class="container topbar__inner">
+        <div class="brand">
+          <div class="brand__logo">LS</div>
+          <div class="brand__text">
+            <div class="brand__title">我的学习站</div>
+            <div class="brand__subtitle">信息技术 × 金融</div>
+          </div>
+        </div>
+
+        <nav class="nav">
+          <a class="nav__link is-active" href="./index.html" data-route="home">首页</a>
+          <a class="nav__link" href="./kb.html" data-route="kb">知识库</a>
+          <a class="nav__link" href="./it.html" data-route="it">信息技术</a>
+          <a class="nav__link" href="./finance.html" data-route="finance">金融</a>
+          <a class="nav__link" href="./sql.html" data-route="sql">SQL练习</a>
+        </nav>
+
+        <div class="actions">
+          <button id="btnExport" class="btn btn--ghost" type="button" title="导出本地数据">导出</button>
+          <label class="btn btn--ghost filebtn" title="导入本地数据">
+            导入
+            <input id="importFile" type="file" accept="application/json" />
+          </label>
+          <button id="btnLogout" class="btn btn--ghost" type="button">退出</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="container main">
+      <section class="hero">
+          <div class="hero__copy">
+            <div class="badge">MVP：路线图 + 知识库 + SQL练习 + 进度</div>
+            <h1 class="h1">把研究生阶段的学习变成一套可执行系统</h1>
+            <p class="muted">
+              目标是成为“信息技术 + 金融”双料人才：先把 SQL 练扎实，再逐步深入 AI/大模型；金融则围绕就业市场所需能力搭建知识体系。
+            </p>
+            <div class="hero__cta">
+              <a class="btn btn--primary" href="./kb.html">先建知识库</a>
+              <a class="btn btn--ghost" href="./it.html">开始练 SQL</a>
+            </div>
+          </div>
+
+          <div class="hero__panel card">
+            <div class="panel__titleRow">
+              <div class="panel__title">本周目标（可改）</div>
+              <button id="btnEditWeekly" class="btn btn--ghost btn--sm" type="button">编辑</button>
+            </div>
+            <div class="panel__grid">
+              <div class="kpi">
+                <div class="kpi__label">已完成课节</div>
+                <div class="kpi__value" id="kpiCompleted">0</div>
+              </div>
+              <div class="kpi">
+                <div class="kpi__label">全部课节</div>
+                <div class="kpi__value" id="kpiTotal">0</div>
+              </div>
+              <div class="kpi">
+                <div class="kpi__label">完成率</div>
+                <div class="kpi__value" id="kpiRate">0%</div>
+              </div>
+            </div>
+            <div class="progressbar" aria-label="progress">
+              <div class="progressbar__fill" id="kpiBar" style="width: 0%"></div>
+            </div>
+            <div class="panel__hint muted">完成率基于你标记的课节完成情况。</div>
+
+            <div class="weekly">
+              <div id="weeklyList" class="weekly__list"></div>
+              <div class="weekly__hint muted">提示：这里更适合写“本周可完成”的小目标。</div>
+            </div>
+          </div>
+      </section>
+
+      <section class="grid2">
+          <section class="card">
+            <div class="card__head">
+              <h2 class="h2">信息技术路线（建议先走这条）</h2>
+              <a class="link" href="./it.html">查看路线 →</a>
+            </div>
+            <div id="itRoadmap" class="roadmap"></div>
+          </section>
+
+          <section class="card">
+            <div class="card__head">
+              <h2 class="h2">金融路线（面向就业市场）</h2>
+              <a class="link" href="./finance.html">查看路线 →</a>
+            </div>
+            <div id="finRoadmap" class="roadmap"></div>
+          </section>
+      </section>
+
+      <section class="card">
+          <div class="card__head">
+            <h2 class="h2">SQL 练习（手动对答案）</h2>
+            <a class="link" href="./sql.html">进入练习 →</a>
+          </div>
+          <div id="sqlPreview" class="exercisePreview"></div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="container footer__inner muted">
+        <span>本地 MVP｜后续可迁移到 Next.js + 数据库 + 自动判题</span>
+        <span id="buildInfo"></span>
+      </div>
+    </footer>
+
+    <script type="module" src="./app.js"></script>
+
+    <dialog id="weeklyDialog" class="modal">
+      <form method="dialog" class="modal__card">
+        <div class="modal__head">
+          <div>
+            <div class="modal__title">编辑本周目标</div>
+            <div class="modal__desc">每行一个目标；以 <span class="kbd">[x]</span> 开头表示已完成（可留空）。</div>
+          </div>
+          <button class="btn btn--ghost btn--sm" value="cancel" type="submit">关闭</button>
+        </div>
+        <textarea id="weeklyTextarea" class="textarea" rows="10" placeholder="例如：&#10;[ ] SQL 基础 10 题&#10;[ ] 复盘窗口函数 3 题&#10;[ ] 看完一篇财务报表速读"></textarea>
+        <div class="modal__actions">
+          <button id="btnWeeklyReset" class="btn btn--ghost" type="button">恢复默认</button>
+          <button id="btnWeeklySave" class="btn btn--primary" value="ok" type="submit">保存</button>
+        </div>
+      </form>
+    </dialog>
+  </body>
+</html>
+
