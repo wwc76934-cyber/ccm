@@ -711,6 +711,22 @@ function renderKbAssistant() {
       </div>
     </div>
 
+    <dialog id="importPreviewDialog" class="modal">
+      <form method="dialog" class="modal__card">
+        <div class="modal__head">
+          <div>
+            <div class="modal__title">文档导入预览</div>
+            <div class="modal__desc">先检查系统拆分出的知识条目，再确认入库。</div>
+          </div>
+          <button class="btn btn--ghost btn--sm" value="cancel" type="submit">关闭</button>
+        </div>
+        <div id="importPreviewList" class="list"></div>
+        <div class="modal__actions">
+          <button id="btnImportConfirm" class="btn btn--primary" value="ok" type="submit">确认入库</button>
+        </div>
+      </form>
+    </dialog>
+
     <dialog id="llmDialog" class="modal">
       <form method="dialog" class="modal__card">
         <div class="modal__head">
@@ -748,6 +764,9 @@ function bindKnowledgeBaseEvents() {
   const cat = document.querySelector("#kbCategory");
   const docUpload = document.querySelector("#kbDocUpload");
   const dialog = document.querySelector("#noteDialog");
+  const previewDialog = document.querySelector("#importPreviewDialog");
+  const previewList = document.querySelector("#importPreviewList");
+  const btnImportConfirm = document.querySelector("#btnImportConfirm");
   const dlgTitle = document.querySelector("#noteDialogTitle");
   const inTitle = document.querySelector("#noteTitle");
   const inCat = document.querySelector("#noteCat");
@@ -756,11 +775,11 @@ function bindKnowledgeBaseEvents() {
   const btnSave = document.querySelector("#btnSaveNote");
   const btnDelete = document.querySelector("#btnDeleteNote");
   const navItems = document.querySelectorAll("[data-kb-section]");
-  const docUpload = document.querySelector("#kbDocUpload");
 
   if (!dialog) return;
 
   let currentId = null;
+  let pendingImportEntries = [];
 
   navItems.forEach((btn) => {
     btn.addEventListener("click", () => setKbSection(btn.getAttribute("data-kb-section") || "notes"));
@@ -852,6 +871,49 @@ function bindKnowledgeBaseEvents() {
     });
   }
 
+  function renderImportPreview(entries, filename) {
+    if (!previewList || !previewDialog) return;
+    previewList.innerHTML = entries.length
+      ? entries.map((e, idx) => `
+        <div class="item">
+          <div class="item__main">
+            <div class="item__title">${escapeHtml(e.title || `条目 ${idx + 1}`)}</div>
+            <div class="item__body">${escapeHtml(e.summary || (e.body || "").slice(0, 180))}</div>
+            <div class="tagrow">
+              <span class="tag">${escapeHtml(e.category || "general")}</span>
+              ${(e.tags || []).slice(0, 6).map((t) => `<span class="tag">${escapeHtml(t)}</span>`).join("")}
+            </div>
+          </div>
+        </div>
+      `).join("")
+      : `<div class="muted" style="font-size:13px">未解析到可入库内容。</div>`;
+    pendingImportEntries = entries;
+    previewDialog.dataset.filename = filename || "";
+    previewDialog.showModal();
+  }
+
+  if (btnImportConfirm) {
+    btnImportConfirm.addEventListener("click", async () => {
+      if (!pendingImportEntries.length) return;
+      try {
+        const res = await fetch("./api/import-doc/confirm", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ entries: pendingImportEntries, filename: previewDialog?.dataset.filename || "" }),
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        saveImportedDocs([{ filename: previewDialog?.dataset.filename || "", importedAt: nowIso(), count: data.inserted || 0 }, ...getImportedDocs()]);
+        toast("导入成功", `已确认入库 ${data.inserted || 0} 条`);
+        renderKnowledgeBase();
+      } catch (e) {
+        toast("入库失败", e?.message || "请重试");
+      } finally {
+        pendingImportEntries = [];
+      }
+    });
+  }
+
   if (docUpload) {
     docUpload.addEventListener("change", async () => {
       const file = docUpload.files?.[0];
@@ -859,16 +921,10 @@ function bindKnowledgeBaseEvents() {
       try {
         const form = new FormData();
         form.append("file", file);
-        const res = await fetch("./api/import-doc", { method: "POST", body: form });
+        const res = await fetch("./api/import-doc/preview", { method: "POST", body: form });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
-        const imported = Array.isArray(data?.imported) ? data.imported : [];
-        const notes = getNotes();
-        saveNotes([...imported, ...notes]);
-        const docs = getImportedDocs();
-        saveImportedDocs([{ filename: file.name, importedAt: nowIso(), count: imported.length }, ...docs]);
-        toast("导入成功", `已解析 ${imported.length} 条标准知识模块`);
-        renderKnowledgeBase();
+        renderImportPreview(Array.isArray(data?.preview) ? data.preview : [], file.name);
       } catch (e) {
         toast("导入失败", e?.message || "无法解析文档");
       } finally {

@@ -13,7 +13,7 @@ import feedparser
 from bs4 import BeautifulSoup
 from docx import Document
 from dateutil import parser as dateparser
-from fastapi import FastAPI, File, UploadFile
+from fastapi import Body, FastAPI, File, UploadFile
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
@@ -470,9 +470,8 @@ def pinned(count: int = 3) -> JSONResponse:
     return JSONResponse({"ok": True, "date": seed, "items": arr[:count]})
 
 
-@app.post("/api/import-doc")
-async def import_doc(file: UploadFile = File(...)) -> JSONResponse:
-    init_db()
+@app.post("/api/preview-doc")
+async def preview_doc(file: UploadFile = File(...)) -> JSONResponse:
     filename = file.filename or "document.txt"
     data = await file.read()
     text = parse_document_bytes(data, filename)
@@ -480,11 +479,52 @@ async def import_doc(file: UploadFile = File(...)) -> JSONResponse:
         return JSONResponse({"ok": False, "message": "文档内容为空"}, status_code=400)
 
     entries = document_to_knowledge_entries(text, filename)
-    with connect_db() as conn:
-        inserted = insert_knowledge_entries(conn, entries)
-        set_meta(conn, "last_doc_import_at", utc_now_iso())
+    return JSONResponse({"ok": True, "filename": filename, "preview": entries})
 
-    return JSONResponse({"ok": True, "inserted": inserted, "filename": filename, "imported": entries})
+
+@app.post("/api/import-doc/preview")
+async def import_doc_preview(file: UploadFile = File(...)) -> JSONResponse:
+    filename = file.filename or "document.txt"
+    data = await file.read()
+    text = parse_document_bytes(data, filename)
+    if not text.strip():
+        return JSONResponse({"ok": False, "message": "文档内容为空"}, status_code=400)
+    preview = document_to_knowledge_entries(text, filename)
+    return JSONResponse({"ok": True, "filename": filename, "preview": preview, "count": len(preview)})
+
+
+@app.post("/api/import-doc/confirm")
+async def import_doc_confirm(payload: Dict[str, Any]) -> JSONResponse:
+    init_db()
+    entries = payload.get("entries") or []
+    if not isinstance(entries, list) or not entries:
+        return JSONResponse({"ok": False, "message": "没有可入库条目"}, status_code=400)
+    normalized = []
+    for item in entries:
+        if not isinstance(item, dict):
+            continue
+        normalized.append(
+            {
+                "source_name": item.get("source_name") or payload.get("filename") or "document",
+                "source_type": item.get("source_type") or "document",
+                "category": item.get("category") or "general",
+                "title": item.get("title") or "未命名文档",
+                "summary": item.get("summary") or "",
+                "body": item.get("body") or "",
+                "tags": item.get("tags") or [],
+                "source_path": item.get("source_path") or payload.get("filename") or "",
+                "created_at": item.get("created_at") or utc_now_iso(),
+                "updated_at": item.get("updated_at") or utc_now_iso(),
+            }
+        )
+    with connect_db() as conn:
+        inserted = insert_knowledge_entries(conn, normalized)
+        set_meta(conn, "last_doc_import_at", utc_now_iso())
+    return JSONResponse({"ok": True, "inserted": inserted})
+
+
+@app.get("/api/knowledge")
+def knowledge(limit: int = 50) -> JSONResponse:
 
 
 @app.get("/api/knowledge")
