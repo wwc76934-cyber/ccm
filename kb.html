@@ -57,13 +57,18 @@
           </nav>
 
           <div class="kbSidebar__tips">
-            <div class="kbSidebar__tipTitle">使用方式</div>
-            <div class="kbSidebar__tipText">左侧切换板块；也可以直接进入独立页面。</div>
-            <div class="kbSidebar__links">
-              <a class="link" href="./kb-notes.html">我的笔记 →</a>
-              <a class="link" href="./kb-pinned.html">今日置顶 →</a>
-              <a class="link" href="./kb-resources.html">学习资源 →</a>
-              <a class="link" href="./kb-assistant.html">AI 助手 →</a>
+            <div class="kbSidebar__tipTitle">导入文档</div>
+            <div class="kbSidebar__tipText">支持上传 Markdown / Word 文档，系统会解析并尽量整理成标准知识模块。</div>
+            <div class="kbSidebar__actions">
+              <label class="btn btn--ghost filebtn kbUploadBtn">选择文档导入
+                <input id="kbDocUpload" type="file" accept=".md,.markdown,.docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/markdown,text/plain" />
+              </label>
+              <div class="kbSidebar__links">
+                <a class="link" href="./kb-notes.html">我的笔记 →</a>
+                <a class="link" href="./kb-pinned.html">今日置顶 →</a>
+                <a class="link" href="./kb-resources.html">学习资源 →</a>
+                <a class="link" href="./kb-assistant.html">AI 助手 →</a>
+              </div>
             </div>
           </div>
         </aside>

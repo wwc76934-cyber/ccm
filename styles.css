@@ -203,6 +203,8 @@ body{
 .kbSidebar__tipTitle{font-weight:900; margin-bottom:6px}
 .kbSidebar__tipText{font-size:13px; color:var(--muted)}
 .kbSidebar__links{display:flex; flex-direction:column; gap:8px; margin-top:10px}
+.kbSidebar__actions{display:flex; flex-direction:column; gap:10px; margin-top:10px}
+.kbUploadBtn{width:100%; justify-content:center}
 .kbNav{display:flex; flex-direction:column; gap:8px; margin-top:16px}
 .kbNav__item{width:100%; text-align:left; padding:11px 12px; border-radius:14px; border:1px solid rgba(20,30,60,.12); background:rgba(255,255,255,.60); color:var(--text); cursor:pointer}
 .kbNav__item:hover{border-color:rgba(91,108,255,.26); background:rgba(91,108,255,.08)}

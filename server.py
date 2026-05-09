@@ -1,14 +1,19 @@
 from __future__ import annotations
 
+import io
 import os
+import re
 import sqlite3
 import time
+import zipfile
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
 import feedparser
+from bs4 import BeautifulSoup
+from docx import Document
 from dateutil import parser as dateparser
-from fastapi import FastAPI
+from fastapi import FastAPI, File, UploadFile
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
@@ -72,6 +77,23 @@ def init_db() -> None:
             CREATE TABLE IF NOT EXISTS meta (
               key TEXT PRIMARY KEY,
               value TEXT NOT NULL
+            );
+            """
+        )
+        conn.execute(
+            """
+            CREATE TABLE IF NOT EXISTS knowledge_entries (
+              id INTEGER PRIMARY KEY AUTOINCREMENT,
+              source_name TEXT,
+              source_type TEXT NOT NULL,
+              category TEXT NOT NULL,
+              title TEXT NOT NULL,
+              summary TEXT,
+              body TEXT NOT NULL,
+              tags TEXT,
+              source_path TEXT,
+              created_at TEXT NOT NULL,
+              updated_at TEXT NOT NULL
             );
             """
         )
@@ -233,6 +255,175 @@ def list_articles(category: Optional[str], limit: int) -> List[Dict[str, Any]]:
     ]
 
 
+def normalize_whitespace(text: str) -> str:
+    return re.sub(r"\s+", " ", text or "").strip()
+
+
+def split_tags(text: str) -> List[str]:
+    return [t.strip() for t in re.split(r"[，,\n\t]+", text or "") if t.strip()]
+
+
+def guess_category(text: str) -> str:
+    t = text.lower()
+    if re.search(r"(sql|数据库|查询|表|窗口函数|join|select|insert|update|delete)", t, re.I):
+        return "it"
+    if re.search(r"(金融|报表|估值|现金流|资产负债|利润|债券|股票|宏观)", t, re.I):
+        return "finance"
+    return "general"
+
+
+def extract_title_and_body(text: str, filename: str) -> tuple[str, str]:
+    raw = normalize_whitespace(text.replace("\x00", " "))
+    lines = [line.strip() for line in text.splitlines() if line.strip()]
+    title = ""
+    for line in lines[:20]:
+        m = re.match(r"^#{1,3}\s+(.+)$", line)
+        if m:
+            title = m.group(1).strip()
+            break
+    if not title:
+        title = filename.rsplit(".", 1)[0] if "." in filename else filename
+    if not title:
+        title = lines[0][:80] if lines else "未命名文档"
+    body = "\n".join(lines) if lines else raw
+    return normalize_whitespace(title), body.strip()
+
+
+def extract_headings(text: str) -> List[str]:
+    heads = []
+    for line in text.splitlines():
+        m = re.match(r"^#{1,6}\s+(.+)$", line.strip())
+        if m:
+            heads.append(m.group(1).strip())
+    return heads
+
+
+def text_from_docx_bytes(data: bytes) -> str:
+    doc = Document(io.BytesIO(data))
+    parts = [p.text for p in doc.paragraphs if p.text.strip()]
+    for table in doc.tables:
+        for row in table.rows:
+            for cell in row.cells:
+                if cell.text.strip():
+                    parts.append(cell.text)
+    return "\n".join(parts)
+
+
+def text_from_md_bytes(data: bytes) -> str:
+    return data.decode("utf-8", errors="ignore")
+
+
+def text_from_html_bytes(data: bytes) -> str:
+    soup = BeautifulSoup(data, "lxml")
+    return soup.get_text("\n")
+
+
+def parse_document_bytes(data: bytes, filename: str) -> str:
+    name = filename.lower()
+    if name.endswith(".docx"):
+        return text_from_docx_bytes(data)
+    if name.endswith(".md") or name.endswith(".markdown") or name.endswith(".txt"):
+        return text_from_md_bytes(data)
+    if name.endswith(".html") or name.endswith(".htm"):
+        return text_from_html_bytes(data)
+    return data.decode("utf-8", errors="ignore")
+
+
+def summarize_text(text: str, max_len: int = 240) -> str:
+    text = normalize_whitespace(text)
+    if len(text) <= max_len:
+        return text
+    return text[: max_len - 1].rstrip() + "…"
+
+
+def document_to_knowledge_entries(text: str, filename: str) -> List[Dict[str, Any]]:
+    raw = text.strip()
+    lines = [line.rstrip() for line in text.splitlines()]
+    headings = extract_headings(text)
+    title, body = extract_title_and_body(text, filename)
+    category = guess_category(f"{title}\n{body}\n{filename}")
+    tags = split_tags(",".join([
+        "信息技术" if category == "it" else "金融" if category == "finance" else "通用",
+        *headings[:3],
+    ]))
+    sections: List[Dict[str, Any]] = []
+
+    if headings:
+        current = []
+        current_title = title
+        for line in lines:
+            m = re.match(r"^#{1,6}\s+(.+)$", line.strip())
+            if m:
+                if current:
+                    section_body = "\n".join(current).strip()
+                    sections.append({
+                        "title": current_title,
+                        "body": section_body,
+                        "summary": summarize_text(section_body),
+                    })
+                    current = []
+                current_title = m.group(1).strip()
+            else:
+                current.append(line)
+        if current:
+            section_body = "\n".join(current).strip()
+            sections.append({
+                "title": current_title,
+                "body": section_body,
+                "summary": summarize_text(section_body),
+            })
+    else:
+        sections.append({"title": title, "body": body, "summary": summarize_text(body)})
+
+    results: List[Dict[str, Any]] = []
+    for idx, sec in enumerate(sections[:20]):
+        sec_title = sec["title"] or title
+        sec_body = sec["body"] or body or raw
+        if not sec_body.strip():
+            continue
+        results.append(
+            {
+                "source_name": filename,
+                "source_type": "document",
+                "category": category,
+                "title": sec_title[:120],
+                "summary": sec["summary"],
+                "body": sec_body.strip(),
+                "tags": tags,
+                "source_path": filename,
+                "created_at": utc_now_iso(),
+                "updated_at": utc_now_iso(),
+            }
+        )
+    return results
+
+
+def insert_knowledge_entries(conn: sqlite3.Connection, entries: List[Dict[str, Any]]) -> int:
+    inserted = 0
+    for e in entries:
+        conn.execute(
+            """
+            INSERT INTO knowledge_entries(
+              source_name, source_type, category, title, summary, body, tags, source_path, created_at, updated_at
+            ) VALUES (?,?,?,?,?,?,?,?,?,?)
+            """,
+            (
+                e.get("source_name"),
+                e.get("source_type", "document"),
+                e.get("category", "general"),
+                e.get("title", "未命名文档"),
+                e.get("summary", ""),
+                e.get("body", ""),
+                ",".join(e.get("tags", [])),
+                e.get("source_path", ""),
+                e.get("created_at", utc_now_iso()),
+                e.get("updated_at", utc_now_iso()),
+            ),
+        )
+        inserted += 1
+    return inserted
+
+
 app = FastAPI(title="LearnSite")
 
 
@@ -277,6 +468,55 @@ def pinned(count: int = 3) -> JSONResponse:
         j = x % (i + 1)
         arr[i], arr[j] = arr[j], arr[i]
     return JSONResponse({"ok": True, "date": seed, "items": arr[:count]})
+
+
+@app.post("/api/import-doc")
+async def import_doc(file: UploadFile = File(...)) -> JSONResponse:
+    init_db()
+    filename = file.filename or "document.txt"
+    data = await file.read()
+    text = parse_document_bytes(data, filename)
+    if not text.strip():
+        return JSONResponse({"ok": False, "message": "文档内容为空"}, status_code=400)
+
+    entries = document_to_knowledge_entries(text, filename)
+    with connect_db() as conn:
+        inserted = insert_knowledge_entries(conn, entries)
+        set_meta(conn, "last_doc_import_at", utc_now_iso())
+
+    return JSONResponse({"ok": True, "inserted": inserted, "filename": filename, "imported": entries})
+
+
+@app.get("/api/knowledge")
+def knowledge(limit: int = 50) -> JSONResponse:
+    init_db()
+    limit = max(1, min(int(limit), 200))
+    with connect_db() as conn:
+        rows = conn.execute(
+            """
+            SELECT source_name, source_type, category, title, summary, body, tags, source_path, created_at, updated_at
+            FROM knowledge_entries
+            ORDER BY updated_at DESC, id DESC
+            LIMIT ?
+            """,
+            (limit,),
+        ).fetchall()
+    items = [
+        {
+            "source_name": r["source_name"],
+            "source_type": r["source_type"],
+            "category": r["category"],
+            "title": r["title"],
+            "summary": r["summary"],
+            "body": r["body"],
+            "tags": [t for t in (r["tags"] or "").split(",") if t],
+            "source_path": r["source_path"],
+            "created_at": r["created_at"],
+            "updated_at": r["updated_at"],
+        }
+        for r in rows
+    ]
+    return JSONResponse({"ok": True, "items": items})
 
 
 app.mount("/", StaticFiles(directory=APP_DIR, html=True), name="static")

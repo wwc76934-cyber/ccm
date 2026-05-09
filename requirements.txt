@@ -2,4 +2,7 @@ fastapi
 uvicorn[standard]
 feedparser
 python-dateutil
+python-docx
+beautifulsoup4
+lxml
 

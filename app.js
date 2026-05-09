@@ -7,6 +7,7 @@ const STORAGE_KEYS = {
   weekly: "learnsite.weekly.v1",
   answers: "learnsite.answers.v1",
   notes: "learnsite.notes.v1",
+  importedDocs: "learnsite.importedDocs.v1",
   llm: "learnsite.llm.v1",
 };
 
@@ -359,6 +360,14 @@ function saveNotes(notes) {
   writeJson(STORAGE_KEYS.notes, notes);
 }
 
+function getImportedDocs() {
+  return readJson(STORAGE_KEYS.importedDocs, []);
+}
+
+function saveImportedDocs(docs) {
+  writeJson(STORAGE_KEYS.importedDocs, docs);
+}
+
 function norm(s) {
   return String(s || "").toLowerCase();
 }
@@ -376,6 +385,54 @@ function noteMatches(note, q, category) {
     .map(norm)
     .join("\n");
   return hay.includes(qq);
+}
+
+function splitTags(text) {
+  return String(text || "")
+    .split(/[，,\n\t]/)
+    .map((s) => s.trim())
+    .filter(Boolean);
+}
+
+function markdownToText(md) {
+  return String(md || "")
+    .replace(/```[\s\S]*?```/g, "")
+    .replace(/^#{1,6}\s*/gm, "")
+    .replace(/\*\*(.*?)\*\*/g, "$1")
+    .replace(/\*(.*?)\*/g, "$1")
+    .replace(/\[(.*?)\]\((.*?)\)/g, "$1")
+    .replace(/\r/g, "");
+}
+
+function guessCategory(text) {
+  const t = norm(text);
+  if (/(sql|数据库|查询|表|窗口函数|join|select|insert|update|delete)/i.test(t)) return "it";
+  if (/(金融|报表|估值|现金流|资产负债|利润|债券|股票|宏观)/i.test(t)) return "finance";
+  return "general";
+}
+
+function makeNoteFromText(text, filename = "") {
+  const raw = String(text || "").trim();
+  const lines = raw.split(/\r?\n/).map((s) => s.trim()).filter(Boolean);
+  const titleFromFile = filename ? filename.replace(/\.[^.]+$/, "") : "";
+  const heading = lines.find((l) => /^#{1,3}\s+/.test(l)) || lines[0] || titleFromFile || "未命名文档";
+  const title = heading.replace(/^#{1,3}\s+/, "").trim();
+  const body = lines.join("\n");
+  const category = guessCategory(`${title}\n${body}\n${filename}`);
+  const tags = Array.from(new Set([
+    ...(category === "it" ? ["信息技术"] : category === "finance" ? ["金融"] : ["通用"]),
+    ...(title.match(/\b[A-Za-z]{3,}\b/g) || []).slice(0, 3),
+  ])).slice(0, 6);
+  return {
+    id: uid("note"),
+    category,
+    title: title || titleFromFile || "未命名文档",
+    tags,
+    body: body || raw,
+    createdAt: nowIso(),
+    updatedAt: nowIso(),
+    source: filename || "",
+  };
 }
 
 function setKbSection(section) {
@@ -689,6 +746,7 @@ function bindKnowledgeBaseEvents() {
   const btnNew = document.querySelector("#btnNewNote");
   const search = document.querySelector("#kbSearch");
   const cat = document.querySelector("#kbCategory");
+  const docUpload = document.querySelector("#kbDocUpload");
   const dialog = document.querySelector("#noteDialog");
   const dlgTitle = document.querySelector("#noteDialogTitle");
   const inTitle = document.querySelector("#noteTitle");
@@ -698,6 +756,7 @@ function bindKnowledgeBaseEvents() {
   const btnSave = document.querySelector("#btnSaveNote");
   const btnDelete = document.querySelector("#btnDeleteNote");
   const navItems = document.querySelectorAll("[data-kb-section]");
+  const docUpload = document.querySelector("#kbDocUpload");
 
   if (!dialog) return;
 
@@ -790,6 +849,31 @@ function bindKnowledgeBaseEvents() {
       currentId = null;
       renderKnowledgeBase();
       dialog.close();
+    });
+  }
+
+  if (docUpload) {
+    docUpload.addEventListener("change", async () => {
+      const file = docUpload.files?.[0];
+      if (!file) return;
+      try {
+        const form = new FormData();
+        form.append("file", file);
+        const res = await fetch("./api/import-doc", { method: "POST", body: form });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        const imported = Array.isArray(data?.imported) ? data.imported : [];
+        const notes = getNotes();
+        saveNotes([...imported, ...notes]);
+        const docs = getImportedDocs();
+        saveImportedDocs([{ filename: file.name, importedAt: nowIso(), count: imported.length }, ...docs]);
+        toast("导入成功", `已解析 ${imported.length} 条标准知识模块`);
+        renderKnowledgeBase();
+      } catch (e) {
+        toast("导入失败", e?.message || "无法解析文档");
+      } finally {
+        docUpload.value = "";
+      }
     });
   }
 }
