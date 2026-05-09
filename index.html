@@ -39,75 +39,45 @@
     </header>
 
     <main class="container main">
-      <section class="homeHero card">
-          <div class="hero__copy">
-            <div class="badge">MVP：知识库 · SQL 练习 · 进度</div>
-            <h1 class="h1">把研究生阶段的学习变成一套可执行系统</h1>
-            <p class="muted">
-              这是你的个人学习工作台，用来记录、整理和推进每周目标，让学习过程更稳定、更可持续。
-            </p>
+      <section class="homeHero card homeHero--center">
+        <div class="hero__copy hero__copy--center">
+          <div class="badge">学习控制台</div>
+          <h1 class="h1">专注本周目标，稳定推进学习节奏</h1>
+          <p class="muted">首页只保留最核心的内容：目标、进度、执行。其余模块请从导航进入。</p>
+        </div>
+
+        <div class="homeWeekly homeWeekly--center">
+          <div class="panel__titleRow">
+            <div>
+              <div class="panel__eyebrow">Weekly Focus</div>
+              <div class="panel__title">本周目标</div>
+            </div>
+            <button id="btnEditWeekly" class="btn btn--ghost btn--sm" type="button">编辑</button>
           </div>
 
-          <div class="hero__panel card homeWeekly">
-            <div class="panel__titleRow">
-              <div>
-                <div class="panel__eyebrow">Weekly Focus</div>
-                <div class="panel__title">本周目标</div>
-              </div>
-              <button id="btnEditWeekly" class="btn btn--ghost btn--sm" type="button">编辑</button>
+          <div class="panel__grid panel__grid--compact">
+            <div class="kpi">
+              <div class="kpi__label">已完成</div>
+              <div class="kpi__value" id="kpiCompleted">0</div>
             </div>
-            <div class="panel__grid panel__grid--compact">
-              <div class="kpi">
-                <div class="kpi__label">已完成</div>
-                <div class="kpi__value" id="kpiCompleted">0</div>
-              </div>
-              <div class="kpi">
-                <div class="kpi__label">总目标</div>
-                <div class="kpi__value" id="kpiTotal">0</div>
-              </div>
-              <div class="kpi">
-                <div class="kpi__label">完成率</div>
-                <div class="kpi__value" id="kpiRate">0%</div>
-              </div>
+            <div class="kpi">
+              <div class="kpi__label">总课节</div>
+              <div class="kpi__value" id="kpiTotal">0</div>
             </div>
-            <div class="progressbar" aria-label="progress">
-              <div class="progressbar__fill" id="kpiBar" style="width: 0%"></div>
-            </div>
-            <div class="weekly">
-              <div id="weeklyList" class="weekly__list"></div>
+            <div class="kpi">
+              <div class="kpi__label">完成率</div>
+              <div class="kpi__value" id="kpiRate">0%</div>
             </div>
           </div>
-      </section>
 
-      <section class="homeGrid">
-          <section class="card homeCard">
-            <div class="card__head">
-              <h2 class="h2">学习入口</h2>
-              <a class="link" href="./kb.html">进入知识库 →</a>
-            </div>
-            <div class="homeLinks">
-              <a class="homeLink" href="./kb.html">
-                <div class="homeLink__title">知识库</div>
-                <div class="homeLink__desc">沉淀笔记、资源与 AI 助手</div>
-              </a>
-              <a class="homeLink" href="./sql.html">
-                <div class="homeLink__title">SQL 练习</div>
-                <div class="homeLink__desc">练习、对答案、记录思路</div>
-              </a>
-            </div>
-          </section>
+          <div class="progressbar" aria-label="progress">
+            <div class="progressbar__fill" id="kpiBar" style="width: 0%"></div>
+          </div>
 
-          <section class="card homeCard">
-            <div class="card__head">
-              <h2 class="h2">学习状态</h2>
-              <span class="link">自动保存</span>
-            </div>
-            <div class="homeStats">
-              <div class="homeStat"><div class="homeStat__label">进度记录</div><div class="homeStat__value" id="kpiCompleted">0</div></div>
-              <div class="homeStat"><div class="homeStat__label">总课节</div><div class="homeStat__value" id="kpiTotal">0</div></div>
-              <div class="homeStat"><div class="homeStat__label">完成率</div><div class="homeStat__value" id="kpiRate">0%</div></div>
-            </div>
-          </section>
+          <div class="weekly">
+            <div id="weeklyList" class="weekly__list"></div>
+          </div>
+        </div>
       </section>
     </main>
 
