@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI 助手｜知识库｜我的学习站</title>
+    <meta name="description" content="知识库中的 AI 助手板块：随时问答，帮助学习与复盘。" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="bg"></div>
+    <header class="topbar">
+      <div class="container topbar__inner">
+        <div class="brand"><div class="brand__logo">LS</div><div class="brand__text"><div class="brand__title">我的学习站</div><div class="brand__subtitle">信息技术 × 金融</div></div></div>
+        <nav class="nav"><a class="nav__link" href="./index.html">首页</a><a class="nav__link is-active" href="./kb.html">知识库</a><a class="nav__link" href="./it.html">信息技术</a><a class="nav__link" href="./finance.html">金融</a><a class="nav__link" href="./sql.html">SQL练习</a></nav>
+        <div class="actions"><button id="btnExport" class="btn btn--ghost" type="button">导出</button><label class="btn btn--ghost filebtn">导入<input id="importFile" type="file" accept="application/json" /></label><button id="btnLogout" class="btn btn--ghost" type="button">退出</button></div>
+      </div>
+    </header>
+
+    <main class="container main">
+      <section class="card page kbPage">
+        <div class="pageHero">
+          <div>
+            <div class="badge">知识库 / AI 助手</div>
+            <h1 class="h1">AI 助手</h1>
+            <p class="muted">随时提问、随时复盘，把问题变成可执行步骤。</p>
+          </div>
+          <div class="pageHero__actions"><a class="btn btn--ghost" href="./kb.html">返回知识库首页</a><a class="btn btn--ghost" href="./kb-notes.html">我的笔记</a><a class="btn btn--ghost" href="./kb-resources.html">学习资源</a></div>
+        </div>
+        <div id="kbAssistant" class="kbAssistant"></div>
+      </section>
+    </main>
+    <footer class="footer"><div class="container footer__inner muted"><span>知识库优先｜先沉淀再拓展</span><span id="buildInfo"></span></div></footer>
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>

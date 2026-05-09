@@ -385,6 +385,10 @@ function setKbSection(section) {
   document.querySelectorAll(".kbPanel").forEach((panel) => {
     panel.classList.toggle("is-active", panel.getAttribute("data-kb-panel") === section);
   });
+  if (section === "notes") {
+    const n = document.querySelector("#kbNotesList");
+    if (n && !n.innerHTML.trim()) renderKnowledgeBase();
+  }
 }
 
 function renderKnowledgeBase() {

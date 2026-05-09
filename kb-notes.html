@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>我的笔记｜知识库｜我的学习站</title>
+    <meta name="description" content="知识库中的我的笔记板块：搜索、分类、编辑与沉淀复盘。" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="bg"></div>
+    <header class="topbar">
+      <div class="container topbar__inner">
+        <div class="brand">
+          <div class="brand__logo">LS</div>
+          <div class="brand__text">
+            <div class="brand__title">我的学习站</div>
+            <div class="brand__subtitle">信息技术 × 金融</div>
+          </div>
+        </div>
+        <nav class="nav">
+          <a class="nav__link" href="./index.html">首页</a>
+          <a class="nav__link is-active" href="./kb.html">知识库</a>
+          <a class="nav__link" href="./it.html">信息技术</a>
+          <a class="nav__link" href="./finance.html">金融</a>
+          <a class="nav__link" href="./sql.html">SQL练习</a>
+        </nav>
+        <div class="actions">
+          <button id="btnExport" class="btn btn--ghost" type="button">导出</button>
+          <label class="btn btn--ghost filebtn">导入<input id="importFile" type="file" accept="application/json" /></label>
+          <button id="btnLogout" class="btn btn--ghost" type="button">退出</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="container main">
+      <section class="card page kbPage">
+        <div class="pageHero">
+          <div>
+            <div class="badge">知识库 / 我的笔记</div>
+            <h1 class="h1">我的笔记</h1>
+            <p class="muted">把知识写成可复用资产。建议每篇笔记都包含“是什么、为什么、怎么用、常见坑、练习、复盘”。</p>
+          </div>
+          <div class="pageHero__actions">
+            <a class="btn btn--ghost" href="./kb.html">返回知识库首页</a>
+            <button id="btnNewNote" class="btn btn--primary" type="button">新建笔记</button>
+          </div>
+        </div>
+
+        <div class="kbFilters">
+          <input id="kbSearch" class="input kbSearch" placeholder="搜索标题/内容/标签（例如：窗口函数、DCF、现金流）" />
+          <select id="kbCategory" class="input kbSelect">
+            <option value="all">全部</option>
+            <option value="it">信息技术</option>
+            <option value="finance">金融</option>
+            <option value="general">通用</option>
+          </select>
+        </div>
+
+        <div class="section">
+          <div class="section__titleRow">
+            <div class="section__title">笔记列表</div>
+            <div class="section__meta">支持搜索与分类筛选</div>
+          </div>
+          <div id="kbNotesList" class="list"></div>
+        </div>
+      </section>
+
+      <dialog id="noteDialog" class="modal">
+        <form method="dialog" class="modal__card">
+          <div class="modal__head">
+            <div>
+              <div class="modal__title" id="noteDialogTitle">编辑笔记</div>
+              <div class="modal__desc">支持纯文本/Markdown 写作；标签用逗号分隔。</div>
+            </div>
+            <button class="btn btn--ghost btn--sm" value="cancel" type="submit">关闭</button>
+          </div>
+          <div class="kbEditGrid">
+            <div class="formrow">
+              <label class="label" for="noteTitle">标题</label>
+              <input id="noteTitle" class="input" />
+            </div>
+            <div class="formrow">
+              <label class="label" for="noteCat">分类</label>
+              <select id="noteCat" class="input">
+                <option value="it">信息技术</option>
+                <option value="finance">金融</option>
+                <option value="general">通用</option>
+              </select>
+            </div>
+            <div class="formrow">
+              <label class="label" for="noteTags">标签</label>
+              <input id="noteTags" class="input" placeholder="SQL,窗口函数,复盘" />
+            </div>
+          </div>
+          <textarea id="noteBody" class="textarea" rows="14"></textarea>
+          <div class="modal__actions kbEditActions">
+            <button id="btnDeleteNote" class="btn btn--ghost" type="button">删除</button>
+            <button id="btnSaveNote" class="btn btn--primary" value="ok" type="submit">保存</button>
+          </div>
+        </form>
+      </dialog>
+    </main>
+
+    <footer class="footer">
+      <div class="container footer__inner muted">
+        <span>知识库优先｜先沉淀再拓展</span>
+        <span id="buildInfo"></span>
+      </div>
+    </footer>
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>

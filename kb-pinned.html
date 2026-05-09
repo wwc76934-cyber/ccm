@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>今日置顶｜知识库｜我的学习站</title>
+    <meta name="description" content="知识库今日置顶内容。" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="bg"></div>
+    <header class="topbar"><div class="container topbar__inner"><div class="brand"><div class="brand__logo">LS</div><div class="brand__text"><div class="brand__title">我的学习站</div><div class="brand__subtitle">信息技术 × 金融</div></div></div><nav class="nav"><a class="nav__link" href="./index.html">首页</a><a class="nav__link is-active" href="./kb.html">知识库</a><a class="nav__link" href="./it.html">信息技术</a><a class="nav__link" href="./finance.html">金融</a><a class="nav__link" href="./sql.html">SQL练习</a></nav><div class="actions"><button id="btnExport" class="btn btn--ghost" type="button">导出</button><label class="btn btn--ghost filebtn">导入<input id="importFile" type="file" accept="application/json" /></label><button id="btnLogout" class="btn btn--ghost" type="button">退出</button></div></div></header>
+    <main class="container main"><section class="card page"><div class="pageHeader"><h2 class="page__title">今日置顶</h2><p class="page__desc">每天自动轮换推荐内容，帮助你快速进入学习状态。</p></div><div id="kbPinned" class="kbPinned"></div></section></main>
+    <footer class="footer"><div class="container footer__inner muted"><span>知识库｜今日置顶</span><span id="buildInfo"></span></div></footer>
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>
