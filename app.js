@@ -896,10 +896,16 @@ function bindKnowledgeBaseEvents() {
     btnImportConfirm.addEventListener("click", async () => {
       if (!pendingImportEntries.length) return;
       try {
+        const enriched = pendingImportEntries.map((e) => ({
+          ...e,
+          title: e.title?.trim() || "未命名文档",
+          summary: e.summary || summarizeText(e.body || ""),
+          tags: Array.from(new Set([...(e.tags || []), ...splitTags(e.title || "")])).slice(0, 8),
+        }));
         const res = await fetch("./api/import-doc/confirm", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ entries: pendingImportEntries, filename: previewDialog?.dataset.filename || "" }),
+          body: JSON.stringify({ entries: enriched, filename: previewDialog?.dataset.filename || "" }),
         });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();

@@ -5,7 +5,6 @@ import os
 import re
 import sqlite3
 import time
-import zipfile
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
@@ -373,19 +372,36 @@ def document_to_knowledge_entries(text: str, filename: str) -> List[Dict[str, An
                 "summary": summarize_text(section_body),
             })
     else:
-        sections.append({"title": title, "body": body, "summary": summarize_text(body)})
+        paragraphs = [p.strip() for p in re.split(r"\n{2,}", text) if p.strip()]
+        if len(paragraphs) > 1:
+            for idx, para in enumerate(paragraphs[:12]):
+                sections.append({
+                    "title": f"{title} - 片段 {idx + 1}" if idx else title,
+                    "body": para,
+                    "summary": summarize_text(para),
+                })
+        else:
+            sections.append({"title": title, "body": body, "summary": summarize_text(body)})
 
     results: List[Dict[str, Any]] = []
+    seen = set()
     for idx, sec in enumerate(sections[:20]):
         sec_title = sec["title"] or title
         sec_body = sec["body"] or body or raw
         if not sec_body.strip():
             continue
+        key = (sec_title.strip().lower(), summarize_text(sec_body, 80).lower())
+        if key in seen:
+            continue
+        seen.add(key)
+        sec_category = category
+        if idx > 0:
+            sec_category = guess_category(f"{sec_title}\n{sec_body}") or category
         results.append(
             {
                 "source_name": filename,
                 "source_type": "document",
-                "category": category,
+                "category": sec_category,
                 "title": sec_title[:120],
                 "summary": sec["summary"],
                 "body": sec_body.strip(),
@@ -470,18 +486,6 @@ def pinned(count: int = 3) -> JSONResponse:
     return JSONResponse({"ok": True, "date": seed, "items": arr[:count]})
 
 
-@app.post("/api/preview-doc")
-async def preview_doc(file: UploadFile = File(...)) -> JSONResponse:
-    filename = file.filename or "document.txt"
-    data = await file.read()
-    text = parse_document_bytes(data, filename)
-    if not text.strip():
-        return JSONResponse({"ok": False, "message": "文档内容为空"}, status_code=400)
-
-    entries = document_to_knowledge_entries(text, filename)
-    return JSONResponse({"ok": True, "filename": filename, "preview": entries})
-
-
 @app.post("/api/import-doc/preview")
 async def import_doc_preview(file: UploadFile = File(...)) -> JSONResponse:
     filename = file.filename or "document.txt"
@@ -521,10 +525,6 @@ async def import_doc_confirm(payload: Dict[str, Any]) -> JSONResponse:
         inserted = insert_knowledge_entries(conn, normalized)
         set_meta(conn, "last_doc_import_at", utc_now_iso())
     return JSONResponse({"ok": True, "inserted": inserted})
-
-
-@app.get("/api/knowledge")
-def knowledge(limit: int = 50) -> JSONResponse:
 
 
 @app.get("/api/knowledge")
