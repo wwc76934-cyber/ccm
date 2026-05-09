@@ -448,7 +448,18 @@ function setKbSection(section) {
   }
 }
 
-function renderKnowledgeBase() {
+async function fetchKnowledgeEntries() {
+  try {
+    const res = await fetch("./api/knowledge?limit=200");
+    if (!res.ok) return [];
+    const data = await res.json();
+    return Array.isArray(data?.items) ? data.items : [];
+  } catch {
+    return [];
+  }
+}
+
+async function renderKnowledgeBase() {
   const listEl = document.querySelector("#kbNotesList");
   if (!listEl) return;
 
@@ -459,13 +470,24 @@ function renderKnowledgeBase() {
   const q = document.querySelector("#kbSearch")?.value || "";
   const category = document.querySelector("#kbCategory")?.value || "all";
 
-  const notes = getNotes()
-    .slice()
-    .sort((a, b) => (b.updatedAt || "").localeCompare(a.updatedAt || ""));
+  const localNotes = getNotes().map((n) => ({ ...n, sourceType: "local" }));
+  const imported = await fetchKnowledgeEntries();
+  const importedNotes = imported.map((n, idx) => ({
+    id: `kb_${idx}_${n.title}`,
+    title: n.title,
+    body: [n.summary, n.body].filter(Boolean).join("\n\n"),
+    category: n.category || "general",
+    tags: n.tags || [],
+    updatedAt: n.updated_at || n.created_at || nowIso(),
+    sourceType: "imported",
+    sourceName: n.source_name || n.source_path || "文档导入",
+  }));
+
+  const notes = [...localNotes, ...importedNotes].sort((a, b) => (b.updatedAt || "").localeCompare(a.updatedAt || ""));
   const filtered = notes.filter((n) => noteMatches(n, q, category));
 
   if (filtered.length === 0) {
-    listEl.innerHTML = `<div class="muted" style="font-size:13px">没有匹配的笔记。你可以点右上角“新建笔记”。</div>`;
+    listEl.innerHTML = `<div class="muted" style="font-size:13px">没有匹配的笔记。你可以点右上角“新建笔记”或上传文档导入。</div>`;
     return;
   }
 
@@ -479,11 +501,13 @@ function renderKnowledgeBase() {
             <div class="item__body">${escapeHtml((n.body || "").slice(0, 180))}${(n.body || "").length > 180 ? "…" : ""}</div>
             <div class="tagrow">
               <span class="tag">${escapeHtml(n.category === "it" ? "信息技术" : n.category === "finance" ? "金融" : "通用")}</span>
+              <span class="tag">${escapeHtml(n.sourceType === "imported" ? "导入文档" : "本地笔记")}</span>
+              ${n.sourceName ? `<span class="tag">${escapeHtml(n.sourceName)}</span>` : ""}
               ${tags.map((t) => `<span class="tag">${escapeHtml(t)}</span>`).join("")}
             </div>
           </div>
           <div>
-            <button class="btn btn--ghost btn--sm" type="button" data-edit-note="${escapeHtml(n.id)}">编辑</button>
+            ${n.sourceType === "local" ? `<button class="btn btn--ghost btn--sm" type="button" data-edit-note="${escapeHtml(n.id)}">编辑</button>` : ""}
           </div>
         </div>
       `;
@@ -911,7 +935,7 @@ function bindKnowledgeBaseEvents() {
         const data = await res.json();
         saveImportedDocs([{ filename: previewDialog?.dataset.filename || "", importedAt: nowIso(), count: data.inserted || 0 }, ...getImportedDocs()]);
         toast("导入成功", `已确认入库 ${data.inserted || 0} 条`);
-        renderKnowledgeBase();
+        await renderKnowledgeBase();
       } catch (e) {
         toast("入库失败", e?.message || "请重试");
       } finally {
