@@ -136,23 +136,47 @@ function totalLessonIds() {
 }
 
 function getDailyTasks() {
-  const today = new Date();
-  const day = today.getDay();
-  const weekday = ["周日", "周一", "周二", "周三", "周四", "周五", "周六"][day];
-  const base = [
-    { id: "d1", text: "完成 1 次核心学习", note: "45-60 分钟" },
-    { id: "d2", text: "整理 1 条笔记或复盘", note: "20-30 分钟" },
-    { id: "d3", text: "回顾本周目标并收尾", note: "10-15 分钟" },
-  ];
-  return { weekday, items: base.map((x) => ({ ...x, done: Boolean(getProgress().completed[x.id]) })) };
+  const stored = readJson("learnsite.daily.v1", null);
+  const base = stored && Array.isArray(stored.items) && stored.items.length ? stored : defaultDaily();
+  return { ...base, items: base.items.map((x) => ({ ...x, done: Boolean(getProgress().completed[x.id]) })) };
+}
+
+function defaultDaily() {
+  const weekday = ["周日", "周一", "周二", "周三", "周四", "周五", "周六"][new Date().getDay()];
+  return {
+    weekday,
+    items: [
+      { id: "d1", text: "完成 1 次核心学习", note: "45-60 分钟", done: false },
+      { id: "d2", text: "整理 1 条笔记或复盘", note: "20-30 分钟", done: false },
+      { id: "d3", text: "回顾本周目标并收尾", note: "10-15 分钟", done: false },
+    ],
+    updatedAt: nowIso(),
+  };
+}
+
+function setDailyTasks(next) {
+  writeJson("learnsite.daily.v1", { ...next, updatedAt: nowIso() });
 }
 
 function getMilestones() {
-  return [
-    { id: "m1", title: "建立稳定学习节奏", desc: "形成每日打开网站、处理任务、完成复盘的习惯", progress: 85 },
-    { id: "m2", title: "打造可复用知识库", desc: "把文档、笔记和导入内容整理为标准模块", progress: 70 },
-    { id: "m3", title: "沉淀个人学习方法", desc: "让学习过程可视化、可追踪、可持续", progress: 60 },
-  ];
+  const stored = readJson("learnsite.milestones.v1", null);
+  if (stored && Array.isArray(stored.items) && stored.items.length) return stored;
+  return defaultMilestones();
+}
+
+function defaultMilestones() {
+  return {
+    items: [
+      { id: "m1", title: "建立稳定学习节奏", desc: "形成每日打开网站、处理任务、完成复盘的习惯", progress: 85 },
+      { id: "m2", title: "打造可复用知识库", desc: "把文档、笔记和导入内容整理为标准模块", progress: 70 },
+      { id: "m3", title: "沉淀个人学习方法", desc: "让学习过程可视化、可追踪、可持续", progress: 60 },
+    ],
+    updatedAt: nowIso(),
+  };
+}
+
+function setMilestones(next) {
+  writeJson("learnsite.milestones.v1", { ...next, updatedAt: nowIso() });
 }
 
 function renderKpis() {
@@ -238,42 +262,64 @@ function roadmapStep(step) {
 
 function renderHomeSnippets() {
   const daily = getDailyTasks();
+  const weekly = getWeekly();
+  const milestones = getMilestones();
+
   const dailyList = document.querySelector("#dailyList");
   const weeklyList = document.querySelector("#weeklyList");
   const milestoneList = document.querySelector("#milestoneList");
   const dailyRate = document.querySelector("#dailyRate");
+  const dailyMeta = document.querySelector("#dailyMeta");
+  const weeklyMeta = document.querySelector("#weeklyMeta");
+  const milestoneMeta = document.querySelector("#milestoneMeta");
+  const stageTitle = document.querySelector("#stageTitle");
+  const stageDesc = document.querySelector("#stageDesc");
   const stageBar = document.querySelector("#stageBar");
   const stageRate = document.querySelector("#stageRate");
+  const dailyRing = document.querySelector("#dailyRing");
+
+  if (dailyMeta) dailyMeta.textContent = `${daily.weekday} · ${daily.items.length} 项`;
+  if (weeklyMeta) weeklyMeta.textContent = `${weekly.items.length || 0} 项任务`;
+  if (milestoneMeta) milestoneMeta.textContent = `${milestones.items.length} 个里程碑`;
+  if (stageTitle) stageTitle.textContent = "建立一套小而精的学习系统";
+  if (stageDesc) stageDesc.textContent = "围绕知识沉淀、目标推进和复盘改进，形成长期可持续的个人学习操作台。";
+
+  const dailyDone = daily.items.filter((x) => x.done).length;
+  const dailyPercent = daily.items.length ? Math.round((dailyDone / daily.items.length) * 100) : 0;
+  if (dailyRate) dailyRate.textContent = `${dailyPercent}%`;
+  if (dailyRing) dailyRing.style.background = `conic-gradient(from 180deg, rgba(91,108,255,.95) 0% ${dailyPercent}%, rgba(255,255,255,.14) ${dailyPercent}% 100%)`;
 
   if (dailyList) {
-    dailyList.innerHTML = daily.items
-      .map((it) => `
+    dailyList.innerHTML = daily.items.length
+      ? daily.items.map((it) => `
         <button class="dailyTask ${it.done ? "is-done" : ""}" data-daily-toggle="${escapeHtml(it.id)}" type="button">
           <div class="dailyTask__icon">${it.done ? "✓" : "○"}</div>
           <div class="dailyTask__main">
             <div class="dailyTask__title">${escapeHtml(it.text)}</div>
-            <div class="dailyTask__meta">${escapeHtml(it.note)}</div>
+            <div class="dailyTask__meta">${escapeHtml(it.note || "")}</div>
           </div>
         </button>
-      `)
-      .join("");
+      `).join("")
+      : `<div class="muted" style="font-size:13px">还没有每日任务，点击“编辑每日”添加。</div>`;
   }
-
-  const dailyDone = daily.items.filter((x) => x.done).length;
-  const dailyPercent = Math.round((dailyDone / daily.items.length) * 100);
-  if (dailyRate) dailyRate.textContent = `${dailyPercent}%`;
 
   if (weeklyList) {
-    const w = getWeekly();
-    if (!w.items.length) {
-      weeklyList.innerHTML = `<div class="muted" style="font-size:13px">还没有本周目标，点击“编辑每周”添加。</div>`;
-    }
+    weeklyList.innerHTML = weekly.items.length
+      ? weekly.items.map((it) => `
+        <button class="weeklyGoal ${it.done ? "is-done" : ""}" data-weekly-toggle="${escapeHtml(it.id)}" type="button">
+          <div class="weeklyGoal__index">${it.done ? "✓" : "•"}</div>
+          <div class="weeklyGoal__main">
+            <div class="weeklyGoal__title">${escapeHtml(it.text)}</div>
+            <div class="weeklyGoal__meta">${escapeHtml(it.done ? "已完成" : "建议拆到每天")}</div>
+          </div>
+        </button>
+      `).join("")
+      : `<div class="muted" style="font-size:13px">还没有本周目标，点击“编辑每周”添加。</div>`;
   }
 
-  const milestones = getMilestones();
   if (milestoneList) {
-    milestoneList.innerHTML = milestones
-      .map((m) => `
+    milestoneList.innerHTML = milestones.items.length
+      ? milestones.items.map((m) => `
         <div class="milestone">
           <div class="milestone__top">
             <div class="milestone__title">${escapeHtml(m.title)}</div>
@@ -282,11 +328,12 @@ function renderHomeSnippets() {
           <div class="progressbar progressbar--thin"><div class="progressbar__fill" style="width:${m.progress}%"></div></div>
           <div class="milestone__desc">${escapeHtml(m.desc)}</div>
         </div>
-      `)
-      .join("");
+      `).join("")
+      : `<div class="muted" style="font-size:13px">还没有阶段目标，点击“编辑阶段”添加。</div>`;
   }
-  if (stageBar) stageBar.style.width = `${Math.round(milestones.reduce((s, m) => s + m.progress, 0) / milestones.length)}%`;
-  if (stageRate) stageRate.textContent = `${Math.round(milestones.reduce((s, m) => s + m.progress, 0) / milestones.length)}%`;
+  const avg = milestones.items.length ? Math.round(milestones.items.reduce((s, m) => s + m.progress, 0) / milestones.items.length) : 0;
+  if (stageBar) stageBar.style.width = `${avg}%`;
+  if (stageRate) stageRate.textContent = `${avg}%`;
 }
 
 function renderRoadmapList(trackKey, targetId) {
@@ -332,6 +379,9 @@ function bindDynamicEvents() {
       writeJson(STORAGE_KEYS.progress, p);
       renderAll();
     });
+  });
+  document.querySelectorAll("[data-weekly-toggle]").forEach((btn) => {
+    btn.addEventListener("click", () => toggleWeekly(btn.getAttribute("data-weekly-toggle")));
   });
 
   const answers = readJson(STORAGE_KEYS.answers, {});
@@ -1269,37 +1319,48 @@ async function ensureAuth() {
     });
   }
 
+  const btnEditDaily = document.querySelector("#btnEditDaily");
   const btnEditWeekly = document.querySelector("#btnEditWeekly");
+  const btnEditMilestone = document.querySelector("#btnEditMilestone");
+  const dailyDialog = document.querySelector("#dailyDialog");
+  const dailyTextarea = document.querySelector("#dailyTextarea");
+  const btnDailyReset = document.querySelector("#btnDailyReset");
+  const btnDailySave = document.querySelector("#btnDailySave");
   const weeklyDialog = document.querySelector("#weeklyDialog");
   const weeklyTextarea = document.querySelector("#weeklyTextarea");
   const btnWeeklyReset = document.querySelector("#btnWeeklyReset");
   const btnWeeklySave = document.querySelector("#btnWeeklySave");
+  const milestoneDialog = document.querySelector("#milestoneDialog");
+  const milestoneTextarea = document.querySelector("#milestoneTextarea");
+  const btnMilestoneReset = document.querySelector("#btnMilestoneReset");
+  const btnMilestoneSave = document.querySelector("#btnMilestoneSave");
 
+  function openDailyDialog() {
+    if (!dailyDialog || !dailyTextarea) return;
+    dailyTextarea.value = getDailyTasks().items.map((it) => `${it.text} | ${it.note || ""}`).join("\n");
+    dailyDialog.showModal();
+  }
   function openWeeklyDialog() {
     if (!weeklyDialog || !weeklyTextarea) return;
     weeklyTextarea.value = weeklyToText(getWeekly());
     weeklyDialog.showModal();
   }
+  function openMilestoneDialog() {
+    if (!milestoneDialog || !milestoneTextarea) return;
+    milestoneTextarea.value = getMilestones().items.map((m) => `${m.title} | ${m.progress} | ${m.desc}`).join("\n");
+    milestoneDialog.showModal();
+  }
 
+  if (btnEditDaily) btnEditDaily.addEventListener("click", openDailyDialog);
   if (btnEditWeekly) btnEditWeekly.addEventListener("click", openWeeklyDialog);
-  if (btnWeeklyReset) {
-    btnWeeklyReset.addEventListener("click", () => {
-      const d = defaultWeekly();
-      setWeekly(d);
-      if (weeklyTextarea) weeklyTextarea.value = weeklyToText(d);
-      rerenderWeekly();
-      toast("已恢复默认", "你可以继续编辑");
-    });
-  }
-  if (btnWeeklySave) {
-    btnWeeklySave.addEventListener("click", () => {
-      if (!weeklyTextarea) return;
-      const next = parseWeeklyText(weeklyTextarea.value);
-      setWeekly(next);
-      rerenderWeekly();
-      toast("已保存", "本周目标已更新");
-    });
-  }
+  if (btnEditMilestone) btnEditMilestone.addEventListener("click", openMilestoneDialog);
+
+  if (btnDailyReset) btnDailyReset.addEventListener("click", () => { const d = defaultDaily(); setDailyTasks(d); if (dailyTextarea) dailyTextarea.value = d.items.map((it) => `${it.text} | ${it.note}`).join("\n"); renderAll(); toast("已恢复默认", "你可以继续编辑"); });
+  if (btnDailySave) btnDailySave.addEventListener("click", () => { if (!dailyTextarea) return; const items = String(dailyTextarea.value || "").split(/\r?\n/).map((line, idx) => { const [text, note = ""] = line.split("|").map((s) => s.trim()); return text ? { id: `d${idx + 1}`, text, note, done: false } : null; }).filter(Boolean); setDailyTasks({ weekday: ["周日", "周一", "周二", "周三", "周四", "周五", "周六"][new Date().getDay()], items: items.length ? items : defaultDaily().items }); renderAll(); toast("已保存", "每日任务已更新"); });
+  if (btnWeeklyReset) btnWeeklyReset.addEventListener("click", () => { const d = defaultWeekly(); setWeekly(d); if (weeklyTextarea) weeklyTextarea.value = weeklyToText(d); renderAll(); toast("已恢复默认", "你可以继续编辑"); });
+  if (btnWeeklySave) btnWeeklySave.addEventListener("click", () => { if (!weeklyTextarea) return; const next = parseWeeklyText(weeklyTextarea.value); setWeekly(next); renderAll(); toast("已保存", "本周目标已更新"); });
+  if (btnMilestoneReset) btnMilestoneReset.addEventListener("click", () => { const d = defaultMilestones(); setMilestones(d); if (milestoneTextarea) milestoneTextarea.value = d.items.map((m) => `${m.title} | ${m.progress} | ${m.desc}`).join("\n"); renderAll(); toast("已恢复默认", "你可以继续编辑"); });
+  if (btnMilestoneSave) btnMilestoneSave.addEventListener("click", () => { if (!milestoneTextarea) return; const items = String(milestoneTextarea.value || "").split(/\r?\n/).map((line, idx) => { const [title, progress = "0", desc = ""] = line.split("|").map((s) => s.trim()); return title ? { id: `m${idx + 1}`, title, progress: Math.max(0, Math.min(100, Number(progress) || 0)), desc } : null; }).filter(Boolean); setMilestones({ items: items.length ? items : defaultMilestones().items }); renderAll(); toast("已保存", "阶段目标已更新"); });
 
   const form = document.querySelector("#authForm");
   if (form) {
