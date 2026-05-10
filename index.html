@@ -80,13 +80,15 @@
               </div>
               <div class="goalCard__meta" id="weeklyMeta">本周主线推进</div>
             </div>
-            <div class="progressbar" aria-label="weekly progress">
-              <div class="progressbar__fill" id="kpiBar" style="width: 0%"></div>
-            </div>
-            <div class="homeStats homeStats--compact">
-              <div class="homeStat"><div class="homeStat__label">已完成</div><div class="homeStat__value" id="kpiCompleted">0</div></div>
-              <div class="homeStat"><div class="homeStat__label">总课节</div><div class="homeStat__value" id="kpiTotal">0</div></div>
-              <div class="homeStat"><div class="homeStat__label">完成率</div><div class="homeStat__value" id="kpiRate">0%</div></div>
+            <div class="weeklySummary">
+              <div class="progressbar" aria-label="weekly progress">
+                <div class="progressbar__fill" id="kpiBar" style="width: 0%"></div>
+              </div>
+              <div class="weeklySummary__chips">
+                <div class="weeklyChip"><div class="weeklyChip__label">已完成</div><div class="weeklyChip__value" id="kpiCompleted">0</div></div>
+                <div class="weeklyChip"><div class="weeklyChip__label">总任务</div><div class="weeklyChip__value" id="kpiTotal">0</div></div>
+                <div class="weeklyChip"><div class="weeklyChip__label">完成率</div><div class="weeklyChip__value" id="kpiRate">0%</div></div>
+              </div>
             </div>
             <div id="weeklyList" class="weekly__list"></div>
           </section>
@@ -101,8 +103,13 @@
             <div class="goalCard__meta" id="milestoneMeta">长期方向</div>
           </div>
           <div class="stageGoal">
-            <div class="stageGoal__title" id="stageTitle">建立一套小而精的学习系统</div>
-            <div class="stageGoal__desc" id="stageDesc">围绕知识沉淀、目标推进和复盘改进，形成长期可持续的个人学习操作台。</div>
+            <div class="stageGoal__topline">
+              <div>
+                <div class="stageGoal__title" id="stageTitle">建立一套小而精的学习系统</div>
+                <div class="stageGoal__desc" id="stageDesc">围绕知识沉淀、目标推进和复盘改进，形成长期可持续的个人学习操作台。</div>
+              </div>
+              <button id="btnEditStageDirect" class="btn btn--ghost btn--sm" type="button">编辑目标</button>
+            </div>
             <div class="stageGoal__progress">
               <div class="progressbar progressbar--stage"><div class="progressbar__fill" id="stageBar" style="width: 0%"></div></div>
               <div class="stageGoal__percent" id="stageRate">0%</div>

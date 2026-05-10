@@ -180,9 +180,9 @@ function setMilestones(next) {
 }
 
 function renderKpis() {
-  const ids = totalLessonIds();
-  const completed = ids.filter((id) => isCompleted(id)).length;
-  const total = ids.length;
+  const w = getWeekly();
+  const completed = (w.items || []).filter((it) => it.done).length;
+  const total = (w.items || []).length;
   const rate = total === 0 ? 0 : Math.round((completed / total) * 100);
 
   setText("#kpiCompleted", String(completed));
@@ -1322,6 +1322,7 @@ async function ensureAuth() {
   const btnEditDaily = document.querySelector("#btnEditDaily");
   const btnEditWeekly = document.querySelector("#btnEditWeekly");
   const btnEditMilestone = document.querySelector("#btnEditMilestone");
+  const btnEditStageDirect = document.querySelector("#btnEditStageDirect");
   const dailyDialog = document.querySelector("#dailyDialog");
   const dailyTextarea = document.querySelector("#dailyTextarea");
   const btnDailyReset = document.querySelector("#btnDailyReset");
@@ -1354,6 +1355,7 @@ async function ensureAuth() {
   if (btnEditDaily) btnEditDaily.addEventListener("click", openDailyDialog);
   if (btnEditWeekly) btnEditWeekly.addEventListener("click", openWeeklyDialog);
   if (btnEditMilestone) btnEditMilestone.addEventListener("click", openMilestoneDialog);
+  if (btnEditStageDirect) btnEditStageDirect.addEventListener("click", openMilestoneDialog);
 
   if (btnDailyReset) btnDailyReset.addEventListener("click", () => { const d = defaultDaily(); setDailyTasks(d); if (dailyTextarea) dailyTextarea.value = d.items.map((it) => `${it.text} | ${it.note}`).join("\n"); renderAll(); toast("已恢复默认", "你可以继续编辑"); });
   if (btnDailySave) btnDailySave.addEventListener("click", () => { if (!dailyTextarea) return; const items = String(dailyTextarea.value || "").split(/\r?\n/).map((line, idx) => { const [text, note = ""] = line.split("|").map((s) => s.trim()); return text ? { id: `d${idx + 1}`, text, note, done: false } : null; }).filter(Boolean); setDailyTasks({ weekday: ["周日", "周一", "周二", "周三", "周四", "周五", "周六"][new Date().getDay()], items: items.length ? items : defaultDaily().items }); renderAll(); toast("已保存", "每日任务已更新"); });
