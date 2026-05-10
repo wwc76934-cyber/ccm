@@ -24,7 +24,6 @@
           <a class="nav__link" href="./kb.html" data-route="kb">知识库</a>
           <a class="nav__link" href="./it.html" data-route="it">信息技术</a>
           <a class="nav__link" href="./finance.html" data-route="finance">金融</a>
-          <a class="nav__link" href="./sql.html" data-route="sql">SQL练习</a>
         </nav>
 
         <div class="actions">
@@ -39,45 +38,78 @@
     </header>
 
     <main class="container main">
-      <section class="homeHero card homeHero--center">
-        <div class="hero__copy hero__copy--center">
-          <div class="badge">学习控制台</div>
-          <h1 class="h1">专注本周目标，稳定推进学习节奏</h1>
-          <p class="muted">首页只保留最核心的内容：目标、进度、执行。其余模块请从导航进入。</p>
+      <section class="card homeBoard">
+        <div class="homeBoard__hero">
+          <div>
+            <div class="badge">学习控制台</div>
+            <h1 class="h1">把每天、每周和阶段目标放在同一个节奏里</h1>
+            <p class="muted">首页只保留最重要的目标系统，帮助你稳定推进，不被无关功能干扰。</p>
+          </div>
+          <div class="homeBoard__actions">
+            <button id="btnEditDaily" class="btn btn--ghost" type="button">编辑每日</button>
+            <button id="btnEditWeekly" class="btn btn--ghost" type="button">编辑每周</button>
+            <button id="btnEditMilestone" class="btn btn--ghost" type="button">编辑阶段</button>
+          </div>
         </div>
 
-        <div class="homeWeekly homeWeekly--center">
-          <div class="panel__titleRow">
-            <div>
-              <div class="panel__eyebrow">Weekly Focus</div>
-              <div class="panel__title">本周目标</div>
+        <div class="goalGrid">
+          <section class="goalCard goalCard--daily">
+            <div class="goalCard__head">
+              <div>
+                <div class="panel__eyebrow">Daily Focus</div>
+                <h2 class="h2">每日任务</h2>
+              </div>
+              <div class="goalCard__meta" id="dailyMeta">3 项 · 今天最重要</div>
             </div>
-            <button id="btnEditWeekly" class="btn btn--ghost btn--sm" type="button">编辑</button>
-          </div>
+            <div class="goalRingRow">
+              <div class="goalRing" id="dailyRing">
+                <div class="goalRing__inner">
+                  <div class="goalRing__value" id="dailyRate">0%</div>
+                  <div class="goalRing__label">完成</div>
+                </div>
+              </div>
+              <div class="goalList" id="dailyList"></div>
+            </div>
+          </section>
 
-          <div class="panel__grid panel__grid--compact">
-            <div class="kpi">
-              <div class="kpi__label">已完成</div>
-              <div class="kpi__value" id="kpiCompleted">0</div>
+          <section class="goalCard goalCard--weekly">
+            <div class="goalCard__head">
+              <div>
+                <div class="panel__eyebrow">Weekly Focus</div>
+                <h2 class="h2">每周任务</h2>
+              </div>
+              <div class="goalCard__meta" id="weeklyMeta">本周主线推进</div>
             </div>
-            <div class="kpi">
-              <div class="kpi__label">总课节</div>
-              <div class="kpi__value" id="kpiTotal">0</div>
+            <div class="progressbar" aria-label="weekly progress">
+              <div class="progressbar__fill" id="kpiBar" style="width: 0%"></div>
             </div>
-            <div class="kpi">
-              <div class="kpi__label">完成率</div>
-              <div class="kpi__value" id="kpiRate">0%</div>
+            <div class="homeStats homeStats--compact">
+              <div class="homeStat"><div class="homeStat__label">已完成</div><div class="homeStat__value" id="kpiCompleted">0</div></div>
+              <div class="homeStat"><div class="homeStat__label">总课节</div><div class="homeStat__value" id="kpiTotal">0</div></div>
+              <div class="homeStat"><div class="homeStat__label">完成率</div><div class="homeStat__value" id="kpiRate">0%</div></div>
             </div>
-          </div>
-
-          <div class="progressbar" aria-label="progress">
-            <div class="progressbar__fill" id="kpiBar" style="width: 0%"></div>
-          </div>
-
-          <div class="weekly">
             <div id="weeklyList" class="weekly__list"></div>
-          </div>
+          </section>
         </div>
+
+        <section class="goalCard goalCard--stage">
+          <div class="goalCard__head">
+            <div>
+              <div class="panel__eyebrow">Stage Goal</div>
+              <h2 class="h2">阶段大目标</h2>
+            </div>
+            <div class="goalCard__meta" id="milestoneMeta">长期方向</div>
+          </div>
+          <div class="stageGoal">
+            <div class="stageGoal__title" id="stageTitle">建立一套小而精的学习系统</div>
+            <div class="stageGoal__desc" id="stageDesc">围绕知识沉淀、目标推进和复盘改进，形成长期可持续的个人学习操作台。</div>
+            <div class="stageGoal__progress">
+              <div class="progressbar progressbar--stage"><div class="progressbar__fill" id="stageBar" style="width: 0%"></div></div>
+              <div class="stageGoal__percent" id="stageRate">0%</div>
+            </div>
+            <div id="milestoneList" class="milestoneList"></div>
+          </div>
+        </section>
       </section>
     </main>
 

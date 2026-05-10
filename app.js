@@ -79,9 +79,9 @@ function getProgress() {
 function defaultWeekly() {
   return {
     items: [
-      { id: "w1", text: "SQL 基础：完成 10 道题（筛选/排序/JOIN）", done: false },
-      { id: "w2", text: "窗口函数：做 3 道并写复盘（为什么这么写）", done: false },
-      { id: "w3", text: "金融：选 1 家公司，做 1 页报表速读笔记", done: false },
+      { id: "w1", text: "完成 1 次核心学习并记录笔记", done: false },
+      { id: "w2", text: "复盘 1 个知识点并整理成模板", done: false },
+      { id: "w3", text: "回顾本周目标并调整下周任务", done: false },
     ],
     updatedAt: nowIso(),
   };
@@ -133,6 +133,26 @@ function isCompleted(id) {
 
 function totalLessonIds() {
   return [...catalog.it.steps, ...catalog.finance.steps].map((s) => s.id);
+}
+
+function getDailyTasks() {
+  const today = new Date();
+  const day = today.getDay();
+  const weekday = ["周日", "周一", "周二", "周三", "周四", "周五", "周六"][day];
+  const base = [
+    { id: "d1", text: "完成 1 次核心学习", note: "45-60 分钟" },
+    { id: "d2", text: "整理 1 条笔记或复盘", note: "20-30 分钟" },
+    { id: "d3", text: "回顾本周目标并收尾", note: "10-15 分钟" },
+  ];
+  return { weekday, items: base.map((x) => ({ ...x, done: Boolean(getProgress().completed[x.id]) })) };
+}
+
+function getMilestones() {
+  return [
+    { id: "m1", title: "建立稳定学习节奏", desc: "形成每日打开网站、处理任务、完成复盘的习惯", progress: 85 },
+    { id: "m2", title: "打造可复用知识库", desc: "把文档、笔记和导入内容整理为标准模块", progress: 70 },
+    { id: "m3", title: "沉淀个人学习方法", desc: "让学习过程可视化、可追踪、可持续", progress: 60 },
+  ];
 }
 
 function renderKpis() {
@@ -217,23 +237,56 @@ function roadmapStep(step) {
 }
 
 function renderHomeSnippets() {
-  const itRoadmap = document.querySelector("#itRoadmap");
-  const finRoadmap = document.querySelector("#finRoadmap");
-  const sqlPreview = document.querySelector("#sqlPreview");
-  if (itRoadmap) itRoadmap.innerHTML = catalog.it.steps.slice(0, 3).map(roadmapStep).join("");
-  if (finRoadmap) finRoadmap.innerHTML = catalog.finance.steps.slice(0, 3).map(roadmapStep).join("");
+  const daily = getDailyTasks();
+  const dailyList = document.querySelector("#dailyList");
+  const weeklyList = document.querySelector("#weeklyList");
+  const milestoneList = document.querySelector("#milestoneList");
+  const dailyRate = document.querySelector("#dailyRate");
+  const stageBar = document.querySelector("#stageBar");
+  const stageRate = document.querySelector("#stageRate");
 
-  if (sqlPreview) {
-    sqlPreview.innerHTML = catalog.sqlExercises.slice(0, 4).map((ex) => {
-      return `
-        <div class="exCard">
-          <div class="exCard__title">${escapeHtml(ex.title)}</div>
-          <div class="exCard__meta">${escapeHtml(ex.meta)}</div>
-          <div class="exCard__desc">${escapeHtml(ex.desc)}</div>
-        </div>
-      `;
-    }).join("");
+  if (dailyList) {
+    dailyList.innerHTML = daily.items
+      .map((it) => `
+        <button class="dailyTask ${it.done ? "is-done" : ""}" data-daily-toggle="${escapeHtml(it.id)}" type="button">
+          <div class="dailyTask__icon">${it.done ? "✓" : "○"}</div>
+          <div class="dailyTask__main">
+            <div class="dailyTask__title">${escapeHtml(it.text)}</div>
+            <div class="dailyTask__meta">${escapeHtml(it.note)}</div>
+          </div>
+        </button>
+      `)
+      .join("");
   }
+
+  const dailyDone = daily.items.filter((x) => x.done).length;
+  const dailyPercent = Math.round((dailyDone / daily.items.length) * 100);
+  if (dailyRate) dailyRate.textContent = `${dailyPercent}%`;
+
+  if (weeklyList) {
+    const w = getWeekly();
+    if (!w.items.length) {
+      weeklyList.innerHTML = `<div class="muted" style="font-size:13px">还没有本周目标，点击“编辑每周”添加。</div>`;
+    }
+  }
+
+  const milestones = getMilestones();
+  if (milestoneList) {
+    milestoneList.innerHTML = milestones
+      .map((m) => `
+        <div class="milestone">
+          <div class="milestone__top">
+            <div class="milestone__title">${escapeHtml(m.title)}</div>
+            <div class="milestone__pct">${m.progress}%</div>
+          </div>
+          <div class="progressbar progressbar--thin"><div class="progressbar__fill" style="width:${m.progress}%"></div></div>
+          <div class="milestone__desc">${escapeHtml(m.desc)}</div>
+        </div>
+      `)
+      .join("");
+  }
+  if (stageBar) stageBar.style.width = `${Math.round(milestones.reduce((s, m) => s + m.progress, 0) / milestones.length)}%`;
+  if (stageRate) stageRate.textContent = `${Math.round(milestones.reduce((s, m) => s + m.progress, 0) / milestones.length)}%`;
 }
 
 function renderRoadmapList(trackKey, targetId) {
@@ -264,51 +317,23 @@ function renderRoadmapList(trackKey, targetId) {
     .join("");
 }
 
-function renderSqlPractice(targetId) {
-  const el = document.querySelector(`#${targetId}`);
-  if (!el) return;
-  el.innerHTML = (catalog.sqlExercises || [])
-    .map((ex) => {
-      return `
-        <div class="item">
-          <div class="item__main">
-            <div class="item__title">${escapeHtml(ex.title)}</div>
-            <div class="item__body">${escapeHtml(ex.desc)}</div>
-            <div class="tagrow">
-              <span class="tag">${escapeHtml(ex.meta)}</span>
-              <span class="tag">手动对答案</span>
-            </div>
-            <div class="accordion">
-              <summary>我的答案（会自动保存）</summary>
-              <div class="accordion__body">
-                <textarea class="textarea" rows="7" data-answer="${escapeHtml(ex.id)}" placeholder="把你写的 SQL 粘贴在这里。建议再写一段思路说明。"></textarea>
-              </div>
-            </div>
-            <div class="accordion">
-              <summary>查看表结构 / 数据说明</summary>
-              <div class="accordion__body">
-                <pre class="code">${escapeHtml(ex.schema)}</pre>
-              </div>
-            </div>
-            <details class="accordion">
-              <summary>展开参考答案</summary>
-              <div class="accordion__body">
-                <pre class="code">${escapeHtml(ex.answer)}</pre>
-              </div>
-            </details>
-          </div>
-        </div>
-      `;
-    })
-    .join("");
-}
 
 function bindDynamicEvents() {
   document.querySelectorAll("[data-toggle]").forEach((btn) => {
     btn.addEventListener("click", () => toggleMarkup(btn.getAttribute("data-toggle")));
   });
+  document.querySelectorAll("[data-daily-toggle]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const p = getProgress();
+      const id = btn.getAttribute("data-daily-toggle");
+      if (!id) return;
+      if (p.completed[id]) delete p.completed[id]; else p.completed[id] = nowIso();
+      p.updatedAt = nowIso();
+      writeJson(STORAGE_KEYS.progress, p);
+      renderAll();
+    });
+  });
 
-  // SQL 我的答案：自动加载与保存
   const answers = readJson(STORAGE_KEYS.answers, {});
   document.querySelectorAll("[data-answer]").forEach((ta) => {
     const id = ta.getAttribute("data-answer");
@@ -1310,9 +1335,6 @@ function renderAll() {
   renderKpis();
   renderHomeSnippets();
   rerenderWeekly();
-  renderRoadmapList("it", "itRoadmapFull");
-  renderRoadmapList("finance", "financeRoadmapFull");
-  renderSqlPractice("sqlPracticeFull");
   renderKnowledgeBase();
   setKbSection("notes");
   bindDynamicEvents();
