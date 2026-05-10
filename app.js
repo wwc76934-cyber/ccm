@@ -114,6 +114,30 @@ function setDailyTasks(next) {
   writeJson("learnsite.daily.v1", { ...next, updatedAt: nowIso() });
 }
 
+function setDailyConfigFromText(text) {
+  const items = String(text || "")
+    .split(/\r?\n/)
+    .map((line, idx) => {
+      const [textPart, note = ""] = line.split("|").map((s) => s.trim());
+      return textPart ? { id: `d${idx + 1}`, text: textPart, note, done: false } : null;
+    })
+    .filter(Boolean)
+    .slice(0, 5);
+  setDailyTasks({ weekday: defaultDaily().weekday, items: items.length ? items : defaultDaily().items });
+}
+
+function setMilestonesFromText(text) {
+  const items = String(text || "")
+    .split(/\r?\n/)
+    .map((line, idx) => {
+      const [title, progress = "0", desc = ""] = line.split("|").map((s) => s.trim());
+      return title ? { id: `m${idx + 1}`, title, progress: Math.max(0, Math.min(100, Number(progress) || 0)), desc } : null;
+    })
+    .filter(Boolean)
+    .slice(0, 6);
+  setMilestones({ items: items.length ? items : defaultMilestones().items });
+}
+
 function defaultMilestones() {
   return {
     items: [
@@ -215,9 +239,9 @@ function setMilestones(next) {
 }
 
 function renderKpis() {
-  const ids = totalLessonIds();
-  const completed = ids.filter((id) => isCompleted(id)).length;
-  const total = ids.length;
+  const w = getWeekly();
+  const completed = (w.items || []).filter((it) => it.done).length;
+  const total = (w.items || []).length;
   const rate = total === 0 ? 0 : Math.round((completed / total) * 100);
 
   setText("#kpiCompleted", String(completed));
@@ -1407,14 +1431,7 @@ async function ensureAuth() {
   if (btnDailySave) {
     btnDailySave.addEventListener("click", () => {
       if (!dailyTextarea) return;
-      const items = String(dailyTextarea.value || "")
-        .split(/\r?\n/)
-        .map((line, idx) => {
-          const [text, note = ""] = line.split("|").map((s) => s.trim());
-          return text ? { id: `d${idx + 1}`, text, note } : null;
-        })
-        .filter(Boolean);
-      setDailyTasks({ weekday: ["周日", "周一", "周二", "周三", "周四", "周五", "周六"][new Date().getDay()], items });
+      setDailyConfigFromText(dailyTextarea.value);
       renderAll();
       toast("已保存", "每日任务已更新");
     });
@@ -1449,14 +1466,7 @@ async function ensureAuth() {
   if (btnMilestoneSave) {
     btnMilestoneSave.addEventListener("click", () => {
       if (!milestoneTextarea) return;
-      const items = String(milestoneTextarea.value || "")
-        .split(/\r?\n/)
-        .map((line, idx) => {
-          const [title, progress = "0", desc = ""] = line.split("|").map((s) => s.trim());
-          return title ? { id: `m${idx + 1}`, title, progress: Math.max(0, Math.min(100, Number(progress) || 0)), desc } : null;
-        })
-        .filter(Boolean);
-      setMilestones({ items });
+      setMilestonesFromText(milestoneTextarea.value);
       renderAll();
       toast("已保存", "阶段目标已更新");
     });
