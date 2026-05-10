@@ -856,8 +856,8 @@ function bindKnowledgeBaseEvents() {
     btn.addEventListener("click", () => setKbSection(btn.getAttribute("data-kb-section") || "notes"));
   });
 
-  function openFor(note) {
-    currentId = note?.id || null;
+  function openFor(note, isNew = false) {
+    currentId = isNew ? null : note?.id || null;
     setKbSection("notes");
     if (dlgTitle) dlgTitle.textContent = currentId ? "编辑笔记" : "新建笔记";
     if (inTitle) inTitle.value = note?.title || "";
@@ -870,7 +870,6 @@ function bindKnowledgeBaseEvents() {
 
   function newNoteTemplate() {
     return {
-      id: uid("note"),
       category: "it",
       title: "",
       tags: [],
@@ -881,7 +880,7 @@ function bindKnowledgeBaseEvents() {
     };
   }
 
-  if (btnNew) btnNew.addEventListener("click", () => openFor(newNoteTemplate()));
+  if (btnNew) btnNew.addEventListener("click", () => openFor(newNoteTemplate(), true));
   if (search) search.addEventListener("input", () => renderKnowledgeBase());
   if (cat) cat.addEventListener("change", () => renderKnowledgeBase());
 
@@ -916,6 +915,7 @@ function bindKnowledgeBaseEvents() {
         updatedAt: nowIso(),
       };
       saveNotes([n, ...notes]);
+      writeJson(STORAGE_KEYS.notes, [n, ...notes]);
       toast("已保存", "新笔记已创建");
       renderKnowledgeBase();
       dialog.close();
@@ -925,6 +925,7 @@ function bindKnowledgeBaseEvents() {
       n.id === currentId ? { ...n, category, title, tags, body, updatedAt: nowIso() } : n
     );
     saveNotes(next);
+    writeJson(STORAGE_KEYS.notes, next);
     toast("已保存", "笔记已更新");
     renderKnowledgeBase();
     dialog.close();
