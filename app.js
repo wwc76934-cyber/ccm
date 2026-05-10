@@ -918,6 +918,7 @@ function bindKnowledgeBaseEvents() {
       saveNotes([n, ...notes]);
       toast("已保存", "新笔记已创建");
       renderKnowledgeBase();
+      dialog.close();
       return;
     }
     const next = notes.map((n) =>
@@ -926,6 +927,7 @@ function bindKnowledgeBaseEvents() {
     saveNotes(next);
     toast("已保存", "笔记已更新");
     renderKnowledgeBase();
+    dialog.close();
   }
 
   if (btnSave) btnSave.addEventListener("click", saveFromDialog);
@@ -992,6 +994,7 @@ function bindKnowledgeBaseEvents() {
         saveImportedDocs([{ filename: previewDialog?.dataset.filename || "", importedAt: nowIso(), count: data.inserted || 0 }, ...getImportedDocs()]);
         toast("导入成功", `已确认入库 ${data.inserted || 0} 条`);
         await renderKnowledgeBase();
+        if (previewDialog?.open) previewDialog.close();
       } catch (e) {
         toast("入库失败", e?.message || "请重试");
       } finally {
