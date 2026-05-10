@@ -360,12 +360,34 @@ function saveNotes(notes) {
   writeJson(STORAGE_KEYS.notes, notes);
 }
 
+function normalizeImportedEntry(entry) {
+  return {
+    ...entry,
+    sourceType: "imported",
+    sourceName: entry.source_name || entry.sourceName || entry.source_path || "文档导入",
+    body: entry.body || "",
+    title: entry.title || "未命名文档",
+    category: entry.category || "general",
+    tags: Array.isArray(entry.tags) ? entry.tags : splitTags(entry.tags),
+    updatedAt: entry.updated_at || entry.updatedAt || nowIso(),
+    createdAt: entry.created_at || entry.createdAt || nowIso(),
+  };
+}
+
 function getImportedDocs() {
   return readJson(STORAGE_KEYS.importedDocs, []);
 }
 
 function saveImportedDocs(docs) {
   writeJson(STORAGE_KEYS.importedDocs, docs);
+}
+
+function getLocalKnowledgeEntries() {
+  return readJson("learnsite.knowledgeEntries.local.v1", []);
+}
+
+function saveLocalKnowledgeEntries(entries) {
+  writeJson("learnsite.knowledgeEntries.local.v1", entries);
 }
 
 function norm(s) {
@@ -453,10 +475,24 @@ async function fetchKnowledgeEntries() {
     const res = await fetch("./api/knowledge?limit=200");
     if (!res.ok) return [];
     const data = await res.json();
-    return Array.isArray(data?.items) ? data.items : [];
+    return Array.isArray(data?.items) ? data.items.map(normalizeImportedEntry) : [];
   } catch {
     return [];
   }
+}
+
+function mapEntryToNote(n, idx = 0) {
+  return {
+    id: `kb_${idx}_${(n.title || "note").replace(/\s+/g, "_").slice(0, 40)}`,
+    title: n.title || "未命名",
+    body: [n.summary, n.body].filter(Boolean).join("\n\n") || n.body || n.summary || "",
+    category: n.category || "general",
+    tags: n.tags || [],
+    updatedAt: n.updated_at || n.created_at || nowIso(),
+    sourceType: n.source_type || "imported",
+    sourceName: n.source_name || n.source_path || "文档导入",
+    sourcePath: n.source_path || "",
+  };
 }
 
 async function renderKnowledgeBase() {
@@ -471,17 +507,9 @@ async function renderKnowledgeBase() {
   const category = document.querySelector("#kbCategory")?.value || "all";
 
   const localNotes = getNotes().map((n) => ({ ...n, sourceType: "local" }));
-  const imported = await fetchKnowledgeEntries();
-  const importedNotes = imported.map((n, idx) => ({
-    id: `kb_${idx}_${n.title}`,
-    title: n.title,
-    body: [n.summary, n.body].filter(Boolean).join("\n\n"),
-    category: n.category || "general",
-    tags: n.tags || [],
-    updatedAt: n.updated_at || n.created_at || nowIso(),
-    sourceType: "imported",
-    sourceName: n.source_name || n.source_path || "文档导入",
-  }));
+  const storedImported = getLocalKnowledgeEntries().map((n, idx) => mapEntryToNote(normalizeImportedEntry(n), idx));
+  const remoteImported = (await fetchKnowledgeEntries()).map((n, idx) => mapEntryToNote(n, idx + 1000));
+  const importedNotes = [...storedImported, ...remoteImported];
 
   const notes = [...localNotes, ...importedNotes].sort((a, b) => (b.updatedAt || "").localeCompare(a.updatedAt || ""));
   const filtered = notes.filter((n) => noteMatches(n, q, category));
@@ -491,28 +519,47 @@ async function renderKnowledgeBase() {
     return;
   }
 
-  listEl.innerHTML = filtered
-    .map((n) => {
-      const tags = (n.tags || []).slice(0, 6);
-      return `
-        <div class="item">
-          <div class="item__main">
-            <div class="item__title">${escapeHtml(n.title || "未命名")}</div>
-            <div class="item__body">${escapeHtml((n.body || "").slice(0, 180))}${(n.body || "").length > 180 ? "…" : ""}</div>
-            <div class="tagrow">
-              <span class="tag">${escapeHtml(n.category === "it" ? "信息技术" : n.category === "finance" ? "金融" : "通用")}</span>
-              <span class="tag">${escapeHtml(n.sourceType === "imported" ? "导入文档" : "本地笔记")}</span>
-              ${n.sourceName ? `<span class="tag">${escapeHtml(n.sourceName)}</span>` : ""}
-              ${tags.map((t) => `<span class="tag">${escapeHtml(t)}</span>`).join("")}
+  const localCount = localNotes.length;
+  const importedCount = importedNotes.length;
+  const stats = `本地 ${localCount} 条 · 导入 ${importedCount} 条 · 当前显示 ${filtered.length} 条`;
+
+  listEl.innerHTML = `
+    <div class="cardSub" style="margin-bottom:12px">
+      <div class="cardSub__head">
+        <div class="cardSub__title">知识库总览</div>
+        <div class="cardSub__meta">${escapeHtml(stats)}</div>
+      </div>
+      <div class="cardSub__body">
+        <div class="homeStats" style="margin-top:0">
+          <div class="homeStat"><div class="homeStat__label">总条目</div><div class="homeStat__value">${notes.length}</div></div>
+          <div class="homeStat"><div class="homeStat__label">本地笔记</div><div class="homeStat__value">${localCount}</div></div>
+          <div class="homeStat"><div class="homeStat__label">导入条目</div><div class="homeStat__value">${importedCount}</div></div>
+        </div>
+      </div>
+    </div>
+    ${filtered
+      .map((n) => {
+        const tags = (n.tags || []).slice(0, 6);
+        return `
+          <div class="item">
+            <div class="item__main">
+              <div class="item__title">${escapeHtml(n.title || "未命名")}</div>
+              <div class="item__body">${escapeHtml((n.body || "").slice(0, 180))}${(n.body || "").length > 180 ? "…" : ""}</div>
+              <div class="tagrow">
+                <span class="tag">${escapeHtml(n.category === "it" ? "信息技术" : n.category === "finance" ? "金融" : "通用")}</span>
+                <span class="tag">${escapeHtml(n.sourceType === "imported" ? "导入文档" : "本地笔记")}</span>
+                ${n.sourceName ? `<span class="tag">${escapeHtml(n.sourceName)}</span>` : ""}
+                ${tags.map((t) => `<span class="tag">${escapeHtml(t)}</span>`).join("")}
+              </div>
+            </div>
+            <div>
+              ${n.sourceType === "local" ? `<button class="btn btn--ghost btn--sm" type="button" data-edit-note="${escapeHtml(n.id)}">编辑</button>` : ""}
             </div>
           </div>
-          <div>
-            ${n.sourceType === "local" ? `<button class="btn btn--ghost btn--sm" type="button" data-edit-note="${escapeHtml(n.id)}">编辑</button>` : ""}
-          </div>
-        </div>
-      `;
-    })
-    .join("");
+        `;
+      })
+      .join("")}
+  `;
 }
 
 function ymd() {
@@ -933,6 +980,15 @@ function bindKnowledgeBaseEvents() {
         });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
+        const saved = pendingImportEntries.map((e) => ({
+          ...e,
+          sourceType: "imported",
+          sourceName: previewDialog?.dataset.filename || e.sourceName || "文档导入",
+          sourcePath: previewDialog?.dataset.filename || e.sourcePath || "",
+          updatedAt: nowIso(),
+          createdAt: e.createdAt || nowIso(),
+        }));
+        saveLocalKnowledgeEntries([...saved, ...getLocalKnowledgeEntries()]);
         saveImportedDocs([{ filename: previewDialog?.dataset.filename || "", importedAt: nowIso(), count: data.inserted || 0 }, ...getImportedDocs()]);
         toast("导入成功", `已确认入库 ${data.inserted || 0} 条`);
         await renderKnowledgeBase();
