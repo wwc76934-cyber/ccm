@@ -487,6 +487,12 @@ function defaultNotes() {
 function getNotes() {
   const notes = readJson(STORAGE_KEYS.notes, null);
   if (!notes || !Array.isArray(notes)) {
+    const imported = getLocalKnowledgeEntries();
+    if (imported.length) {
+      const restored = imported.map((n, idx) => mapEntryToNote(normalizeImportedEntry(n), idx));
+      writeJson(STORAGE_KEYS.notes, restored);
+      return restored;
+    }
     const d = defaultNotes();
     writeJson(STORAGE_KEYS.notes, d);
     return d;
