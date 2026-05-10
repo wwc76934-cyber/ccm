@@ -112,51 +112,52 @@ body{
 .link{color:rgba(48,197,255,.92); text-decoration:none}
 .link:hover{text-decoration:underline}
 
-.homeHero{display:grid; grid-template-columns: 1.1fr .9fr; gap:18px; padding:22px; margin-top:10px}
-.hero__copy{padding:8px 0}
-.badge{
-  display:inline-flex; align-items:center;
-  padding:7px 10px; border-radius:999px;
-  border:1px solid rgba(255,255,255,.12);
-  background:rgba(255,255,255,.04);
-  font-size:12px; color:var(--muted);
-}
-.homeWeekly{padding:18px; align-self:center; justify-self:stretch}
-.panel__eyebrow{font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted2); margin-bottom:4px}
-.panel__title{font-weight:700}
-.panel__titleRow{display:flex; align-items:flex-start; justify-content:space-between; gap:10px}
-.btn--sm{padding:7px 10px; border-radius:10px; font-size:13px}
-.panel__grid{display:grid; grid-template-columns: repeat(3, 1fr); gap:10px; margin-top:12px}
-.panel__grid--compact .kpi{padding:12px}
-.kpi{padding:10px 10px; border-radius:14px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.10)}
-.kpi__label{color:var(--muted2); font-size:12px}
-.kpi__value{font-size:22px; font-weight:800; margin-top:4px}
-.progressbar{height:10px; border-radius:999px; background:rgba(255,255,255,.06); margin-top:12px; overflow:hidden; border:1px solid rgba(255,255,255,.10)}
-.progressbar__fill{height:100%; background:linear-gradient(90deg, rgba(124,92,255,.85), rgba(48,197,255,.78))}
-.weekly{margin-top:14px}
-.weekly__list{display:flex; flex-direction:column; gap:8px; margin-top:8px}
-.weeklyItem{
-  display:flex; gap:10px; align-items:flex-start;
-  padding:12px 12px;
-  border-radius:14px;
-  border:1px solid rgba(255,255,255,.10);
-  background:rgba(255,255,255,.05);
-}
-.weeklyItem__main{flex:1}
-.weeklyItem__title{font-weight:750}
-.weeklyItem__meta{color:var(--muted2); font-size:12px; margin-top:3px}
-.weeklyItem.is-done .weeklyItem__title{color:rgba(52,211,153,.95); text-decoration: line-through; text-decoration-thickness: 2px; text-decoration-color: rgba(52,211,153,.55)}
-.homeGrid{display:grid; grid-template-columns: repeat(2, 1fr); gap:18px; margin-top:18px}
-.homeCard{padding:18px}
-.homeLinks{display:grid; gap:12px; margin-top:12px}
-.homeLink{display:block; text-decoration:none; color:inherit; padding:14px; border-radius:14px; border:1px solid rgba(20,30,60,.10); background:rgba(255,255,255,.72)}
-.homeLink:hover{border-color:rgba(91,108,255,.26); box-shadow:0 10px 30px rgba(10,18,40,.08)}
-.homeLink__title{font-weight:900}
-.homeLink__desc{font-size:13px; color:var(--muted); margin-top:4px}
+.homeBoard{padding:22px; margin-top:10px}
+.homeBoard__hero{display:flex; align-items:flex-start; justify-content:space-between; gap:16px; margin-bottom:18px}
+.homeBoard__actions{display:flex; gap:10px; flex-wrap:wrap}
+.goalGrid{display:grid; grid-template-columns: 1fr 1fr; gap:18px; align-items:start}
+.goalCard{padding:18px; border-radius:18px; border:1px solid rgba(20,30,60,.10); background:rgba(255,255,255,.62)}
+.goalCard--stage{margin-top:18px}
+.goalCard__head{display:flex; justify-content:space-between; gap:10px; align-items:flex-start; margin-bottom:12px}
+.goalCard__meta{color:var(--muted2); font-size:12px; text-align:right}
+.goalRingRow{display:grid; grid-template-columns: 180px 1fr; gap:14px; align-items:center}
+.goalRing{width:180px; height:180px; border-radius:50%; background:conic-gradient(from 180deg, rgba(91,108,255,.95) 0%, rgba(42,169,255,.72) 0%, rgba(255,255,255,.12) 0%); display:grid; place-items:center; box-shadow:inset 0 0 0 1px rgba(255,255,255,.12)}
+.goalRing__inner{width:126px; height:126px; border-radius:50%; background:rgba(255,255,255,.88); display:grid; place-items:center; text-align:center; box-shadow:0 12px 30px rgba(10,18,40,.12)}
+.goalRing__value{font-size:28px; font-weight:950}
+.goalRing__label{font-size:12px; color:var(--muted2); margin-top:-6px}
+.goalList{display:flex; flex-direction:column; gap:10px}
+.dailyTask{display:flex; gap:12px; align-items:flex-start; width:100%; padding:12px; border-radius:14px; border:1px solid rgba(20,30,60,.10); background:rgba(255,255,255,.72); text-align:left; cursor:pointer}
+.dailyTask:hover{border-color:rgba(91,108,255,.25); background:rgba(255,255,255,.88)}
+.dailyTask.is-done{opacity:.72}
+.dailyTask__icon{width:28px; height:28px; border-radius:10px; display:grid; place-items:center; background:rgba(91,108,255,.12); color:var(--primary); font-weight:900}
+.dailyTask__main{flex:1}
+.dailyTask__title{font-weight:850}
+.dailyTask__meta{font-size:12px; color:var(--muted2); margin-top:4px}
 .homeStats{display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:12px}
+.homeStats--compact{margin-top:10px}
 .homeStat{padding:14px; border-radius:14px; border:1px solid rgba(20,30,60,.10); background:rgba(255,255,255,.72)}
 .homeStat__label{font-size:12px; color:var(--muted2)}
 .homeStat__value{font-size:26px; font-weight:900; margin-top:6px}
+.weeklyGoal{display:flex; gap:12px; align-items:flex-start; width:100%; padding:12px; border-radius:14px; border:1px solid rgba(20,30,60,.10); background:rgba(255,255,255,.72); text-align:left; cursor:pointer}
+.weeklyGoal:hover{border-color:rgba(91,108,255,.25); background:rgba(255,255,255,.88)}
+.weeklyGoal.is-done{opacity:.72}
+.weeklyGoal__index{width:28px; height:28px; border-radius:10px; display:grid; place-items:center; background:rgba(42,169,255,.12); color:var(--primary2); font-weight:900}
+.weeklyGoal__main{flex:1}
+.weeklyGoal__title{font-weight:850}
+.weeklyGoal__meta{font-size:12px; color:var(--muted2); margin-top:4px}
+.stageGoal{display:flex; flex-direction:column; gap:14px}
+.stageGoal__title{font-size:22px; font-weight:950}
+.stageGoal__desc{color:var(--muted); line-height:1.6}
+.stageGoal__progress{display:flex; align-items:center; gap:12px}
+.stageGoal__percent{font-weight:900; font-size:18px}
+.milestoneList{display:grid; grid-template-columns:repeat(3,1fr); gap:12px}
+.milestone{padding:14px; border-radius:14px; border:1px solid rgba(20,30,60,.10); background:rgba(255,255,255,.72)}
+.milestone__top{display:flex; justify-content:space-between; gap:8px; align-items:center}
+.milestone__title{font-weight:850}
+.milestone__pct{font-weight:900; color:var(--primary)}
+.milestone__desc{font-size:13px; color:var(--muted); margin-top:8px; line-height:1.55}
+.progressbar--thin{height:8px; margin-top:10px}
+@media (max-width: 980px){.goalGrid,.goalRingRow,.milestoneList{grid-template-columns:1fr}.homeBoard__hero{flex-direction:column}.goalRing{margin:0 auto}.homeBoard__actions{width:100%}}
 
 .modal{
   border:none;

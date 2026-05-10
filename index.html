@@ -122,6 +122,40 @@
 
     <script type="module" src="./app.js"></script>
 
+    <dialog id="dailyDialog" class="modal">
+      <form method="dialog" class="modal__card">
+        <div class="modal__head">
+          <div>
+            <div class="modal__title">编辑每日任务</div>
+            <div class="modal__desc">每行一个任务；格式：任务名称 | 备注</div>
+          </div>
+          <button class="btn btn--ghost btn--sm" value="cancel" type="submit">关闭</button>
+        </div>
+        <textarea id="dailyTextarea" class="textarea" rows="10" placeholder="完成 1 次核心学习 | 45-60 分钟&#10;整理 1 条笔记或复盘 | 20-30 分钟&#10;回顾本周目标并收尾 | 10-15 分钟"></textarea>
+        <div class="modal__actions">
+          <button id="btnDailyReset" class="btn btn--ghost" type="button">恢复默认</button>
+          <button id="btnDailySave" class="btn btn--primary" value="ok" type="submit">保存</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="milestoneDialog" class="modal">
+      <form method="dialog" class="modal__card">
+        <div class="modal__head">
+          <div>
+            <div class="modal__title">编辑阶段目标</div>
+            <div class="modal__desc">每行一个里程碑；格式：标题 | 进度百分比 | 描述</div>
+          </div>
+          <button class="btn btn--ghost btn--sm" value="cancel" type="submit">关闭</button>
+        </div>
+        <textarea id="milestoneTextarea" class="textarea" rows="10" placeholder="建立稳定学习节奏 | 85 | 形成每日打开网站、处理任务、完成复盘的习惯&#10;打造可复用知识库 | 70 | 把文档、笔记和导入内容整理为标准模块&#10;沉淀个人学习方法 | 60 | 让学习过程可视化、可追踪、可持续"></textarea>
+        <div class="modal__actions">
+          <button id="btnMilestoneReset" class="btn btn--ghost" type="button">恢复默认</button>
+          <button id="btnMilestoneSave" class="btn btn--primary" value="ok" type="submit">保存</button>
+        </div>
+      </form>
+    </dialog>
+
     <dialog id="weeklyDialog" class="modal">
       <form method="dialog" class="modal__card">
         <div class="modal__head">
