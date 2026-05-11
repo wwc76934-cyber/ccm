@@ -5,6 +5,7 @@ const STORAGE_KEYS = {
   session: "learnsite.session.v1",
   progress: "learnsite.progress.v1",
   weekly: "learnsite.weekly.v1",
+  weeklyPlan: "learnsite.weeklyPlan.v1",
   answers: "learnsite.answers.v1",
   notes: "learnsite.notes.v1",
   importedDocs: "learnsite.importedDocs.v1",
@@ -79,23 +80,46 @@ function getProgress() {
 function defaultWeekly() {
   return {
     total: 12,
+    title: "牛客网 SQL 刷题周计划",
+    platform: "nowcoder",
+    topic: "SQL篇 / 大厂笔试真题",
     items: [
-      { id: "w1", text: "牛客网代码题 4 题", done: false },
-      { id: "w2", text: "回顾与整理 2 题", done: false },
-      { id: "w3", text: "复盘与沉淀 1 篇", done: false },
+      { id: "w1", title: "SQL40 每个月 Top3 的周杰伦歌曲", difficulty: "较难", url: "https://www.nowcoder.com/practice/4ab6d198ea8447fe9b6a1cad1f671503?tpId=375&tqId=10737572", done: false, stage: "今日", note: "优先练窗口函数与分组统计" },
+      { id: "w2", title: "SQL41 最长连续登录天数", difficulty: "困难", url: "https://www.nowcoder.com/practice/cb8bc687046e4d32ad38de62c48ad79b?tpId=375&tqId=10737573", done: false, stage: "待完成", note: "连续性问题，适合周中攻克" },
+      { id: "w3", title: "SQL42 分析客户逾期情况", difficulty: "中等", url: "https://www.nowcoder.com/practice/22633632da344e2492973ecf555e10c9?tpId=375&tqId=10497698", done: false, stage: "待完成", note: "重点练条件聚合与分组" },
+      { id: "w4", title: "SQL46 查询培训指定课程的员工信息", difficulty: "简单", url: "https://www.nowcoder.com/practice/a0ef4574056e4a219ee7d651ba82efef?tpId=375&tqId=10858427", done: false, stage: "待完成", note: "用于热身和收尾" },
+      { id: "w5", title: "SQL48 每个商品的销售总额", difficulty: "中等", url: "https://www.nowcoder.com/practice/6d796e885ee44a9cb599f47b16a02ea4?tpId=375&tqId=10824294", done: false, stage: "待完成", note: "配合 GROUP BY 与排序" },
+      { id: "w6", title: "SQL74 下单最多的商品", difficulty: "简单", url: "https://www.nowcoder.com/practice/d7c93e3a3d5b4087896539121d32d367?tpId=375&tqId=11136042", done: false, stage: "待完成", note: "做成每日小题" },
     ],
     updatedAt: nowIso(),
   };
 }
 
+function normalizeWeeklyPlan(raw) {
+  if (!raw || !Array.isArray(raw.items) || !raw.items.length) return defaultWeekly();
+  return {
+    ...defaultWeekly(),
+    ...raw,
+    items: raw.items.map((it, idx) => ({
+      id: it.id || `w${idx + 1}`,
+      title: it.title || it.text || `题目 ${idx + 1}`,
+      difficulty: it.difficulty || it.level || "中等",
+      url: it.url || it.link || "",
+      done: Boolean(it.done),
+      stage: it.stage || (it.done ? "已完成" : idx === 0 ? "今日" : "待完成"),
+      note: it.note || it.desc || "",
+    })),
+    total: Number(raw.total || raw.items.length),
+  };
+}
+
 function getWeekly() {
-  const w = readJson(STORAGE_KEYS.weekly, null);
-  if (!w || !Array.isArray(w.items)) return defaultWeekly();
-  return w;
+  const w = readJson(STORAGE_KEYS.weeklyPlan, null) || readJson(STORAGE_KEYS.weekly, null);
+  return normalizeWeeklyPlan(w);
 }
 
 function setWeekly(next) {
-  writeJson(STORAGE_KEYS.weekly, { ...next, updatedAt: nowIso() });
+  writeJson(STORAGE_KEYS.weeklyPlan, { ...normalizeWeeklyPlan(next), updatedAt: nowIso() });
 }
 
 function parseWeeklyText(text) {
@@ -115,7 +139,26 @@ function parseWeeklyText(text) {
 
 function weeklyToText(w) {
   const items = w?.items || [];
-  return items.map((it) => `[${it.done ? "x" : " "}] ${it.text}`).join("\n");
+  return items.map((it) => `[${it.done ? "x" : " "}] ${it.title || it.text}`).join("\n");
+}
+
+function weeklyPlanStats(plan) {
+  const items = plan.items || [];
+  const total = items.length;
+  const completed = items.filter((it) => it.done).length;
+  const simple = items.filter((it) => /简单/.test(it.difficulty)).length;
+  const medium = items.filter((it) => /中等/.test(it.difficulty)).length;
+  const hard = items.filter((it) => /(较难|困难)/.test(it.difficulty)).length;
+  const today = items.find((it) => it.stage === "今日") || items[0] || null;
+  const remaining = Math.max(0, total - completed);
+  return { total, completed, remaining, rate: total ? Math.round((completed / total) * 100) : 0, simple, medium, hard, today };
+}
+
+function difficultyLabel(d) {
+  if (/简单/.test(d)) return "简单";
+  if (/困难/.test(d)) return "困难";
+  if (/较难/.test(d)) return "较难";
+  return "中等";
 }
 
 function setCompleted(id, on) {
@@ -182,15 +225,13 @@ function setMilestones(next) {
 
 function renderKpis() {
   const w = getWeekly();
-  const completed = (w.items || []).filter((it) => it.done).length;
-  const total = w.items?.length || 0;
-  const rate = total === 0 ? 0 : Math.round((completed / total) * 100);
-
-  setText("#kpiCompleted", String(completed));
-  setText("#kpiTotal", String(total));
-  setText("#kpiRate", `${rate}%`);
+  const stats = weeklyPlanStats(w);
+  setText("#kpiCompleted", String(stats.completed));
+  setText("#kpiTotal", String(stats.total));
+  setText("#kpiRemaining", String(stats.remaining));
+  setText("#kpiRate", `${stats.rate}%`);
   const bar = document.querySelector("#kpiBar");
-  if (bar) bar.style.width = `${rate}%`;
+  if (bar) bar.style.width = `${stats.rate}%`;
 }
 
 function setText(sel, text) {
@@ -209,37 +250,11 @@ function toggleWeekly(id) {
   const w = getWeekly();
   const nextItems = (w.items || []).map((it) => (it.id === id ? { ...it, done: !it.done } : it));
   setWeekly({ ...w, items: nextItems });
-  rerenderWeekly();
+  renderAll();
 }
 
 function rerenderWeekly() {
-  const weeklyList = document.querySelector("#weeklyList");
-  if (!weeklyList) return;
-  const w = getWeekly();
-  if (!w.items.length) {
-    weeklyList.innerHTML = `<div class="muted" style="font-size:13px">还没有本周目标，点右上角“编辑”添加。</div>`;
-    return;
-  }
-  weeklyList.innerHTML = w.items
-    .map((it) => {
-      return `
-        <div class="weeklyItem ${it.done ? "is-done" : ""}">
-          <button class="toggle ${it.done ? "is-on" : ""}" data-weekly-toggle="${escapeHtml(it.id)}" type="button">
-            <span class="check"></span>
-            <span class="toggle__text">${it.done ? "已完成" : "待完成"}</span>
-          </button>
-          <div class="weeklyItem__main">
-            <div class="weeklyItem__title">${escapeHtml(it.text)}</div>
-            <div class="weeklyItem__meta">${escapeHtml(it.done ? "完成了就很棒，继续保持" : "建议拆到当天可完成")}</div>
-          </div>
-        </div>
-      `;
-    })
-    .join("");
-
-  document.querySelectorAll("[data-weekly-toggle]").forEach((btn) => {
-    btn.addEventListener("click", () => toggleWeekly(btn.getAttribute("data-weekly-toggle")));
-  });
+  // Weekly panel is rendered inside renderHomeSnippets().
 }
 
 function roadmapStep(step) {
@@ -265,6 +280,7 @@ function renderHomeSnippets() {
   const daily = getDailyTasks();
   const weekly = getWeekly();
   const milestones = getMilestones();
+  const weeklyStats = weeklyPlanStats(weekly);
   const dailyList = document.querySelector("#dailyList");
   const weeklyList = document.querySelector("#weeklyList");
   const milestoneList = document.querySelector("#milestoneList");
@@ -277,9 +293,11 @@ function renderHomeSnippets() {
   const stageBar = document.querySelector("#stageBar");
   const stageRate = document.querySelector("#stageRate");
   const dailyRing = document.querySelector("#dailyRing");
+  const weeklyBoard = document.querySelector("#weeklyBoard");
+  const weeklyBoardHint = document.querySelector("#weeklyBoardHint");
 
   if (dailyMeta) dailyMeta.textContent = `${daily.weekday} · ${daily.items.length} 项`;
-  if (weeklyMeta) weeklyMeta.textContent = `${weekly.items.length} 个本周目标`;
+  if (weeklyMeta) weeklyMeta.textContent = `${weeklyStats.total} 项计划`;
   if (milestoneMeta) milestoneMeta.textContent = `${milestones.items.length} 个里程碑`;
   if (stageTitle) stageTitle.textContent = "建立一套小而精的学习系统";
   if (stageDesc) stageDesc.textContent = "围绕知识沉淀、目标推进和复盘改进，形成长期可持续的个人学习操作台。";
@@ -303,11 +321,76 @@ function renderHomeSnippets() {
       : `<div class="muted" style="font-size:13px">还没有每日任务，点击“编辑每日”添加。</div>`;
   }
 
+  if (weeklyBoard) {
+    weeklyBoard.innerHTML = `
+      <div class="weeklyBoard">
+        <div class="weeklyBoard__header">
+          <div>
+            <div class="weeklyBoard__eyebrow">Weekly Progress</div>
+            <div class="weeklyBoard__title">牛客网 SQL 周计划</div>
+            <div class="weeklyBoard__subtitle">记录题目总数、难度分布和每天推进节奏</div>
+          </div>
+          <div class="weeklyBoard__actions">
+            <button id="btnWeeklyEditFromBoard" class="btn btn--primary btn--sm" type="button">编辑周计划</button>
+          </div>
+        </div>
+        <div class="weeklyBoard__metrics">
+          <div class="weeklyMetric"><span>完成率</span><strong id="kpiRate">0%</strong></div>
+          <div class="weeklyMetric"><span>已完成</span><strong id="kpiCompleted">0</strong></div>
+          <div class="weeklyMetric"><span>剩余</span><strong id="kpiRemaining">0</strong></div>
+          <div class="weeklyMetric"><span>总题数</span><strong id="kpiTotal">0</strong></div>
+        </div>
+        <div class="weeklyBoard__progress">
+          <div class="progressbar progressbar--weekly" aria-label="weekly progress">
+            <div class="progressbar__fill weeklyBar" id="kpiBar" style="width: 0%"></div>
+          </div>
+          <div class="weeklyBoard__status" id="weeklyStatus">开始推进</div>
+        </div>
+        <div class="weeklyBoard__split">
+          <div class="weeklyBoard__splitCard">
+            <div class="weeklyBoard__splitTitle">难度分布</div>
+            <div class="difficultyBars">
+              <div class="difficultyRow"><span>简单</span><div class="difficultyBar"><div id="diffSimple" class="difficultyBar__fill difficultyBar__fill--simple" style="width:0%"></div></div><strong id="diffSimpleNum">0</strong></div>
+              <div class="difficultyRow"><span>中等</span><div class="difficultyBar"><div id="diffMedium" class="difficultyBar__fill difficultyBar__fill--medium" style="width:0%"></div></div><strong id="diffMediumNum">0</strong></div>
+              <div class="difficultyRow"><span>较难</span><div class="difficultyBar"><div id="diffHard" class="difficultyBar__fill difficultyBar__fill--hard" style="width:0%"></div></div><strong id="diffHardNum">0</strong></div>
+            </div>
+          </div>
+          <div class="weeklyBoard__splitCard">
+            <div class="weeklyBoard__splitTitle">今日推进</div>
+            <div class="weeklyBoard__today" id="weeklyToday"></div>
+          </div>
+        </div>
+        <div class="weeklyBoard__trackWrap">
+          <div class="weeklyBlockTitle"><span>时间轴</span><small>今日 / 已完成 / 待完成</small></div>
+          <div class="weeklyTrack" id="weeklyTrack"></div>
+        </div>
+        <div class="weeklyBoard__listWrap">
+          <div class="weeklyBlockTitle"><span>题目清单</span><small>点击即可切换完成状态</small></div>
+          <div id="weeklyList" class="weekly__list"></div>
+        </div>
+      </div>
+    `;
+    const btn = document.querySelector("#btnWeeklyEditFromBoard");
+    if (btn) btn.addEventListener("click", () => document.querySelector("#btnEditWeekly")?.click());
+  }
+
+  const difficultyTotal = weeklyStats.total || 1;
+  const simplePct = Math.round((weeklyStats.simple / difficultyTotal) * 100);
+  const mediumPct = Math.round((weeklyStats.medium / difficultyTotal) * 100);
+  const hardPct = Math.round((weeklyStats.hard / difficultyTotal) * 100);
+  setText("#diffSimple", String(weeklyStats.simple));
+  setText("#diffMedium", String(weeklyStats.medium));
+  setText("#diffHard", String(weeklyStats.hard));
+  const ds = document.querySelector("#diffSimple"); if (ds) ds.style.width = `${simplePct}%`;
+  const dm = document.querySelector("#diffMedium"); if (dm) dm.style.width = `${mediumPct}%`;
+  const dh = document.querySelector("#diffHard"); if (dh) dh.style.width = `${hardPct}%`;
+  setText("#diffSimpleNum", `${weeklyStats.simple}`);
+  setText("#diffMediumNum", `${weeklyStats.medium}`);
+  setText("#diffHardNum", `${weeklyStats.hard}`);
+  if (weeklyBoardHint) weeklyBoardHint.textContent = `${weeklyStats.total} 题 · ${weeklyStats.completed} 已完成`;
+
   if (weeklyList) {
-    const completed = weekly.items.filter((it) => it.done).length;
-    const total = weekly.items.length;
-    const rate = total ? Math.round((completed / total) * 100) : 0;
-    const statusText = rate >= 80 ? "节奏很稳" : rate >= 50 ? "稳步推进" : "开始推进";
+    const statusText = weeklyStats.rate >= 80 ? "节奏很稳" : weeklyStats.rate >= 50 ? "稳步推进" : "开始推进";
     const timeline = document.querySelector("#weeklyTrack");
     if (timeline) {
       timeline.innerHTML = weekly.items.length
@@ -322,15 +405,15 @@ function renderHomeSnippets() {
                     <span class="weeklyTimeline__day">${String(idx + 1).padStart(2, "0")}</span>
                   </div>
                   <div class="weeklyTimeline__content">
-                    <div class="weeklyTimeline__title">${escapeHtml(it.text)}</div>
-                    <div class="weeklyTimeline__meta">${escapeHtml(state === "done" ? "已完成" : state === "today" ? "今日重点" : statusText)}</div>
+                    <div class="weeklyTimeline__title">${escapeHtml(it.title)}</div>
+                    <div class="weeklyTimeline__meta">${escapeHtml(it.difficulty)} · ${escapeHtml(state === "done" ? "已完成" : state === "today" ? "今日重点" : statusText)}</div>
                   </div>
                 </button>
               `;
             }).join("")}
           </div>
         `
-        : `<div class="muted" style="font-size:13px">还没有本周目标，点击“编辑周目标”添加。</div>`;
+        : `<div class="muted" style="font-size:13px">还没有本周目标，点击“编辑周计划”添加。</div>`;
     }
     weeklyList.innerHTML = weekly.items.length
       ? weekly.items.map((it, idx) => {
@@ -339,23 +422,37 @@ function renderHomeSnippets() {
             <button class="weeklyGoal state-${state}" data-weekly-toggle="${escapeHtml(it.id)}" type="button">
               <div class="weeklyGoal__index">${String(idx + 1).padStart(2, "0")}</div>
               <div class="weeklyGoal__main">
-                <div class="weeklyGoal__title">${escapeHtml(it.text)}</div>
-                <div class="weeklyGoal__meta">${escapeHtml(state === "done" ? "已完成" : state === "today" ? "今日重点" : statusText)}</div>
+                <div class="weeklyGoal__title">${escapeHtml(it.title)}</div>
+                <div class="weeklyGoal__meta">${escapeHtml(difficultyLabel(it.difficulty))} · ${escapeHtml(state === "done" ? "已完成" : state === "today" ? "今日重点" : statusText)}</div>
+                ${it.note ? `<div class="weeklyGoal__note">${escapeHtml(it.note)}</div>` : ""}
               </div>
+              ${it.url ? `<a class="weeklyGoal__link" href="${escapeHtml(it.url)}" target="_blank" rel="noreferrer">原题</a>` : ""}
             </button>
           `;
         }).join("")
-      : `<div class="muted" style="font-size:13px">还没有本周目标，点击“编辑周目标”添加。</div>`;
+      : `<div class="muted" style="font-size:13px">还没有本周目标，点击“编辑周计划”添加。</div>`;
     const bar = document.querySelector("#kpiBar");
-    if (bar) bar.style.width = `${rate}%`;
+    if (bar) bar.style.width = `${weeklyStats.rate}%`;
     const ring = document.querySelector(".weeklyHero__meterRing");
-    if (ring) ring.style.background = `conic-gradient(from 180deg, rgba(91,108,255,.95) 0% ${rate}%, rgba(42,169,255,.78) ${Math.max(0, rate - 6)}% ${rate}%, rgba(20,30,60,.08) ${rate}% 100%)`;
-    setText("#kpiCompleted", String(completed));
-    setText("#kpiTotal", String(total));
-    setText("#kpiRemaining", String(Math.max(0, total - completed)));
-    setText("#kpiRate", `${rate}%`);
+    if (ring) ring.style.background = `conic-gradient(from 180deg, rgba(91,108,255,.95) 0% ${weeklyStats.rate}%, rgba(42,169,255,.78) ${Math.max(0, weeklyStats.rate - 6)}% ${weeklyStats.rate}%, rgba(20,30,60,.08) ${weeklyStats.rate}% 100%)`;
+    setText("#kpiCompleted", String(weeklyStats.completed));
+    setText("#kpiTotal", String(weeklyStats.total));
+    setText("#kpiRemaining", String(weeklyStats.remaining));
+    setText("#kpiRate", `${weeklyStats.rate}%`);
     const status = document.querySelector("#weeklyStatus");
     if (status) status.textContent = statusText;
+    const today = document.querySelector("#weeklyToday");
+    if (today) {
+      const current = weeklyStats.today;
+      today.innerHTML = current ? `
+        <div class="weeklyTodayCard">
+          <div class="weeklyTodayCard__tag">今日重点</div>
+          <div class="weeklyTodayCard__title">${escapeHtml(current.title)}</div>
+          <div class="weeklyTodayCard__meta">${escapeHtml(difficultyLabel(current.difficulty))} · ${escapeHtml(current.note || "")}</div>
+          ${current.url ? `<a class="weeklyTodayCard__link" href="${escapeHtml(current.url)}" target="_blank" rel="noreferrer">打开原题</a>` : ""}
+        </div>
+      ` : `<div class="muted">本周还没有安排今日重点</div>`;
+    }
   }
 
   if (milestoneList) {
