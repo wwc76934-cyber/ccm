@@ -129,12 +129,18 @@ body{
 .goalRing__value{font-size:28px; font-weight:950}
 .goalRing__label{font-size:12px; color:var(--muted2); margin-top:-6px}
 .goalList{display:flex; flex-direction:column; gap:10px}
-.weeklyHero{display:grid; grid-template-columns: 1fr 1fr; gap:14px; align-items:stretch; margin-bottom:14px}
-.weeklyHero__lead{padding:16px; border-radius:16px; background:linear-gradient(180deg, rgba(91,108,255,.08), rgba(42,169,255,.04)); border:1px solid rgba(91,108,255,.12)}
+.weeklyHero{display:grid; grid-template-columns: 1.05fr .95fr; gap:14px; align-items:stretch; margin-bottom:14px}
+.weeklyHero__lead{padding:18px; border-radius:18px; background:linear-gradient(180deg, rgba(91,108,255,.10), rgba(42,169,255,.05)); border:1px solid rgba(91,108,255,.14); display:flex; flex-direction:column; justify-content:space-between}
 .weeklyHero__title{font-size:14px; font-weight:900; letter-spacing:.02em}
 .weeklyHero__desc{margin-top:8px; color:var(--muted); line-height:1.6; font-size:13px}
-.weeklyHero__meter{padding:16px; border-radius:16px; background:rgba(255,255,255,.76); border:1px solid rgba(20,30,60,.10)}
-.weeklyHero__meterTop{display:flex; justify-content:space-between; align-items:center; font-size:12px; color:var(--muted2)}
+.weeklyHero__tagrow{display:flex; gap:8px; flex-wrap:wrap; margin-top:12px}
+.weeklyHero__tag{padding:6px 10px; border-radius:999px; font-size:12px; background:rgba(255,255,255,.74); border:1px solid rgba(20,30,60,.08); color:var(--muted)}
+.weeklyHero__meter{padding:18px; border-radius:18px; background:rgba(255,255,255,.82); border:1px solid rgba(20,30,60,.10); box-shadow:0 10px 28px rgba(10,18,40,.05)}
+.weeklyHero__meterTop{display:flex; justify-content:space-between; align-items:center; font-size:12px; color:var(--muted2); margin-bottom:10px}
+.weeklyHero__meterVisual{display:grid; grid-template-columns:82px 1fr; gap:14px; align-items:center}
+.weeklyHero__meterRing{width:82px; height:82px; border-radius:50%; background:conic-gradient(from 180deg, rgba(91,108,255,.95) 0%, rgba(42,169,255,.85) 0%, rgba(255,255,255,.18) 0%); display:grid; place-items:center; box-shadow:inset 0 0 0 1px rgba(255,255,255,.14)}
+.weeklyHero__meterCenter{width:58px; height:58px; border-radius:50%; background:rgba(255,255,255,.94); display:grid; place-items:center; font-size:12px; font-weight:900; color:var(--primary); box-shadow:0 10px 20px rgba(10,18,40,.10)}
+.weeklyHero__meterBody{min-width:0}
 .weeklyHero__stats{display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:12px}
 .weeklyStat{padding:10px 12px; border-radius:14px; background:rgba(255,255,255,.72); border:1px solid rgba(20,30,60,.08)}
 .weeklyStat span{display:block; font-size:12px; color:var(--muted2)}
@@ -142,9 +148,10 @@ body{
 .weeklyTrackWrap{position:relative; margin-bottom:12px; padding:12px 0 4px}
 .weeklyTimeline{position:relative; display:flex; gap:12px; overflow-x:auto; padding:8px 4px 14px; scroll-snap-type:x proximity}
 .weeklyTimeline__rail{position:absolute; left:18px; right:18px; top:30px; height:2px; background:linear-gradient(90deg, rgba(91,108,255,.15), rgba(42,169,255,.15));}
-.weeklyTimeline__step{position:relative; flex:0 0 240px; display:flex; gap:12px; align-items:flex-start; padding:14px; border-radius:16px; border:1px solid rgba(20,30,60,.10); background:rgba(255,255,255,.78); cursor:pointer; text-align:left; scroll-snap-align:start; box-shadow:0 8px 24px rgba(10,18,40,.05)}
-.weeklyTimeline__step.state-today{border-color:rgba(91,108,255,.28); background:linear-gradient(180deg, rgba(91,108,255,.10), rgba(255,255,255,.84))}
-.weeklyTimeline__step.state-done{opacity:.74}
+.weeklyTimeline__step{position:relative; flex:0 0 240px; display:flex; gap:12px; align-items:flex-start; padding:14px; border-radius:16px; border:1px solid rgba(20,30,60,.10); background:rgba(255,255,255,.78); cursor:pointer; text-align:left; scroll-snap-align:start; box-shadow:0 8px 24px rgba(10,18,40,.05); transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease}
+.weeklyTimeline__step:hover{transform:translateY(-1px); box-shadow:0 12px 28px rgba(10,18,40,.08)}
+.weeklyTimeline__step.state-today{border-color:rgba(91,108,255,.28); background:linear-gradient(180deg, rgba(91,108,255,.10), rgba(255,255,255,.86))}
+.weeklyTimeline__step.state-done{opacity:.78}
 .weeklyTimeline__node{width:36px; height:36px; border-radius:12px; display:grid; place-items:center; background:rgba(91,108,255,.12); color:var(--primary); font-weight:900; flex:0 0 auto; box-shadow:0 8px 20px rgba(91,108,255,.10)}
 .weeklyTimeline__step.state-today .weeklyTimeline__node{background:linear-gradient(135deg, rgba(91,108,255,.95), rgba(42,169,255,.85)); color:white}
 .weeklyTimeline__step.state-done .weeklyTimeline__node{background:rgba(22,163,74,.12); color:rgba(22,163,74,.95)}

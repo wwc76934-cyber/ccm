@@ -87,19 +87,29 @@
               <div class="weeklyHero__lead">
                 <div class="weeklyHero__title">本周主线</div>
                 <div class="weeklyHero__desc">围绕牛客网 SQL 刷题、回顾总结与知识沉淀，形成一个完整的周节奏。</div>
+                <div class="weeklyHero__tagrow">
+                  <span class="weeklyHero__tag">今日</span>
+                  <span class="weeklyHero__tag">已完成</span>
+                  <span class="weeklyHero__tag">待完成</span>
+                </div>
               </div>
               <div class="weeklyHero__meter">
                 <div class="weeklyHero__meterTop">
-                  <span>总进度</span>
+                  <span>周目标完成度</span>
                   <strong id="kpiRate">0%</strong>
                 </div>
-                <div class="progressbar progressbar--weekly" aria-label="weekly progress">
-                  <div class="progressbar__fill weeklyBar" id="kpiBar" style="width: 0%"></div>
-                </div>
-                <div class="weeklyHero__stats">
-                  <div class="weeklyStat"><span>已完成</span><strong id="kpiCompleted">0</strong></div>
-                  <div class="weeklyStat"><span>总任务</span><strong id="kpiTotal">0</strong></div>
-                  <div class="weeklyStat"><span>状态</span><strong id="weeklyStatus">开始推进</strong></div>
+                <div class="weeklyHero__meterVisual">
+                  <div class="weeklyHero__meterRing"><div class="weeklyHero__meterCenter">本周</div></div>
+                  <div class="weeklyHero__meterBody">
+                    <div class="progressbar progressbar--weekly" aria-label="weekly progress">
+                      <div class="progressbar__fill weeklyBar" id="kpiBar" style="width: 0%"></div>
+                    </div>
+                    <div class="weeklyHero__stats">
+                      <div class="weeklyStat"><span>已完成</span><strong id="kpiCompleted">0</strong></div>
+                      <div class="weeklyStat"><span>总任务</span><strong id="kpiTotal">0</strong></div>
+                      <div class="weeklyStat"><span>状态</span><strong id="weeklyStatus">开始推进</strong></div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
