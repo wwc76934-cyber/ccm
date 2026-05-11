@@ -305,38 +305,51 @@ function renderHomeSnippets() {
 
   if (weeklyList) {
     const completed = weekly.items.filter((it) => it.done).length;
-    const rate = weekly.items.length ? Math.round((completed / weekly.items.length) * 100) : 0;
+    const total = weekly.items.length;
+    const rate = total ? Math.round((completed / total) * 100) : 0;
     const statusText = rate >= 80 ? "节奏很稳，继续推进" : rate >= 50 ? "稳步推进中" : "先把主线拉起来";
-    const track = document.querySelector("#weeklyTrack");
-    if (track) {
-      track.innerHTML = `
-        <div class="weeklyTrack__rail"></div>
-        ${weekly.items.map((it, idx) => `
-          <div class="weeklyTrack__step ${it.done ? "is-done" : ""}">
-            <div class="weeklyTrack__dot">${idx + 1}</div>
-            <div class="weeklyTrack__info">
-              <div class="weeklyTrack__title">${escapeHtml(it.text)}</div>
-              <div class="weeklyTrack__meta">${escapeHtml(it.done ? "已完成" : statusText)}</div>
-            </div>
+    const timeline = document.querySelector("#weeklyTrack");
+    if (timeline) {
+      timeline.innerHTML = weekly.items.length
+        ? `
+          <div class="weeklyTimeline">
+            <div class="weeklyTimeline__rail"></div>
+            ${weekly.items.map((it, idx) => {
+              const state = it.done ? "done" : idx === 0 ? "today" : "todo";
+              return `
+                <button class="weeklyTimeline__step state-${state}" data-weekly-toggle="${escapeHtml(it.id)}" type="button">
+                  <div class="weeklyTimeline__node">
+                    <span class="weeklyTimeline__day">${String(idx + 1).padStart(2, "0")}</span>
+                  </div>
+                  <div class="weeklyTimeline__content">
+                    <div class="weeklyTimeline__title">${escapeHtml(it.text)}</div>
+                    <div class="weeklyTimeline__meta">${escapeHtml(state === "done" ? "已完成" : state === "today" ? "今日重点" : statusText)}</div>
+                  </div>
+                </button>
+              `;
+            }).join("")}
           </div>
-        `).join("")}
-      `;
+        `
+        : `<div class="muted" style="font-size:13px">还没有本周目标，点击“编辑周目标”添加。</div>`;
     }
     weeklyList.innerHTML = weekly.items.length
-      ? weekly.items.map((it, idx) => `
-        <button class="weeklyGoal ${it.done ? "is-done" : ""}" data-weekly-toggle="${escapeHtml(it.id)}" type="button">
-          <div class="weeklyGoal__index">${String(idx + 1).padStart(2, "0")}</div>
-          <div class="weeklyGoal__main">
-            <div class="weeklyGoal__title">${escapeHtml(it.text)}</div>
-            <div class="weeklyGoal__meta">${escapeHtml(it.done ? "已完成" : statusText)}</div>
-          </div>
-        </button>
-      `).join("")
-      : `<div class="muted" style="font-size:13px">还没有本周目标，点击“编辑每周”添加。</div>`;
+      ? weekly.items.map((it, idx) => {
+          const state = it.done ? "done" : idx === 0 ? "today" : "todo";
+          return `
+            <button class="weeklyGoal state-${state}" data-weekly-toggle="${escapeHtml(it.id)}" type="button">
+              <div class="weeklyGoal__index">${String(idx + 1).padStart(2, "0")}</div>
+              <div class="weeklyGoal__main">
+                <div class="weeklyGoal__title">${escapeHtml(it.text)}</div>
+                <div class="weeklyGoal__meta">${escapeHtml(state === "done" ? "已完成" : state === "today" ? "今日重点" : statusText)}</div>
+              </div>
+            </button>
+          `;
+        }).join("")
+      : `<div class="muted" style="font-size:13px">还没有本周目标，点击“编辑周目标”添加。</div>`;
     const bar = document.querySelector("#kpiBar");
     if (bar) bar.style.width = `${rate}%`;
     setText("#kpiCompleted", String(completed));
-    setText("#kpiTotal", String(weekly.items.length));
+    setText("#kpiTotal", String(total));
     setText("#kpiRate", `${rate}%`);
     const status = document.querySelector("#weeklyStatus");
     if (status) status.textContent = statusText;
@@ -1347,6 +1360,7 @@ async function ensureAuth() {
   const btnEditWeekly = document.querySelector("#btnEditWeekly");
   const btnEditMilestone = document.querySelector("#btnEditMilestone");
   const btnEditStageDirect = document.querySelector("#btnEditStageDirect");
+  const btnEditStageDirect = document.querySelector("#btnEditStageDirect");
   const dailyDialog = document.querySelector("#dailyDialog");
   const dailyTextarea = document.querySelector("#dailyTextarea");
   const btnDailyReset = document.querySelector("#btnDailyReset");
@@ -1379,6 +1393,7 @@ async function ensureAuth() {
   if (btnEditDaily) btnEditDaily.addEventListener("click", openDailyDialog);
   if (btnEditWeekly) btnEditWeekly.addEventListener("click", openWeeklyDialog);
   if (btnEditMilestone) btnEditMilestone.addEventListener("click", openMilestoneDialog);
+  if (btnEditStageDirect) btnEditStageDirect.addEventListener("click", openMilestoneDialog);
   if (btnEditStageDirect) btnEditStageDirect.addEventListener("click", openMilestoneDialog);
 
   if (btnDailyReset) btnDailyReset.addEventListener("click", () => { const d = defaultDaily(); setDailyTasks(d); if (dailyTextarea) dailyTextarea.value = d.items.map((it) => `${it.text} | ${it.note}`).join("\n"); renderAll(); toast("已恢复默认", "你可以继续编辑"); });

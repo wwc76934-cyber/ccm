@@ -73,12 +73,15 @@
           </section>
 
           <section class="goalCard goalCard--weekly">
-            <div class="goalCard__head">
+            <div class="goalCard__head goalCard__head--weekly">
               <div>
                 <div class="panel__eyebrow">Weekly Focus</div>
                 <h2 class="h2">每周任务</h2>
               </div>
-              <div class="goalCard__meta" id="weeklyMeta">本周主线推进</div>
+              <div class="goalCard__actions">
+                <div class="goalCard__meta" id="weeklyMeta">本周主线推进</div>
+                <button id="btnEditWeekly" class="btn btn--primary btn--sm" type="button">编辑周目标</button>
+              </div>
             </div>
             <div class="weeklyHero">
               <div class="weeklyHero__lead">
@@ -87,7 +90,7 @@
               </div>
               <div class="weeklyHero__meter">
                 <div class="weeklyHero__meterTop">
-                  <span>进度</span>
+                  <span>总进度</span>
                   <strong id="kpiRate">0%</strong>
                 </div>
                 <div class="progressbar progressbar--weekly" aria-label="weekly progress">
@@ -96,12 +99,13 @@
                 <div class="weeklyHero__stats">
                   <div class="weeklyStat"><span>已完成</span><strong id="kpiCompleted">0</strong></div>
                   <div class="weeklyStat"><span>总任务</span><strong id="kpiTotal">0</strong></div>
-                  <div class="weeklyStat"><span>目标状态</span><strong id="weeklyStatus">开始推进</strong></div>
+                  <div class="weeklyStat"><span>状态</span><strong id="weeklyStatus">开始推进</strong></div>
                 </div>
               </div>
             </div>
-            <div class="weeklyTrack" id="weeklyTrack"></div>
-            <div id="weeklyList" class="weekly__list"></div>
+            <div class="weeklyTrackWrap">
+              <div class="weeklyTrack" id="weeklyTrack"></div>
+            </div>
             <div id="weeklyList" class="weekly__list"></div>
           </section>
         </div>

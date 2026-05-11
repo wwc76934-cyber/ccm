@@ -120,6 +120,8 @@ body{
 .goalCard{padding:18px; border-radius:18px; border:1px solid rgba(20,30,60,.10); background:linear-gradient(180deg, rgba(255,255,255,.86), rgba(255,255,255,.68)); box-shadow:0 12px 30px rgba(10,18,40,.06)}
 .goalCard--stage{margin-top:18px}
 .goalCard__head{display:flex; justify-content:space-between; gap:10px; align-items:flex-start; margin-bottom:12px}
+.goalCard__head--weekly{align-items:center}
+.goalCard__actions{display:flex; align-items:center; gap:10px; flex-wrap:wrap}
 .goalCard__meta{color:var(--muted2); font-size:12px; text-align:right}
 .goalRingRow{display:grid; grid-template-columns: 180px 1fr; gap:14px; align-items:center}
 .goalRing{width:180px; height:180px; border-radius:50%; background:conic-gradient(from 180deg, rgba(91,108,255,.95) 0%, rgba(42,169,255,.72) 0%, rgba(255,255,255,.12) 0%); display:grid; place-items:center; box-shadow:inset 0 0 0 1px rgba(255,255,255,.12), 0 18px 40px rgba(10,18,40,.08)}
@@ -127,12 +129,36 @@ body{
 .goalRing__value{font-size:28px; font-weight:950}
 .goalRing__label{font-size:12px; color:var(--muted2); margin-top:-6px}
 .goalList{display:flex; flex-direction:column; gap:10px}
+.weeklyHero{display:grid; grid-template-columns: 1fr 1fr; gap:14px; align-items:stretch; margin-bottom:14px}
+.weeklyHero__lead{padding:16px; border-radius:16px; background:linear-gradient(180deg, rgba(91,108,255,.08), rgba(42,169,255,.04)); border:1px solid rgba(91,108,255,.12)}
+.weeklyHero__title{font-size:14px; font-weight:900; letter-spacing:.02em}
+.weeklyHero__desc{margin-top:8px; color:var(--muted); line-height:1.6; font-size:13px}
+.weeklyHero__meter{padding:16px; border-radius:16px; background:rgba(255,255,255,.76); border:1px solid rgba(20,30,60,.10)}
+.weeklyHero__meterTop{display:flex; justify-content:space-between; align-items:center; font-size:12px; color:var(--muted2)}
+.weeklyHero__stats{display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:12px}
+.weeklyStat{padding:10px 12px; border-radius:14px; background:rgba(255,255,255,.72); border:1px solid rgba(20,30,60,.08)}
+.weeklyStat span{display:block; font-size:12px; color:var(--muted2)}
+.weeklyStat strong{display:block; margin-top:5px; font-size:18px}
+.weeklyTrackWrap{position:relative; margin-bottom:12px; padding:12px 0 4px}
+.weeklyTimeline{position:relative; display:flex; gap:12px; overflow-x:auto; padding:8px 4px 14px; scroll-snap-type:x proximity}
+.weeklyTimeline__rail{position:absolute; left:18px; right:18px; top:30px; height:2px; background:linear-gradient(90deg, rgba(91,108,255,.15), rgba(42,169,255,.15));}
+.weeklyTimeline__step{position:relative; flex:0 0 240px; display:flex; gap:12px; align-items:flex-start; padding:14px; border-radius:16px; border:1px solid rgba(20,30,60,.10); background:rgba(255,255,255,.78); cursor:pointer; text-align:left; scroll-snap-align:start; box-shadow:0 8px 24px rgba(10,18,40,.05)}
+.weeklyTimeline__step.state-today{border-color:rgba(91,108,255,.28); background:linear-gradient(180deg, rgba(91,108,255,.10), rgba(255,255,255,.84))}
+.weeklyTimeline__step.state-done{opacity:.74}
+.weeklyTimeline__node{width:36px; height:36px; border-radius:12px; display:grid; place-items:center; background:rgba(91,108,255,.12); color:var(--primary); font-weight:900; flex:0 0 auto; box-shadow:0 8px 20px rgba(91,108,255,.10)}
+.weeklyTimeline__step.state-today .weeklyTimeline__node{background:linear-gradient(135deg, rgba(91,108,255,.95), rgba(42,169,255,.85)); color:white}
+.weeklyTimeline__step.state-done .weeklyTimeline__node{background:rgba(22,163,74,.12); color:rgba(22,163,74,.95)}
+.weeklyTimeline__content{flex:1}
+.weeklyTimeline__title{font-weight:900}
+.weeklyTimeline__meta{margin-top:4px; color:var(--muted2); font-size:12px; line-height:1.45}
 .dailyTask,.weeklyGoal{display:flex; gap:12px; align-items:flex-start; width:100%; padding:12px; border-radius:14px; border:1px solid rgba(20,30,60,.10); background:rgba(255,255,255,.80); text-align:left; cursor:pointer; transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease}
 .dailyTask:hover,.weeklyGoal:hover{border-color:rgba(91,108,255,.25); background:rgba(255,255,255,.96); transform:translateY(-1px); box-shadow:0 10px 26px rgba(10,18,40,.06)}
 .dailyTask.is-done,.weeklyGoal.is-done{opacity:.72}
 .dailyTask__icon,.weeklyGoal__index{width:28px; height:28px; border-radius:10px; display:grid; place-items:center; background:rgba(91,108,255,.12); color:var(--primary); font-weight:900; flex:0 0 auto}
-.weeklyGoal__index{background:rgba(42,169,255,.12); color:var(--primary2)}
-.dailyTask__main,.weeklyGoal__main{flex:1}
+.weeklyGoal.state-today .weeklyGoal__index{background:linear-gradient(135deg, rgba(91,108,255,.95), rgba(42,169,255,.85)); color:#fff}
+.weeklyGoal.state-done .weeklyGoal__index{background:rgba(22,163,74,.12); color:rgba(22,163,74,.95)}
+.weeklyGoal.state-todo .weeklyGoal__index{background:rgba(42,169,255,.08); color:var(--primary2)}
+.weeklyGoal__main,.dailyTask__main{flex:1}
 .dailyTask__title,.weeklyGoal__title{font-weight:850}
 .dailyTask__meta,.weeklyGoal__meta{font-size:12px; color:var(--muted2); margin-top:4px}
 .homeStats{display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:12px}
