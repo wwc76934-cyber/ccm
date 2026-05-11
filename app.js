@@ -461,6 +461,12 @@ function defaultNotes() {
 function getNotes() {
   const notes = readJson(STORAGE_KEYS.notes, null);
   if (!notes || !Array.isArray(notes)) {
+    const imported = getLocalKnowledgeEntries();
+    if (imported.length) {
+      const restored = imported.map((n, idx) => mapEntryToNote(normalizeImportedEntry(n), idx));
+      writeJson(STORAGE_KEYS.notes, restored);
+      return restored;
+    }
     const d = defaultNotes();
     writeJson(STORAGE_KEYS.notes, d);
     return d;
@@ -1360,7 +1366,6 @@ async function ensureAuth() {
   const btnEditWeekly = document.querySelector("#btnEditWeekly");
   const btnEditMilestone = document.querySelector("#btnEditMilestone");
   const btnEditStageDirect = document.querySelector("#btnEditStageDirect");
-  const btnEditStageDirect = document.querySelector("#btnEditStageDirect");
   const dailyDialog = document.querySelector("#dailyDialog");
   const dailyTextarea = document.querySelector("#dailyTextarea");
   const btnDailyReset = document.querySelector("#btnDailyReset");
@@ -1393,7 +1398,6 @@ async function ensureAuth() {
   if (btnEditDaily) btnEditDaily.addEventListener("click", openDailyDialog);
   if (btnEditWeekly) btnEditWeekly.addEventListener("click", openWeeklyDialog);
   if (btnEditMilestone) btnEditMilestone.addEventListener("click", openMilestoneDialog);
-  if (btnEditStageDirect) btnEditStageDirect.addEventListener("click", openMilestoneDialog);
   if (btnEditStageDirect) btnEditStageDirect.addEventListener("click", openMilestoneDialog);
 
   if (btnDailyReset) btnDailyReset.addEventListener("click", () => { const d = defaultDaily(); setDailyTasks(d); if (dailyTextarea) dailyTextarea.value = d.items.map((it) => `${it.text} | ${it.note}`).join("\n"); renderAll(); toast("已恢复默认", "你可以继续编辑"); });
