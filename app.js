@@ -1469,6 +1469,7 @@ async function ensureAuth() {
 
   const btnEditDaily = document.querySelector("#btnEditDaily");
   const btnEditWeekly = document.querySelector("#btnEditWeekly");
+  const btnImportWeekly = document.querySelector("#btnImportWeekly");
   const btnEditMilestone = document.querySelector("#btnEditMilestone");
   const btnEditStageDirect = document.querySelector("#btnEditStageDirect");
   const dailyDialog = document.querySelector("#dailyDialog");
@@ -1494,6 +1495,13 @@ async function ensureAuth() {
     weeklyTextarea.value = weeklyToText(getWeekly());
     weeklyDialog.showModal();
   }
+
+  function openWeeklyImportDialog() {
+    if (!weeklyDialog || !weeklyTextarea) return;
+    const plan = getWeekly();
+    weeklyTextarea.value = `# ${plan.title || "牛客网 SQL 刷题周计划"}\n# 格式：题目标题 | 难度 | 链接 | 备注\n${plan.items.map((it) => `${it.title} | ${it.difficulty} | ${it.url || ""} | ${it.note || ""}`).join("\n")}`;
+    weeklyDialog.showModal();
+  }
   function openMilestoneDialog() {
     if (!milestoneDialog || !milestoneTextarea) return;
     milestoneTextarea.value = getMilestones().items.map((m) => `${m.title} | ${m.progress} | ${m.desc}`).join("\n");
@@ -1502,13 +1510,27 @@ async function ensureAuth() {
 
   if (btnEditDaily) btnEditDaily.addEventListener("click", openDailyDialog);
   if (btnEditWeekly) btnEditWeekly.addEventListener("click", openWeeklyDialog);
+  if (btnImportWeekly) btnImportWeekly.addEventListener("click", openWeeklyImportDialog);
   if (btnEditMilestone) btnEditMilestone.addEventListener("click", openMilestoneDialog);
   if (btnEditStageDirect) btnEditStageDirect.addEventListener("click", openMilestoneDialog);
 
   if (btnDailyReset) btnDailyReset.addEventListener("click", () => { const d = defaultDaily(); setDailyTasks(d); if (dailyTextarea) dailyTextarea.value = d.items.map((it) => `${it.text} | ${it.note}`).join("\n"); renderAll(); toast("已恢复默认", "你可以继续编辑"); });
   if (btnDailySave) btnDailySave.addEventListener("click", () => { if (!dailyTextarea) return; const items = String(dailyTextarea.value || "").split(/\r?\n/).map((line, idx) => { const [text, note = ""] = line.split("|").map((s) => s.trim()); return text ? { id: `d${idx + 1}`, text, note, done: false } : null; }).filter(Boolean); setDailyTasks({ weekday: ["周日", "周一", "周二", "周三", "周四", "周五", "周六"][new Date().getDay()], items: items.length ? items : defaultDaily().items }); renderAll(); toast("已保存", "每日任务已更新"); });
   if (btnWeeklyReset) btnWeeklyReset.addEventListener("click", () => { const d = defaultWeekly(); setWeekly(d); if (weeklyTextarea) weeklyTextarea.value = weeklyToText(d); renderAll(); toast("已恢复默认", "你可以继续编辑"); });
-  if (btnWeeklySave) btnWeeklySave.addEventListener("click", () => { if (!weeklyTextarea) return; const next = parseWeeklyText(weeklyTextarea.value); setWeekly(next); renderAll(); toast("已保存", "本周目标已更新"); });
+  if (btnWeeklySave) btnWeeklySave.addEventListener("click", () => { if (!weeklyTextarea) return; const text = String(weeklyTextarea.value || "");
+    if (text.includes("# 格式：题目标题 | 难度 | 链接 | 备注")) {
+      const items = text.split(/\r?\n/).map((line, idx) => line.trim()).filter((line) => line && !line.startsWith("#")).map((line, idx) => {
+        const parts = line.split("|").map((s) => s.trim());
+        const [title = "", difficulty = "中等", url = "", note = ""] = parts;
+        return title ? { id: `w${idx + 1}`, title, difficulty, url, note, done: false, stage: idx === 0 ? "今日" : "待完成" } : null;
+      }).filter(Boolean);
+      const next = { ...getWeekly(), items: items.length ? items : defaultWeekly().items, title: "牛客网 SQL 刷题周计划", platform: "nowcoder", topic: "SQL篇 / 大厂笔试真题" };
+      setWeekly(next);
+    } else {
+      const next = parseWeeklyText(text);
+      setWeekly(next);
+    }
+    renderAll(); toast("已保存", "本周目标已更新"); });
   if (btnMilestoneReset) btnMilestoneReset.addEventListener("click", () => { const d = defaultMilestones(); setMilestones(d); if (milestoneTextarea) milestoneTextarea.value = d.items.map((m) => `${m.title} | ${m.progress} | ${m.desc}`).join("\n"); renderAll(); toast("已恢复默认", "你可以继续编辑"); });
   if (btnMilestoneSave) btnMilestoneSave.addEventListener("click", () => { if (!milestoneTextarea) return; const items = String(milestoneTextarea.value || "").split(/\r?\n/).map((line, idx) => { const [title, progress = "0", desc = ""] = line.split("|").map((s) => s.trim()); return title ? { id: `m${idx + 1}`, title, progress: Math.max(0, Math.min(100, Number(progress) || 0)), desc } : null; }).filter(Boolean); setMilestones({ items: items.length ? items : defaultMilestones().items }); renderAll(); toast("已保存", "阶段目标已更新"); });
 

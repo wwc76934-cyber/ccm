@@ -171,6 +171,21 @@ body{
 .weeklyTimeline__title{font-weight:900}
 .weeklyTimeline__meta{margin-top:4px; color:var(--muted2); font-size:12px; line-height:1.45}
 .weeklyTaskPanel{padding:14px; border-radius:20px; background:rgba(255,255,255,.52); border:1px solid rgba(20,30,60,.08)}
+.weeklyTodayCard{padding:14px; border-radius:16px; background:linear-gradient(135deg, rgba(91,108,255,.10), rgba(42,169,255,.05)); border:1px solid rgba(91,108,255,.16)}
+.weeklyTodayCard__tag{display:inline-flex; padding:5px 9px; border-radius:999px; background:rgba(255,255,255,.75); border:1px solid rgba(20,30,60,.08); font-size:11px; color:var(--muted)}
+.weeklyTodayCard__title{margin-top:10px; font-size:16px; font-weight:950}
+.weeklyTodayCard__meta{margin-top:6px; color:var(--muted); font-size:13px; line-height:1.5}
+.weeklyTodayCard__link{display:inline-flex; margin-top:10px; font-size:12px; color:var(--primary); text-decoration:none; font-weight:700}
+.weeklyTodayCard__link:hover{text-decoration:underline}
+.difficultyTag{display:inline-flex; align-items:center; padding:3px 8px; border-radius:999px; font-size:11px; border:1px solid rgba(20,30,60,.08); background:rgba(255,255,255,.76)}
+.difficultyTag--简单{color:rgba(22,163,74,.95); background:rgba(22,163,74,.10)}
+.difficultyTag--中等{color:var(--primary2); background:rgba(42,169,255,.10)}
+.difficultyTag--较难{color:rgba(244,114,182,.95); background:rgba(244,114,182,.10)}
+.difficultyTag--困难{color:rgba(239,68,68,.95); background:rgba(239,68,68,.10)}
+.weeklyGoal,.weeklyTimeline__step{position:relative}
+.weeklyGoal__note{margin-top:6px; color:var(--muted2); font-size:12px; line-height:1.45}
+.weeklyGoal__link{display:inline-flex; align-self:center; padding:8px 10px; border-radius:10px; border:1px solid rgba(20,30,60,.10); background:rgba(255,255,255,.86); text-decoration:none; color:var(--text); font-size:12px; font-weight:700}
+.weeklyGoal__link:hover{border-color:rgba(91,108,255,.24); box-shadow:0 8px 18px rgba(10,18,40,.05)}
 .dailyTask,.weeklyGoal{display:flex; gap:12px; align-items:flex-start; width:100%; padding:13px; border-radius:16px; border:1px solid rgba(20,30,60,.10); background:rgba(255,255,255,.84); text-align:left; cursor:pointer; transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease}
 .dailyTask:hover,.weeklyGoal:hover{border-color:rgba(91,108,255,.25); background:rgba(255,255,255,.98); transform:translateY(-1px); box-shadow:0 10px 26px rgba(10,18,40,.06)}
 .dailyTask.is-done,.weeklyGoal.is-done{opacity:.72}
@@ -178,6 +193,7 @@ body{
 .weeklyGoal.state-today .weeklyGoal__index{background:linear-gradient(135deg, rgba(91,108,255,.95), rgba(42,169,255,.85)); color:#fff}
 .weeklyGoal.state-done .weeklyGoal__index{background:rgba(22,163,74,.12); color:rgba(22,163,74,.95)}
 .weeklyGoal.state-todo .weeklyGoal__index{background:rgba(42,169,255,.08); color:var(--primary2)}
+.weeklyGoal.state-today,.weeklyTimeline__step.state-today{outline:2px solid rgba(91,108,255,.12)}
 .weeklyGoal__main,.dailyTask__main{flex:1}
 .dailyTask__title,.weeklyGoal__title{font-weight:850}
 .dailyTask__meta,.weeklyGoal__meta{font-size:12px; color:var(--muted2); margin-top:4px}
