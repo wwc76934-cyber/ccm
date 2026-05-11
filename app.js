@@ -460,15 +460,22 @@ function defaultNotes() {
 
 function getNotes() {
   const notes = readJson(STORAGE_KEYS.notes, null);
-  if (!notes || !Array.isArray(notes)) {
+  if (!notes || !Array.isArray(notes) || notes.length === 0) {
+    const backup = readJson("learnsite.notes.backup.v1", null);
+    if (backup && Array.isArray(backup) && backup.length) {
+      writeJson(STORAGE_KEYS.notes, backup);
+      return backup;
+    }
     const imported = getLocalKnowledgeEntries();
     if (imported.length) {
       const restored = imported.map((n, idx) => mapEntryToNote(normalizeImportedEntry(n), idx));
       writeJson(STORAGE_KEYS.notes, restored);
+      writeJson("learnsite.notes.backup.v1", restored);
       return restored;
     }
     const d = defaultNotes();
     writeJson(STORAGE_KEYS.notes, d);
+    writeJson("learnsite.notes.backup.v1", d);
     return d;
   }
   return notes;
@@ -476,6 +483,7 @@ function getNotes() {
 
 function saveNotes(notes) {
   writeJson(STORAGE_KEYS.notes, notes);
+  writeJson("learnsite.notes.backup.v1", notes);
 }
 
 function normalizeImportedEntry(entry) {
@@ -576,13 +584,14 @@ function makeNoteFromText(text, filename = "") {
 }
 
 function setKbSection(section) {
+  const safe = document.querySelectorAll(".kbNav__item").length ? section : "notes";
   document.querySelectorAll(".kbNav__item").forEach((btn) => {
-    btn.classList.toggle("is-active", btn.getAttribute("data-kb-section") === section);
+    btn.classList.toggle("is-active", btn.getAttribute("data-kb-section") === safe);
   });
   document.querySelectorAll(".kbPanel").forEach((panel) => {
-    panel.classList.toggle("is-active", panel.getAttribute("data-kb-panel") === section);
+    panel.classList.toggle("is-active", panel.getAttribute("data-kb-panel") === safe);
   });
-  if (section === "notes") {
+  if (safe === "notes") {
     const n = document.querySelector("#kbNotesList");
     if (n && !n.innerHTML.trim()) renderKnowledgeBase();
   }
@@ -615,6 +624,9 @@ function mapEntryToNote(n, idx = 0) {
 
 async function renderKnowledgeBase() {
   const listEl = document.querySelector("#kbNotesList");
+  const pinnedEl = document.querySelector("#kbPinned");
+  const resourcesEl = document.querySelector("#kbResources");
+  const assistantEl = document.querySelector("#kbAssistant");
   if (!listEl) return;
 
   renderKbPinned();
@@ -631,11 +643,6 @@ async function renderKnowledgeBase() {
 
   const notes = [...localNotes, ...importedNotes].sort((a, b) => (b.updatedAt || "").localeCompare(a.updatedAt || ""));
   const filtered = notes.filter((n) => noteMatches(n, q, category));
-
-  if (filtered.length === 0) {
-    listEl.innerHTML = `<div class="muted" style="font-size:13px">没有匹配的笔记。你可以点右上角“新建笔记”或上传文档导入。</div>`;
-    return;
-  }
 
   const localCount = localNotes.length;
   const importedCount = importedNotes.length;
@@ -655,8 +662,7 @@ async function renderKnowledgeBase() {
         </div>
       </div>
     </div>
-    ${filtered
-      .map((n) => {
+    ${filtered.length ? filtered.map((n) => {
         const tags = (n.tags || []).slice(0, 6);
         return `
           <div class="item">
@@ -675,8 +681,7 @@ async function renderKnowledgeBase() {
             </div>
           </div>
         `;
-      })
-      .join("")}
+      }).join("") : `<div class="muted" style="font-size:13px">没有匹配的笔记。你可以点右上角“新建笔记”或上传文档导入。</div>`}
   `;
 }
 
