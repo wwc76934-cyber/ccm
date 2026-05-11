@@ -78,10 +78,11 @@ function getProgress() {
 
 function defaultWeekly() {
   return {
+    total: 12,
     items: [
-      { id: "w1", text: "完成 1 次核心学习并记录笔记", done: false },
-      { id: "w2", text: "复盘 1 个知识点并整理成模板", done: false },
-      { id: "w3", text: "回顾本周目标并调整下周任务", done: false },
+      { id: "w1", text: "牛客网代码题 4 题", done: false },
+      { id: "w2", text: "回顾与整理 2 题", done: false },
+      { id: "w3", text: "复盘与沉淀 1 篇", done: false },
     ],
     updatedAt: nowIso(),
   };
@@ -115,6 +116,11 @@ function parseWeeklyText(text) {
 function weeklyToText(w) {
   const items = w?.items || [];
   return items.map((it) => `[${it.done ? "x" : " "}] ${it.text}`).join("\n");
+}
+
+function getWeeklyTotal() {
+  const w = getWeekly();
+  return Math.max(1, Number(w.total || w.items?.length || 0));
 }
 
 function setCompleted(id, on) {
@@ -182,7 +188,7 @@ function setMilestones(next) {
 function renderKpis() {
   const w = getWeekly();
   const completed = (w.items || []).filter((it) => it.done).length;
-  const total = (w.items || []).length;
+  const total = getWeeklyTotal();
   const rate = total === 0 ? 0 : Math.round((completed / total) * 100);
 
   setText("#kpiCompleted", String(completed));
@@ -363,7 +369,6 @@ function renderRoadmapList(trackKey, targetId) {
     })
     .join("");
 }
-
 
 function bindDynamicEvents() {
   document.querySelectorAll("[data-toggle]").forEach((btn) => {
