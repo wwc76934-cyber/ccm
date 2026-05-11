@@ -270,7 +270,6 @@ function renderHomeSnippets() {
   const daily = getDailyTasks();
   const weekly = getWeekly();
   const milestones = getMilestones();
-
   const dailyList = document.querySelector("#dailyList");
   const weeklyList = document.querySelector("#weeklyList");
   const milestoneList = document.querySelector("#milestoneList");
@@ -285,7 +284,7 @@ function renderHomeSnippets() {
   const dailyRing = document.querySelector("#dailyRing");
 
   if (dailyMeta) dailyMeta.textContent = `${daily.weekday} · ${daily.items.length} 项`;
-  if (weeklyMeta) weeklyMeta.textContent = `${weekly.items.length || 0} 项任务`;
+  if (weeklyMeta) weeklyMeta.textContent = `${weekly.items.length} 个本周目标`;
   if (milestoneMeta) milestoneMeta.textContent = `${milestones.items.length} 个里程碑`;
   if (stageTitle) stageTitle.textContent = "建立一套小而精的学习系统";
   if (stageDesc) stageDesc.textContent = "围绕知识沉淀、目标推进和复盘改进，形成长期可持续的个人学习操作台。";
@@ -310,17 +309,25 @@ function renderHomeSnippets() {
   }
 
   if (weeklyList) {
+    const completed = weekly.items.filter((it) => it.done).length;
+    const rate = weekly.items.length ? Math.round((completed / weekly.items.length) * 100) : 0;
+    const statusText = rate >= 80 ? "节奏很稳，继续推进" : rate >= 50 ? "稳步推进中" : "先把主线拉起来";
     weeklyList.innerHTML = weekly.items.length
-      ? weekly.items.map((it) => `
+      ? weekly.items.map((it, idx) => `
         <button class="weeklyGoal ${it.done ? "is-done" : ""}" data-weekly-toggle="${escapeHtml(it.id)}" type="button">
-          <div class="weeklyGoal__index">${it.done ? "✓" : "•"}</div>
+          <div class="weeklyGoal__index">${String(idx + 1).padStart(2, "0")}</div>
           <div class="weeklyGoal__main">
             <div class="weeklyGoal__title">${escapeHtml(it.text)}</div>
-            <div class="weeklyGoal__meta">${escapeHtml(it.done ? "已完成" : "建议拆到每天")}</div>
+            <div class="weeklyGoal__meta">${escapeHtml(it.done ? "已完成" : statusText)}</div>
           </div>
         </button>
       `).join("")
       : `<div class="muted" style="font-size:13px">还没有本周目标，点击“编辑每周”添加。</div>`;
+    const bar = document.querySelector("#kpiBar");
+    if (bar) bar.style.width = `${rate}%`;
+    setText("#kpiCompleted", String(completed));
+    setText("#kpiTotal", String(weekly.items.length));
+    setText("#kpiRate", `${rate}%`);
   }
 
   if (milestoneList) {
