@@ -80,16 +80,28 @@
               </div>
               <div class="goalCard__meta" id="weeklyMeta">本周主线推进</div>
             </div>
-            <div class="weeklySummary">
-              <div class="progressbar" aria-label="weekly progress">
-                <div class="progressbar__fill" id="kpiBar" style="width: 0%"></div>
+            <div class="weeklyHero">
+              <div class="weeklyHero__lead">
+                <div class="weeklyHero__title">本周主线</div>
+                <div class="weeklyHero__desc">围绕牛客网 SQL 刷题、回顾总结与知识沉淀，形成一个完整的周节奏。</div>
               </div>
-              <div class="weeklySummary__chips">
-                <div class="weeklyChip"><div class="weeklyChip__label">已完成</div><div class="weeklyChip__value" id="kpiCompleted">0</div></div>
-                <div class="weeklyChip"><div class="weeklyChip__label">总任务</div><div class="weeklyChip__value" id="kpiTotal">0</div></div>
-                <div class="weeklyChip"><div class="weeklyChip__label">完成率</div><div class="weeklyChip__value" id="kpiRate">0%</div></div>
+              <div class="weeklyHero__meter">
+                <div class="weeklyHero__meterTop">
+                  <span>进度</span>
+                  <strong id="kpiRate">0%</strong>
+                </div>
+                <div class="progressbar progressbar--weekly" aria-label="weekly progress">
+                  <div class="progressbar__fill weeklyBar" id="kpiBar" style="width: 0%"></div>
+                </div>
+                <div class="weeklyHero__stats">
+                  <div class="weeklyStat"><span>已完成</span><strong id="kpiCompleted">0</strong></div>
+                  <div class="weeklyStat"><span>总任务</span><strong id="kpiTotal">0</strong></div>
+                  <div class="weeklyStat"><span>目标状态</span><strong id="weeklyStatus">开始推进</strong></div>
+                </div>
               </div>
             </div>
+            <div class="weeklyTrack" id="weeklyTrack"></div>
+            <div id="weeklyList" class="weekly__list"></div>
             <div id="weeklyList" class="weekly__list"></div>
           </section>
         </div>
@@ -114,7 +126,7 @@
               <div class="progressbar progressbar--stage"><div class="progressbar__fill" id="stageBar" style="width: 0%"></div></div>
               <div class="stageGoal__percent" id="stageRate">0%</div>
             </div>
-            <div id="milestoneList" class="milestoneList"></div>
+            <div class="stageMilestoneRail" id="milestoneList"></div>
           </div>
         </section>
       </section>

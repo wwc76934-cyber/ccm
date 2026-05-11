@@ -118,11 +118,6 @@ function weeklyToText(w) {
   return items.map((it) => `[${it.done ? "x" : " "}] ${it.text}`).join("\n");
 }
 
-function getWeeklyTotal() {
-  const w = getWeekly();
-  return Math.max(1, Number(w.total || w.items?.length || 0));
-}
-
 function setCompleted(id, on) {
   const p = getProgress();
   if (on) p.completed[id] = nowIso();
@@ -188,7 +183,7 @@ function setMilestones(next) {
 function renderKpis() {
   const w = getWeekly();
   const completed = (w.items || []).filter((it) => it.done).length;
-  const total = getWeeklyTotal();
+  const total = w.items?.length || 0;
   const rate = total === 0 ? 0 : Math.round((completed / total) * 100);
 
   setText("#kpiCompleted", String(completed));
@@ -312,6 +307,21 @@ function renderHomeSnippets() {
     const completed = weekly.items.filter((it) => it.done).length;
     const rate = weekly.items.length ? Math.round((completed / weekly.items.length) * 100) : 0;
     const statusText = rate >= 80 ? "节奏很稳，继续推进" : rate >= 50 ? "稳步推进中" : "先把主线拉起来";
+    const track = document.querySelector("#weeklyTrack");
+    if (track) {
+      track.innerHTML = `
+        <div class="weeklyTrack__rail"></div>
+        ${weekly.items.map((it, idx) => `
+          <div class="weeklyTrack__step ${it.done ? "is-done" : ""}">
+            <div class="weeklyTrack__dot">${idx + 1}</div>
+            <div class="weeklyTrack__info">
+              <div class="weeklyTrack__title">${escapeHtml(it.text)}</div>
+              <div class="weeklyTrack__meta">${escapeHtml(it.done ? "已完成" : statusText)}</div>
+            </div>
+          </div>
+        `).join("")}
+      `;
+    }
     weeklyList.innerHTML = weekly.items.length
       ? weekly.items.map((it, idx) => `
         <button class="weeklyGoal ${it.done ? "is-done" : ""}" data-weekly-toggle="${escapeHtml(it.id)}" type="button">
@@ -328,6 +338,8 @@ function renderHomeSnippets() {
     setText("#kpiCompleted", String(completed));
     setText("#kpiTotal", String(weekly.items.length));
     setText("#kpiRate", `${rate}%`);
+    const status = document.querySelector("#weeklyStatus");
+    if (status) status.textContent = statusText;
   }
 
   if (milestoneList) {
