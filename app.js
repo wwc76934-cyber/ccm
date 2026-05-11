@@ -113,13 +113,17 @@ function normalizeWeeklyPlan(raw) {
   };
 }
 
+function weeklyStorageKey() {
+  return STORAGE_KEYS.weeklyPlan || "learnsite.weeklyPlan.v1";
+}
+
 function getWeekly() {
-  const w = readJson(STORAGE_KEYS.weeklyPlan, null) || readJson(STORAGE_KEYS.weekly, null);
+  const w = readJson(weeklyStorageKey(), null) || readJson(STORAGE_KEYS.weekly, null);
   return normalizeWeeklyPlan(w);
 }
 
 function setWeekly(next) {
-  writeJson(STORAGE_KEYS.weeklyPlan, { ...normalizeWeeklyPlan(next), updatedAt: nowIso() });
+  writeJson(weeklyStorageKey(), { ...normalizeWeeklyPlan(next), updatedAt: nowIso() });
 }
 
 function parseWeeklyText(text) {
