@@ -307,7 +307,7 @@ function renderHomeSnippets() {
     const completed = weekly.items.filter((it) => it.done).length;
     const total = weekly.items.length;
     const rate = total ? Math.round((completed / total) * 100) : 0;
-    const statusText = rate >= 80 ? "节奏很稳，继续推进" : rate >= 50 ? "稳步推进中" : "先把主线拉起来";
+    const statusText = rate >= 80 ? "节奏很稳" : rate >= 50 ? "稳步推进" : "开始推进";
     const timeline = document.querySelector("#weeklyTrack");
     if (timeline) {
       timeline.innerHTML = weekly.items.length
@@ -348,6 +348,8 @@ function renderHomeSnippets() {
       : `<div class="muted" style="font-size:13px">还没有本周目标，点击“编辑周目标”添加。</div>`;
     const bar = document.querySelector("#kpiBar");
     if (bar) bar.style.width = `${rate}%`;
+    const ring = document.querySelector(".weeklyHero__meterRing");
+    if (ring) ring.style.background = `conic-gradient(from 180deg, rgba(91,108,255,.95) 0% ${rate}%, rgba(42,169,255,.78) ${Math.max(0, rate - 6)}% ${rate}%, rgba(20,30,60,.08) ${rate}% 100%)`;
     setText("#kpiCompleted", String(completed));
     setText("#kpiTotal", String(total));
     setText("#kpiRate", `${rate}%`);
