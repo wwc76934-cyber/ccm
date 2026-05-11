@@ -104,10 +104,19 @@
                     <div class="progressbar progressbar--weekly" aria-label="weekly progress">
                       <div class="progressbar__fill weeklyBar" id="kpiBar" style="width: 0%"></div>
                     </div>
+                    <div class="weeklyHero__legend">
+                      <span class="state-done">已完成</span>
+                      <span class="state-today">今日</span>
+                      <span class="state-todo">待完成</span>
+                    </div>
                     <div class="weeklyHero__stats">
                       <div class="weeklyStat"><span>已完成</span><strong id="kpiCompleted">0</strong></div>
                       <div class="weeklyStat"><span>总任务</span><strong id="kpiTotal">0</strong></div>
-                      <div class="weeklyStat"><span>状态</span><strong id="weeklyStatus">开始推进</strong></div>
+                      <div class="weeklyStat"><span>剩余</span><strong id="kpiRemaining">0</strong></div>
+                    </div>
+                    <div class="weeklyHero__statusbar">
+                      <div class="weeklyHero__statusdot"></div>
+                      <div id="weeklyStatus">开始推进</div>
                     </div>
                   </div>
                 </div>

@@ -352,6 +352,7 @@ function renderHomeSnippets() {
     if (ring) ring.style.background = `conic-gradient(from 180deg, rgba(91,108,255,.95) 0% ${rate}%, rgba(42,169,255,.78) ${Math.max(0, rate - 6)}% ${rate}%, rgba(20,30,60,.08) ${rate}% 100%)`;
     setText("#kpiCompleted", String(completed));
     setText("#kpiTotal", String(total));
+    setText("#kpiRemaining", String(Math.max(0, total - completed)));
     setText("#kpiRate", `${rate}%`);
     const status = document.querySelector("#weeklyStatus");
     if (status) status.textContent = statusText;
