@@ -78,124 +78,43 @@ function getProgress() {
 }
 
 function defaultWeekly() {
-  const items = [];
-  const add = (id, title, difficulty, url, note = "") => items.push({ id, title, difficulty, url, done: false, stage: items.length === 0 ? "今日" : "待完成", note });
-  add("w40", "SQL40 每个月 Top3 的周杰伦歌曲", "较难", "https://www.nowcoder.com/practice/4ab6d198ea8447fe9b6a1cad1f671503?tpId=375&tqId=10737572", "窗口函数与分组统计");
-  add("w41", "SQL41 最长连续登录天数", "困难", "https://www.nowcoder.com/practice/cb8bc687046e4d32ad38de62c48ad79b?tpId=375&tqId=10737573", "连续性问题");
-  add("w42", "SQL42 分析客户逾期情况", "中等", "https://www.nowcoder.com/practice/22633632da344e2492973ecf555e10c9?tpId=375&tqId=10497698", "条件聚合与分组");
-  add("w43", "SQL43 获取指定客户每月的消费额", "中等", "https://www.nowcoder.com/practice/ed04f148b63e469e8f62e051d06a46f5?tpId=375&tqId=10858424", "月度统计");
-  add("w44", "SQL44 查询连续入住多晚的客户信息", "中等", "https://www.nowcoder.com/practice/5b4018c47dfd401d87a5afb5ebf35dfd?tpId=375&tqId=10858425", "连续区间识别");
-  add("w45", "SQL45 统计所有课程参加培训人次", "中等", "https://www.nowcoder.com/practice/98aad5807cf34a3b960cc8a70ce03f53?tpId=375&tqId=10858426", "聚合统计");
-  add("w46", "SQL46 查询培训指定课程的员工信息", "简单", "https://www.nowcoder.com/practice/a0ef4574056e4a219ee7d651ba82efef?tpId=375&tqId=10858427", "热身题");
-  add("w47", "SQL47 推荐内容准确的用户平均评分", "中等", "https://www.nowcoder.com/practice/2dcac73b647247f0aef0b261ed76b47e?tpId=375&tqId=10858428", "评分口径");
-  add("w48", "SQL48 每个商品的销售总额", "中等", "https://www.nowcoder.com/practice/6d796e885ee44a9cb599f47b16a02ea4?tpId=375&tqId=10824294", "GROUP BY 与排序");
-  add("w49", "SQL49 统计各岗位员工平均工作时长", "简单", "https://www.nowcoder.com/practice/b7220791a95a4cd092801069aefa1cae?tpId=375&tqId=2452517", "快速完成");
-  add("w50", "SQL50 查询连续登陆的用户", "较难", "https://www.nowcoder.com/practice/9944210610ec417e94140ac09512a3f5?tpId=375&tqId=2371138", "连续登录与窗口技巧");
-  add("w51", "SQL51 统计商家不同会员每日访问人次及访问人数", "简单", "https://www.nowcoder.com/practice/0017dc22426b495889da3304dcf254d1?tpId=375&tqId=10222179", "日粒度统计");
-  add("w52", "SQL52 统计各等级会员用户下订单总额", "简单", "https://www.nowcoder.com/practice/48dd35a3dd8c4e1494db36b097a03300?tpId=375&tqId=10221977", "会员等级汇总");
-  add("w53", "SQL53 查询下订单用户访问次数", "中等", "https://www.nowcoder.com/practice/32bc1e0fce2343ad934b76a025e09fc5?tpId=375&tqId=10221975", "访问到下单路径");
-  add("w54", "SQL54 统计用户从访问到下单的转化率", "较难", "https://www.nowcoder.com/practice/eaff8684aed74e208300f2737edbb083?tpId=375&tqId=10220087", "漏斗转化逻辑");
-  add("w55", "SQL55 统计员工薪资扣除比例", "简单", "https://www.nowcoder.com/practice/08db6f0135664ca598b579f8d53dc486?tpId=375&tqId=2480313", "规则统计");
-  add("w56", "SQL56 统计用户获得积分", "简单", "https://www.nowcoder.com/practice/22ed0cd240824bb597b3130fef389cea?tpId=375&tqId=10819551", "积分累加");
-  add("w57", "SQL57 更新用户积分信息", "中等", "https://www.nowcoder.com/practice/ef1f2fda4338460b948810f3f7e7a68e?tpId=375&tqId=10223707", "更新类题型");
-  add("w58", "SQL58 查询单日多次下订单的用户信息", "简单", "https://www.nowcoder.com/practice/9958aed1e74a49b795dfe2cb9d54ee12?tpId=375&tqId=10221993", "单日聚合");
-  add("w59", "SQL59 统计各个部门平均薪资", "简单", "https://www.nowcoder.com/practice/4722fdf89a4c43eebb58d61a19ccab31?tpId=375&tqId=2473552", "部门维度");
-  add("w60", "SQL60 统计加班员工占比", "中等", "https://www.nowcoder.com/practice/6c0a521c36e14c7599eaef858f6f8233?tpId=375&tqId=2455222", "比例计算");
-  add("w61", "SQL61 每天登陆最早的用户的内容喜好", "中等", "https://www.nowcoder.com/practice/24bb13a28267486ba86c1d21459fa90a?tpId=375&tqId=2440462", "每天第一名");
-  add("w62", "SQL62 支付间隔平均值", "中等", "https://www.nowcoder.com/practice/847431ad931e45348eb1ab5657144c28?tpId=375&tqId=2358395", "时间间隔统计");
-  add("w63", "SQL63 网易云音乐推荐", "较难", "https://www.nowcoder.com/practice/048ed413ac0e4cf4a774b906fc87e0e7?tpId=375&tqId=1262829", "综合分析题");
-  add("w64", "SQL64 商品交易", "简单", "https://www.nowcoder.com/practice/f257dfc1b55e42e19eec004aa3cb4174?tpId=375&tqId=1262828", "基础交易聚合");
-  add("w65", "SQL65 计算粉丝 CTR", "中等", "https://www.nowcoder.com/practice/853a6567cf524f63bab0879b8d0bfe62?tpId=375&tqId=10858285", "CTR 计算");
-  add("w66", "SQL66 查询成绩", "简单", "https://www.nowcoder.com/practice/ef30689ae065434c89c129e9dfe1b4cd?tpId=375&tqId=10825311", "基础查询");
-  add("w67", "SQL67 被重复观看次数最多的 3 个视频", "中等", "https://www.nowcoder.com/practice/b75fa2412659422c96369976ee1f9504?tpId=375&tqId=10960094", "TopN 分析");
-  add("w68", "SQL68 直播间晚上 11-12 点在线人数", "中等", "https://www.nowcoder.com/practice/38f5febc9dac4e9e84ed5891a3e4ca05?tpId=375&tqId=10960121", "时间区间分析");
-  add("w69", "SQL69 淘宝店铺的实际销售额与客单价", "简单", "https://www.nowcoder.com/practice/ce116419a1f141568094b5eab70e5ce8?tpId=375&tqId=2349978", "销售与客单价");
-  add("w70", "SQL70 完成员工考核试卷突出员工", "较难", "https://www.nowcoder.com/practice/422dcd6ae72c49c9bbec1aff90d69806?tpId=375&tqId=2349979", "综合筛选");
-  add("w71", "SQL71 查询产生理赔费用的快递信息", "简单", "https://www.nowcoder.com/practice/d22eab8a0001443fba7c5757e7cbcaea?tpId=375&tqId=11136039", "业务筛选");
-  add("w72", "SQL72 统计快递运输时长", "中等", "https://www.nowcoder.com/practice/bb4196936f15424dbabe76a501186d91?tpId=375&tqId=11136040", "时长计算");
-  add("w73", "SQL73 统计快递从创建订单到发出间隔时长", "简单", "https://www.nowcoder.com/practice/be3e56c950724b27aa79b79309147443?tpId=375&tqId=11136041", "创建到发出");
-  add("w74", "SQL74 下单最多的商品", "简单", "https://www.nowcoder.com/practice/d7c93e3a3d5b4087896539121d32d367?tpId=375&tqId=11136042", "每日小题");
-  add("w75", "SQL75 用户购买次数前三", "简单", "https://www.nowcoder.com/practice/e359c071d29c4fb7bac6d346f0cfe1d0?tpId=375&tqId=11136043", "Top3 次数");
-  add("w76", "SQL76 商品价格排名", "中等", "https://www.nowcoder.com/practice/119f5b8cfe5b45779a3e1b3f4d83b341?tpId=375&tqId=11136044", "排名窗口");
-  add("w77", "SQL77 商品销售排名", "简单", "https://www.nowcoder.com/practice/79c6c3d6d66946f79387bca73c0a29f4?tpId=375&tqId=11136045", "销售排名");
-  add("w78", "SQL78 商品销售总额分布", "中等", "https://www.nowcoder.com/practice/62909494cecd4eab8c2501167e825566?tpId=375&tqId=11136046", "分布分析");
-  add("w79", "SQL79 每个客户的账户总金额", "简单", "https://www.nowcoder.com/practice/19f0bc2b8cad44b6986ad9a51ed43def?tpId=375&tqId=10587885", "账户汇总");
-  add("w80", "SQL80 每个部门薪资排名前两名员工", "中等", "https://www.nowcoder.com/practice/89329eadd4a64126b1cd326ea0b7eff7?tpId=375&tqId=10612237", "部门 Top2");
-  add("w82", "SQL82 查询订单", "简单", "https://www.nowcoder.com/practice/5ae7f48dc94f4a76b0ade40b70caf308?tpId=375&tqId=10769485", "订单查询");
-  add("w83", "SQL83 商品id数据清洗统计", "简单", "https://www.nowcoder.com/practice/c985ecbd820b46e6bafa858f6600126d?tpId=375&tqId=2363832", "数据清洗");
-  add("w84", "SQL84 每个顾客最近一次下单的订单信息", "中等", "https://www.nowcoder.com/practice/4762ea22b0eb42ceb4f0a972c56d24c4?tpId=375&tqId=10623547", "最近一次下单");
-  add("w85", "SQL85 统计每个产品的销售情况", "困难", "https://www.nowcoder.com/practice/d431aa7bf72c4fd7b048ec639bc83ad2?tpId=375&tqId=11142907", "销售与利润率");
-  add("w86", "SQL86 各个部门实际平均薪资和男女员工实际平均薪资", "较难", "https://www.nowcoder.com/practice/e8272685d07347cc88667f31f7989231?tpId=375&tqId=10274379", "多维平均薪资");
-  add("w87", "SQL87 每个顾客购买的最新产品名称", "中等", "https://www.nowcoder.com/practice/6ff37adae90f490aafa313033a2dcff7?tpId=375&tqId=10620275", "最新购买");
-  add("w88", "SQL88 输出播放量最高的视频", "中等", "https://www.nowcoder.com/practice/9e9cb264e1f64e28846975d5a32ba8e4?tpId=375&tqId=10770802", "播放量 Top1");
-  add("w89", "SQL89 返回顾客名称和相关订单号以及每个订单的总价", "简单", "https://www.nowcoder.com/practice/4dda66e385c443d8a11570a70807d250?tpId=375&tqId=2374706", "订单总价");
-  add("w90", "SQL90 未下单用户统计", "简单", "https://www.nowcoder.com/practice/3433aee5c7824255b2dd2879b30df090?tpId=375&tqId=2363827", "未下单统计");
-  add("w92", "SQL92 用户订单信息查询", "简单", "https://www.nowcoder.com/practice/dccec8456d774169925c0d50843ea076?tpId=375&tqId=10823704", "订单信息");
-  add("w93", "SQL93 未下单用户登陆渠道统计", "简单", "https://www.nowcoder.com/practice/5090553d7854458987997a5c91c30975?tpId=375&tqId=2363836", "渠道统计");
-  add("w94", "SQL94 更新员工信息表", "中等", "https://www.nowcoder.com/practice/1eb20d4bf7c5443da7b84105372c9070?tpId=375&tqId=10711867", "更新题型");
-  add("w95", "SQL95 最受欢迎的 top3 课程", "中等", "https://www.nowcoder.com/practice/b9b33659559c46099aa3257da0374a48?tpId=375&tqId=2358702", "Top3 课程");
-  add("w96", "SQL96 对商品的销售情况进行深度分析", "中等", "https://www.nowcoder.com/practice/d6ced1b60af64a4998169ae717672e8e?tpId=375&tqId=11253544", "深度分析");
-  add("w97", "SQL97 电商平台需要对商家的销售业绩、退款情况和客户满意度进行综合评估", "中等", "https://www.nowcoder.com/practice/48a236567617449eb6010274b30b29e8?tpId=375&tqId=11253543", "综合评估");
-  add("w98", "SQL98 不同商品在不同月份的销售趋势", "中等", "https://www.nowcoder.com/practice/a3fab87aca9347c28f406088cf601c7b?tpId=375&tqId=11253542", "月度趋势");
-  add("w99", "SQL99 分析每个商品在不同时间段的销售情况", "中等", "https://www.nowcoder.com/practice/eec7a93e1ab24233bd244e04e910d2f9?tpId=375&tqId=11253541", "时间段销售");
-  add("w100", "SQL100 不同类别商品中销售金额排名前三且利润率超过20%的商品信息", "中等", "https://www.nowcoder.com/practice/3d70132f4c14442cada25fec0198e743?tpId=375&tqId=11253540", "类别 Top3");
-  add("w101", "SQL101 分析每个员工在不同项目中的绩效情况", "中等", "https://www.nowcoder.com/practice/fa64fd2eb40d4639bc23dfb1ffae2163?tpId=375&tqId=11253539", "项目绩效");
-  add("w102", "SQL102 每个品牌在特定时间段内的退货率以及平均客户满意度评分", "中等", "https://www.nowcoder.com/practice/39f4ccb8ac1b47a89d092b4d8ed08bc8?tpId=375&tqId=11253538", "退货率与评分");
-  add("w103", "SQL103 物流公司想要分析快递小哥的薪资构成和绩效情况", "中等", "https://www.nowcoder.com/practice/4be55ba954bf4f928a2d6ff840f23d1b?tpId=375&tqId=11253537", "薪资与绩效");
-  add("w104", "SQL104 每个品牌在不同月份的总销售额以及购买该品牌商品的用户的平均年龄", "中等", "https://www.nowcoder.com/practice/a50c67d3374f4d0e85869d3e48e02c0a?tpId=375&tqId=11253536", "品牌月报");
-  add("w105", "SQL105 电商平台需要对各行业销售情况综合评估", "中等", "https://www.nowcoder.com/practice/120cbc6f87214886bbba80d2b5414786?tpId=375&tqId=11253535", "行业评估");
-  add("w106", "SQL106 查询出每个商品在 2024 年上半年总销售额", "中等", "https://www.nowcoder.com/practice/e190c019dabe4622ae719cca64437a47?tpId=375&tqId=11253534", "上半年销售额");
-  add("w107", "SQL107 商品的销售和评价情况进行综合分析", "中等", "https://www.nowcoder.com/practice/ccb441966a0342f2ab5fa8e76c33a3e6?tpId=375&tqId=11253533", "销售与评价");
-  add("w108", "SQL108 评估2023年不同品牌商品的销售趋势和客户满意度", "中等", "https://www.nowcoder.com/practice/a32c7ff803054a919e2b65334463002f?tpId=375&tqId=11253532", "品牌趋势");
-  add("w109", "SQL109 不同运输方式在不同城市的平均运输时长以及总运输费用", "中等", "https://www.nowcoder.com/practice/673bf7b17e7c4962bcde889980eec872?tpId=375&tqId=11253531", "运输统计");
-  add("w110", "SQL110 分析员工在不同项目中的绩效表现以及所属部门的平均绩效情况", "中等", "https://www.nowcoder.com/practice/20c76a1181004965a3106524fd3ab583?tpId=375&tqId=11253530", "项目绩效对比");
-  add("w111", "SQL111 物流公司想要分析快递小哥的收入情况", "中等", "https://www.nowcoder.com/practice/749ba0168f014c639b516258c0ed6c5d?tpId=375&tqId=11253529", "收入分析");
-  add("w112", "SQL112 不同门店各类商品的库存情况和销售情况", "中等", "https://www.nowcoder.com/practice/5b9262a36724466ea1ae1f58187197d6?tpId=375&tqId=11253528", "库存与销售");
-  add("w113", "SQL113 评估不同供应商提供的零部件质量和成本情况", "中等", "https://www.nowcoder.com/practice/dc44fdd330e8429db8271efc38ce1922?tpId=375&tqId=11253527", "供应商评估");
-  add("w114", "SQL114 了解 2023 年全年所有商品的盈利情况", "中等", "https://www.nowcoder.com/practice/05cbbb8662c14b46a15cbcb8993d9277?tpId=375&tqId=11253526", "全年盈利");
-  add("w115", "SQL115 哪些产品在特定时间段内表现最为出色", "中等", "https://www.nowcoder.com/practice/866a4614615b43a29750537ede4bf0c8?tpId=375&tqId=11253525", "表现最好产品");
-  add("w116", "SQL116 分析配送员的配送效率", "中等", "https://www.nowcoder.com/practice/e27ba25e7722478eb86c832fab96fc1a?tpId=375&tqId=11285767", "配送效率");
-  add("w117", "SQL117 各款产品年总销售额与竞品的年度对比", "中等", "https://www.nowcoder.com/practice/99cc7f1798a84645a6aca5bdfd163fdb?tpId=375&tqId=11285667", "年度对比");
-  add("w118", "SQL118 各产品线在特定时间段内的销售情况", "中等", "https://www.nowcoder.com/practice/8a002dd7888b4247b6ac9228577bdbc3?tpId=375&tqId=11285668", "产品线销售");
-  add("w119", "SQL119 查询高价值旅行套餐客户的支出与套餐详情", "中等", "https://www.nowcoder.com/practice/957e8ab30e2745b48d2f79046df73a23?tpId=375&tqId=11276152", "旅行套餐");
-  add("w120", "SQL120 贷款情况", "较难", "https://www.nowcoder.com/practice/2817d353f0634208bcf0de74f56ca8f0?tpId=375&tqId=11257960", "贷款分析");
-  add("w121", "SQL121 统计借阅量", "困难", "https://www.nowcoder.com/practice/280ed56ab3ee49a4b2a4595d38e1d565?tpId=375&tqId=11430014", "借阅量统计");
-  add("w122", "SQL122 统计骑手信息", "较难", "https://www.nowcoder.com/practice/704de2445ed943c6bf65cfd77bd69ff4?tpId=375&tqId=11430807", "骑手统计");
-  add("w123", "SQL123 内容社区用户活跃度、转化与广告归因分析", "较难", "https://www.nowcoder.com/practice/e491704f99ed4affb1d42127bf16a4a9?tpId=375&tqId=11430831", "活跃与归因");
-  add("w124", "SQL124 下单复盘", "较难", "https://www.nowcoder.com/practice/85cece6c8e11434783e9e18da2bddd45?tpId=375&tqId=11431183", "下单复盘");
-  add("w125", "SQL125 医院门诊复诊率与抗生素用药占比统计", "较难", "https://www.nowcoder.com/practice/7adcef0b1fb741fbba255870422cdb43?tpId=375&tqId=11431192", "医疗统计");
-  add("w126", "SQL126 最畅销的 SKU", "较难", "https://www.nowcoder.com/practice/356a64a402864b27a9ab47d0c032756d?tpId=375&tqId=11434803", "最畅销 SKU");
-  add("w127", "SQL127 统计每个班级的关键指标", "较难", "https://www.nowcoder.com/practice/07beee54ac62455586016ea1b018d371?tpId=375&tqId=11435125", "班级指标");
-  add("w128", "SQL128 统计创作者", "中等", "https://www.nowcoder.com/practice/5f0155102879494c8707f749156f9af3?tpId=375&tqId=11435179", "创作者统计");
-  add("w129", "SQL129 近 7 天骑手履约时效看板", "中等", "https://www.nowcoder.com/practice/25af5a3296c747f5b01fc589f1568514?tpId=375&tqId=11435319", "时效看板");
-  add("w130", "SQL130 目标月份的品类销售简报", "较难", "https://www.nowcoder.com/practice/d5693e529a514ed390f097d395ad481d?tpId=375&tqId=11435347", "销售简报");
-  add("w131", "SQL131 智能家居设备高能耗异常监控分析", "中等", "https://www.nowcoder.com/practice/d66ad4fcf3d54852832099d1674fe1c3?tpId=375&tqId=11618971", "高能耗监控");
-  add("w132", "SQL132 在线教育平台活跃学员课程评价分析", "中等", "https://www.nowcoder.com/practice/fc255da3eb464571a757980951ff4e79?tpId=375&tqId=11618973", "课程评价");
-  add("w133", "SQL133 SaaS 平台企业客户新功能采纳度分析", "中等", "https://www.nowcoder.com/practice/7b4b67320dde405c8ffdea850467a92d?tpId=375&tqId=11619097", "功能采纳");
-  add("w134", "SQL134 游戏平台新玩家消费与进阶行为分析", "中等", "https://www.nowcoder.com/practice/dff4543dbf684133b971bb570ce42660?tpId=375&tqId=11619102", "新玩家行为");
-  add("w135", "SQL135 SaaS 产品高价值用户活跃度分析", "中等", "https://www.nowcoder.com/practice/439f6de3254143e7b3673ed0259d98b0?tpId=375&tqId=11619115", "高价值活跃度");
-  add("w136", "SQL136 微服务架构下的深层依赖链路漏洞影响面分析", "中等", "https://www.nowcoder.com/practice/a8416ddac26b427c97d8a8c6a7d14779?tpId=375&tqId=11626950", "依赖链路漏洞");
-  add("w137", "SQL137 宠物猫繁育族谱追溯与遗传病风险评估", "中等", "https://www.nowcoder.com/practice/b81457c7327e4a17960804f3ef1a4fd3?tpId=375&tqId=11626956", "族谱追溯");
-  add("w138", "SQL138 全民健身季推荐网络与积分衰减计算", "中等", "https://www.nowcoder.com/practice/520e2c69f75247bbb05b36fc11d1df67?tpId=375&tqId=11626970", "积分衰减");
-  add("w139", "SQL139 播客精彩片段裂变传播链统计", "较难", "https://www.nowcoder.com/practice/c67a5e17dd474032aa5eac5dcffca317?tpId=375&tqId=11637107", "裂变传播链");
-  add("w140", "SQL140 找出补位班次", "较难", "https://www.nowcoder.com/practice/ed828b0385a84e0db95f1513f43076d4?tpId=375&tqId=11637110", "补位班次");
-  add("w141", "SQL141 超充站故障派单链路统计", "较难", "https://www.nowcoder.com/practice/0995ab4acb05404591cfab71df3d11e4?tpId=375&tqId=11637115", "故障派单链路");
-  add("w142", "SQL142 电竞赛事战队近期战绩查询", "简单", "https://www.nowcoder.com/practice/7dda27e223a94184a3269ed99ac42fbe?tpId=375&tqId=11653457", "战绩查询");
-  add("w143", "SQL143 骑行运动社区路线个人最佳排名", "中等", "https://www.nowcoder.com/practice/9a7bde8872dd41268e0c69b2d5cd4c42?tpId=375&tqId=11653506", "路线排名");
-  add("w144", "SQL144 SaaS 产品租户核心功能模块用量及占比分析", "中等", "https://www.nowcoder.com/practice/baeb3d368c3b467b8d8dd7f68c39bef4?tpId=375&tqId=11653509", "模块用量");
-  add("w145", "SQL145 精品咖啡连锁门店王牌产品及其最忠实顾客分析", "较难", "https://www.nowcoder.com/practice/618a45ec484e45d6a18135586e272152?tpId=375&tqId=11653595", "王牌产品");
-  add("w146", "SQL146 潮鞋新品发售后 N 日复购留存矩阵", "中等", "https://www.nowcoder.com/practice/1a4a359d3a524cc0830c52985888bd38?tpId=375&tqId=11668567", "复购留存矩阵");
-  add("w147", "SQL147 骑手配送履约分层留存与时段热力矩阵", "较难", "https://www.nowcoder.com/practice/aca3e6f51a264f5db6a2f876b5f75ef0?tpId=375&tqId=11668571", "履约热力矩阵");
-  add("w148", "SQL148 歌手新歌首发后听众分层次日留存与时段活跃矩阵", "较难", "https://www.nowcoder.com/practice/084ae898ce9a4bc9866700cc9b4616e5?tpId=375&tqId=11668573", "听众活跃矩阵");
-  return {
-    total: items.length,
-    title: "牛客网 SQL 刷题周计划",
-    platform: "nowcoder",
-    topic: "SQL篇 / 大厂笔试真题",
-    items,
-    updatedAt: nowIso(),
-  };
-}
+  const items = [
+    { id: "w1", title: "SQL40 每个月 Top3 的周杰伦歌曲", difficulty: "较难", url: "https://www.nowcoder.com/practice/4ab6d198ea8447fe9b6a1cad1f671503?tpId=375&tqId=10737572", done: false, stage: "今日", note: "优先练窗口函数与分组统计" },
+    { id: "w2", title: "SQL41 最长连续登录天数", difficulty: "困难", url: "https://www.nowcoder.com/practice/cb8bc687046e4d32ad38de62c48ad79b?tpId=375&tqId=10737573", done: false, stage: "待完成", note: "连续性问题，适合周中攻克" },
+    { id: "w3", title: "SQL42 分析客户逾期情况", difficulty: "中等", url: "https://www.nowcoder.com/practice/22633632da344e2492973ecf555e10c9?tpId=375&tqId=10497698", done: false, stage: "待完成", note: "重点练条件聚合与分组" },
+    { id: "w4", title: "SQL43 获取指定客户每月的消费额", difficulty: "中等", url: "https://www.nowcoder.com/practice/ed04f148b63e469e8f62e051d06a46f5?tpId=375&tqId=10858424", done: false, stage: "待完成", note: "月度统计与分组表达" },
+    { id: "w5", title: "SQL44 查询连续入住多晚的客户信息", difficulty: "中等", url: "https://www.nowcoder.com/practice/5b4018c47dfd401d87a5afb5ebf35dfd?tpId=375&tqId=10858425", done: false, stage: "待完成", note: "连续区间识别" },
+    { id: "w6", title: "SQL45 统计所有课程参加培训人次", difficulty: "中等", url: "https://www.nowcoder.com/practice/98aad5807cf34a3b960cc8a70ce03f53?tpId=375&tqId=10858426", done: false, stage: "待完成", note: "聚合统计热身" },
+    { id: "w7", title: "SQL46 查询培训指定课程的员工信息", difficulty: "简单", url: "https://www.nowcoder.com/practice/a0ef4574056e4a219ee7d651ba82efef?tpId=375&tqId=10858427", done: false, stage: "待完成", note: "用于热身和收尾" },
+    { id: "w8", title: "SQL47 推荐内容准确的用户平均评分", difficulty: "中等", url: "https://www.nowcoder.com/practice/2dcac73b647247f0aef0b261ed76b47e?tpId=375&tqId=10858428", done: false, stage: "待完成", note: "评分口径与过滤" },
+    { id: "w9", title: "SQL48 每个商品的销售总额", difficulty: "中等", url: "https://www.nowcoder.com/practice/6d796e885ee44a9cb599f47b16a02ea4?tpId=375&tqId=10824294", done: false, stage: "待完成", note: "配合 GROUP BY 与排序" },
+    { id: "w10", title: "SQL49 统计各岗位员工平均工作时长", difficulty: "简单", url: "https://www.nowcoder.com/practice/b7220791a95a4cd092801069aefa1cae?tpId=375&tqId=2452517", done: false, stage: "待完成", note: "适合快速完成" },
+    { id: "w11", title: "SQL50 查询连续登陆的用户", difficulty: "较难", url: "https://www.nowcoder.com/practice/9944210610ec417e94140ac09512a3f5?tpId=375&tqId=2371138", done: false, stage: "待完成", note: "连续登录与窗口技巧" },
+    { id: "w12", title: "SQL51 统计商家不同会员每日访问人次及访问人数", difficulty: "简单", url: "https://www.nowcoder.com/practice/0017dc22426b495889da3304dcf254d1?tpId=375&tqId=10222179", done: false, stage: "待完成", note: "日粒度统计" },
+    { id: "w13", title: "SQL52 统计各等级会员用户下订单总额", difficulty: "简单", url: "https://www.nowcoder.com/practice/48dd35a3dd8c4e1494db36b097a03300?tpId=375&tqId=10221977", done: false, stage: "待完成", note: "会员等级汇总" },
+    { id: "w14", title: "SQL53 查询下订单用户访问次数", difficulty: "中等", url: "https://www.nowcoder.com/practice/32bc1e0fce2343ad934b76a025e09fc5?tpId=375&tqId=10221975", done: false, stage: "待完成", note: "访问到下单路径" },
+    { id: "w15", title: "SQL54 统计用户从访问到下单的转化率", difficulty: "较难", url: "https://www.nowcoder.com/practice/eaff8684aed74e208300f2737edbb083?tpId=375&tqId=10220087", done: false, stage: "待完成", note: "漏斗转化逻辑" },
+    { id: "w16", title: "SQL55 统计员工薪资扣除比例", difficulty: "简单", url: "https://www.nowcoder.com/practice/08db6f0135664ca598b579f8d53dc486?tpId=375&tqId=2480313", done: false, stage: "待完成", note: "规则统计" },
+    { id: "w17", title: "SQL56 统计用户获得积分", difficulty: "简单", url: "https://www.nowcoder.com/practice/22ed0cd240824bb597b3130fef389cea?tpId=375&tqId=10819551", done: false, stage: "待完成", note: "积分累加" },
+    { id: "w18", title: "SQL57 更新用户积分信息", difficulty: "中等", url: "https://www.nowcoder.com/practice/ef1f2fda4338460b948810f3f7e7a68e?tpId=375&tqId=10223707", done: false, stage: "待完成", note: "更新类题型" },
+    { id: "w19", title: "SQL58 查询单日多次下订单的用户信息", difficulty: "简单", url: "https://www.nowcoder.com/practice/9958aed1e74a49b795dfe2cb9d54ee12?tpId=375&tqId=10221993", done: false, stage: "待完成", note: "单日聚合" },
+    { id: "w20", title: "SQL59 统计各个部门平均薪资", difficulty: "简单", url: "https://www.nowcoder.com/practice/4722fdf89a4c43eebb58d61a19ccab31?tpId=375&tqId=2473552", done: false, stage: "待完成", note: "部门维度" },
+    { id: "w21", title: "SQL60 统计加班员工占比", difficulty: "中等", url: "https://www.nowcoder.com/practice/6c0a521c36e14c7599eaef858f6f8233?tpId=375&tqId=2455222", done: false, stage: "待完成", note: "比例计算" },
+    { id: "w22", title: "SQL61 每天登陆最早的用户的内容喜好", difficulty: "中等", url: "https://www.nowcoder.com/practice/24bb13a28267486ba86c1d21459fa90a?tpId=375&tqId=2440462", done: false, stage: "待完成", note: "每天第一名" },
+    { id: "w23", title: "SQL62 支付间隔平均值", difficulty: "中等", url: "https://www.nowcoder.com/practice/847431ad931e45348eb1ab5657144c28?tpId=375&tqId=2358395", done: false, stage: "待完成", note: "时间间隔统计" },
+    { id: "w24", title: "SQL63 网易云音乐推荐", difficulty: "较难", url: "https://www.nowcoder.com/practice/048ed413ac0e4cf4a774b906fc87e0e7?tpId=375&tqId=1262829", done: false, stage: "待完成", note: "综合分析题" },
+    { id: "w25", title: "SQL64 商品交易", difficulty: "简单", url: "https://www.nowcoder.com/practice/f257dfc1b55e42e19eec004aa3cb4174?tpId=375&tqId=1262828", done: false, stage: "待完成", note: "基础交易聚合" },
+    { id: "w26", title: "SQL65 计算粉丝 CTR", difficulty: "中等", url: "https://www.nowcoder.com/practice/853a6567cf524f63bab0879b8d0bfe62?tpId=375&tqId=10858285", done: false, stage: "待完成", note: "CTR 计算" },
+    { id: "w27", title: "SQL66 查询成绩", difficulty: "简单", url: "https://www.nowcoder.com/practice/ef30689ae065434c89c129e9dfe1b4cd?tpId=375&tqId=10825311", done: false, stage: "待完成", note: "基础查询" },
+    { id: "w28", title: "SQL67 被重复观看次数最多的 3 个视频", difficulty: "中等", url: "https://www.nowcoder.com/practice/b75fa2412659422c96369976ee1f9504?tpId=375&tqId=10960094", done: false, stage: "待完成", note: "TopN 分析" },
+    { id: "w29", title: "SQL68 直播间晚上 11-12 点在线人数", difficulty: "中等", url: "https://www.nowcoder.com/practice/38f5febc9dac4e9e84ed5891a3e4ca05?tpId=375&tqId=10960121", done: false, stage: "待完成", note: "时间区间分析" },
+    { id: "w30", title: "SQL69 淘宝店铺的实际销售额与客单价", difficulty: "简单", url: "https://www.nowcoder.com/practice/ce116419a1f141568094b5eab70e5ce8?tpId=375&tqId=2349978", done: false, stage: "待完成", note: "销售与客单价" },
+    { id: "w31", title: "SQL70 完成员工考核试卷突出员工", difficulty: "较难", url: "https://www.nowcoder.com/practice/422dcd6ae72c49c9bbec1aff90d69806?tpId=375&tqId=2349979", done: false, stage: "待完成", note: "综合筛选" },
+    { id: "w32", title: "SQL71 查询产生理赔费用的快递信息", difficulty: "简单", url: "https://www.nowcoder.com/practice/d22eab8a0001443fba7c5757e7cbcaea?tpId=375&tqId=11136039", done: false, stage: "待完成", note: "业务筛选" },
+    { id: "w33", title: "SQL72 统计快递运输时长", difficulty: "中等", url: "https://www.nowcoder.com/practice/bb4196936f15424dbabe76a501186d91?tpId=375&tqId=11136040", done: false, stage: "待完成", note: "时长计算" },
+    { id: "w34", title: "SQL73 统计快递从创建订单到发出间隔时长", difficulty: "简单", url: "https://www.nowcoder.com/practice/be3e56c950724b27aa79b79309147443?tpId=375&tqId=11136041", done: false, stage: "待完成", note: "创建到发出" },
+    { id: "w35", title: "SQL74 下单最多的商品", difficulty: "简单", url: "https://www.nowcoder.com/practice/d7c93e3a3d5b4087896539121d32d367?tpId=375&tqId=11136042", done: false, stage: "待完成", note: "做成每日小题" },
+  ];
   return {
     total: items.length,
     title: "牛客网 SQL 刷题周计划",
@@ -320,12 +239,7 @@ function weeklyPlanStats(plan) {
     medium: items.filter((it) => /中等/.test(it.difficulty) && it.done).length,
     hard: items.filter((it) => /(较难|困难)/.test(it.difficulty) && it.done).length,
   };
-  const groups = { 简单: [], 中等: [], 较难: [], 困难: [] };
-  items.forEach((it) => {
-    const key = /简单/.test(it.difficulty) ? "简单" : /较难/.test(it.difficulty) ? "较难" : /困难/.test(it.difficulty) ? "困难" : "中等";
-    groups[key].push(it);
-  });
-  return { total, completed, remaining, rate: total ? Math.round((completed / total) * 100) : 0, simple, medium, hard, today, doneByDifficulty, groups };
+  return { total, completed, remaining, rate: total ? Math.round((completed / total) * 100) : 0, simple, medium, hard, today, doneByDifficulty };
 }
 
 function difficultyLabel(d) {
@@ -524,10 +438,8 @@ function renderHomeSnippets() {
         <div class="weeklyBoard__summary">
           <div class="weeklyBoard__summaryCard">
             <div class="weeklyBoard__splitTitle">阶段总览</div>
-            <div class="weeklyBoard__summaryText" id="weeklySummaryText">简单 0 · 中等 0 · 较难 0 · 困难 0</div>
+            <div class="weeklyBoard__summaryText" id="weeklySummaryText">简单 0 · 中等 0 · 难题 0</div>
             <div class="weeklyBoard__compactTags" id="weeklyDifficultyTags"></div>
-            <div class="weeklyBoard__phaseProgress" id="weeklyPhaseProgress"></div>
-            <div class="weeklyBoard__phaseHint" id="weeklyPhaseHint"></div>
             <div class="weeklyBoard__progressRows" id="weeklyDifficultyBreakdown"></div>
           </div>
           <div class="weeklyBoard__summaryCard">
@@ -568,19 +480,9 @@ function renderHomeSnippets() {
     difficultyTags.innerHTML = `
       <span class="compactTag">简单 ${weeklyStats.simple}</span>
       <span class="compactTag">中等 ${weeklyStats.medium}</span>
-      <span class="compactTag">较难 ${weeklyStats.hard}</span>
-      <span class="compactTag">困难 ${weeklyStats.groups.困难.length}</span>
+      <span class="compactTag">较难/困难 ${weeklyStats.hard}</span>
     `;
   }
-  const phaseProgress = document.querySelector("#weeklyPhaseProgress");
-  if (phaseProgress) {
-    phaseProgress.innerHTML = `
-      <div class="weeklyPhaseBar"><div class="weeklyPhaseBar__fill" style="width:${weeklyStats.rate}%"></div></div>
-      <div class="weeklyPhaseBar__meta">阶段总题量 ${weeklyStats.total} · 已完成 ${weeklyStats.completed} · 剩余 ${weeklyStats.remaining}</div>
-    `;
-  }
-  const phaseHint = document.querySelector("#weeklyPhaseHint");
-  if (phaseHint) phaseHint.textContent = `当前阶段以 ${weeklyStats.today ? weeklyStats.today.title : "阶段任务"} 作为今日重点，按难度推进。`;
   const difficultyBreakdown = document.querySelector("#weeklyDifficultyBreakdown");
   if (difficultyBreakdown) {
     const total = weeklyStats.total || 1;
@@ -589,11 +491,11 @@ function renderHomeSnippets() {
     const hardPct = Math.round((weeklyStats.hard / total) * 100);
     const doneSimplePct = Math.round((weeklyStats.doneByDifficulty.simple / (weeklyStats.simple || 1)) * 100);
     const doneMediumPct = Math.round((weeklyStats.doneByDifficulty.medium / (weeklyStats.medium || 1)) * 100);
-    const doneHardPct = Math.round((weeklyStats.doneByDifficulty.hard / ((weeklyStats.hard + weeklyStats.groups.困难.length) || 1)) * 100);
+    const doneHardPct = Math.round((weeklyStats.doneByDifficulty.hard / (weeklyStats.hard || 1)) * 100);
     difficultyBreakdown.innerHTML = `
       <div class="weeklyProgressRow"><span>简单</span><div class="weeklyProgressBar"><div class="weeklyProgressBar__fill weeklyProgressBar__fill--simple" style="width:${simplePct}%"></div></div><strong>${weeklyStats.simple} 题 / ${doneSimplePct}% 完成</strong></div>
       <div class="weeklyProgressRow"><span>中等</span><div class="weeklyProgressBar"><div class="weeklyProgressBar__fill weeklyProgressBar__fill--medium" style="width:${mediumPct}%"></div></div><strong>${weeklyStats.medium} 题 / ${doneMediumPct}% 完成</strong></div>
-      <div class="weeklyProgressRow"><span>较难/困难</span><div class="weeklyProgressBar"><div class="weeklyProgressBar__fill weeklyProgressBar__fill--hard" style="width:${hardPct}%"></div></div><strong>${weeklyStats.hard + weeklyStats.groups.困难.length} 题 / ${doneHardPct}% 完成</strong></div>
+      <div class="weeklyProgressRow"><span>较难/困难</span><div class="weeklyProgressBar"><div class="weeklyProgressBar__fill weeklyProgressBar__fill--hard" style="width:${hardPct}%"></div></div><strong>${weeklyStats.hard} 题 / ${doneHardPct}% 完成</strong></div>
     `;
   }
 
