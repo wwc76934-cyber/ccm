@@ -393,9 +393,27 @@ function renderHomeSnippets() {
   const weekly = getWeekly();
   const milestones = getMilestones();
   const weeklyStats = weeklyPlanStats(weekly);
+  const stagePlan = catalog.sqlStagePlan || [];
+  const stageStats = stagePlan.reduce((acc, it) => {
+    acc.total += 1;
+    if (it.done) acc.completed += 1;
+    if (/简单/.test(it.difficulty)) acc.simple.total += 1;
+    else if (/中等/.test(it.difficulty)) acc.medium.total += 1;
+    else if (/较难/.test(it.difficulty)) acc.hard.total += 1;
+    else if (/困难/.test(it.difficulty)) acc.hard.total += 1;
+    return acc;
+  }, { total: 0, completed: 0, simple: { total: 0, done: 0 }, medium: { total: 0, done: 0 }, hard: { total: 0, done: 0 } });
+  stagePlan.forEach((it) => {
+    if (it.done) {
+      if (/简单/.test(it.difficulty)) stageStats.simple.done += 1;
+      else if (/中等/.test(it.difficulty)) stageStats.medium.done += 1;
+      else stageStats.hard.done += 1;
+    }
+  });
   const dailyList = document.querySelector("#dailyList");
   const weeklyList = document.querySelector("#weeklyList");
   const milestoneList = document.querySelector("#milestoneList");
+  const stageMeta = document.querySelector("#milestoneMeta");
   const dailyRate = document.querySelector("#dailyRate");
   const dailyMeta = document.querySelector("#dailyMeta");
   const weeklyMeta = document.querySelector("#weeklyMeta");
@@ -410,7 +428,8 @@ function renderHomeSnippets() {
 
   if (dailyMeta) dailyMeta.textContent = `${daily.weekday} · ${daily.items.length} 项`;
   if (weeklyMeta) weeklyMeta.textContent = `${weeklyStats.total} 项计划`;
-  if (milestoneMeta) milestoneMeta.textContent = `${milestones.items.length} 个里程碑`;
+  if (milestoneMeta) milestoneMeta.textContent = `${stageStats.total} 题 · SQL40-SQL148 阶段总览`;
+  if (stageMeta) stageMeta.textContent = `总题量 ${stageStats.total} · 已完成 ${stageStats.completed}`;
   if (stageTitle) stageTitle.textContent = "建立一套小而精的学习系统";
   if (stageDesc) stageDesc.textContent = "围绕知识沉淀、目标推进和复盘改进，形成长期可持续的个人学习操作台。";
 
@@ -595,22 +614,21 @@ function renderHomeSnippets() {
   }
 
   if (milestoneList) {
-    const stageStats = weeklyStats;
     const total = stageStats.total || 1;
-    const donePct = stageStats.rate;
-    const simpleTotal = stageStats.simple;
-    const mediumTotal = stageStats.medium;
-    const hardTotal = stageStats.hard;
-    const simpleDone = stageStats.doneByDifficulty.simple;
-    const mediumDone = stageStats.doneByDifficulty.medium;
-    const hardDone = stageStats.doneByDifficulty.hard;
+    const donePct = Math.round((stageStats.completed / total) * 100);
+    const simpleTotal = stageStats.simple.total;
+    const mediumTotal = stageStats.medium.total;
+    const hardTotal = stageStats.hard.total;
+    const simpleDone = stageStats.simple.done;
+    const mediumDone = stageStats.medium.done;
+    const hardDone = stageStats.hard.done;
     milestoneList.innerHTML = `
       <div class="stageGoal__meta">
         <div class="stageSummary">
           <div class="stageSummary__card"><div class="stageSummary__label">总题量</div><div class="stageSummary__value">${total}</div><div class="stageSummary__sub">SQL40 - SQL148</div></div>
           <div class="stageSummary__card"><div class="stageSummary__label">已完成</div><div class="stageSummary__value">${stageStats.completed}</div><div class="stageSummary__sub">完成率 ${donePct}%</div></div>
-          <div class="stageSummary__card"><div class="stageSummary__label">剩余</div><div class="stageSummary__value">${stageStats.remaining}</div><div class="stageSummary__sub">持续推进中</div></div>
-          <div class="stageSummary__card"><div class="stageSummary__label">今日重点</div><div class="stageSummary__value">${stageStats.today ? 1 : 0}</div><div class="stageSummary__sub">按阶段自动排班</div></div>
+          <div class="stageSummary__card"><div class="stageSummary__label">剩余</div><div class="stageSummary__value">${Math.max(0, total - stageStats.completed)}</div><div class="stageSummary__sub">持续推进中</div></div>
+          <div class="stageSummary__card"><div class="stageSummary__label">今日重点</div><div class="stageSummary__value">${Math.min(4, Math.max(1, Math.ceil(total / 10)))}</div><div class="stageSummary__sub">按阶段自动排班</div></div>
         </div>
         <div class="stageGoal__strip"><div class="stageGoal__stripFill" style="width:${donePct}%"></div></div>
         <div class="stageGoal__hint">阶段进度：${donePct}%｜当前总览覆盖 SQL40 - SQL148 的全部题目，按难度分层管理。</div>
@@ -1720,7 +1738,7 @@ function renderAll() {
 }
 
 function boot() {
-  const currentBuild = "20260511-3";
+  const currentBuild = "20260511-4";
   const existing = getAssetVersion();
   if (!existing || existing.v !== currentBuild) setAssetVersion(currentBuild);
   setText("#buildInfo", `build ${new Date().toISOString().slice(0, 10)} · ${currentBuild}`);
