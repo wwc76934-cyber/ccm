@@ -78,19 +78,26 @@ function getProgress() {
 }
 
 function defaultWeekly() {
+  const items = [
+    { id: "w1", title: "SQL40 每个月 Top3 的周杰伦歌曲", difficulty: "较难", url: "https://www.nowcoder.com/practice/4ab6d198ea8447fe9b6a1cad1f671503?tpId=375&tqId=10737572", done: false, stage: "今日", note: "优先练窗口函数与分组统计" },
+    { id: "w2", title: "SQL41 最长连续登录天数", difficulty: "困难", url: "https://www.nowcoder.com/practice/cb8bc687046e4d32ad38de62c48ad79b?tpId=375&tqId=10737573", done: false, stage: "待完成", note: "连续性问题，适合周中攻克" },
+    { id: "w3", title: "SQL42 分析客户逾期情况", difficulty: "中等", url: "https://www.nowcoder.com/practice/22633632da344e2492973ecf555e10c9?tpId=375&tqId=10497698", done: false, stage: "待完成", note: "重点练条件聚合与分组" },
+    { id: "w4", title: "SQL43 获取指定客户每月的消费额", difficulty: "中等", url: "https://www.nowcoder.com/practice/ed04f148b63e469e8f62e051d06a46f5?tpId=375&tqId=10858424", done: false, stage: "待完成", note: "月度统计与分组表达" },
+    { id: "w5", title: "SQL44 查询连续入住多晚的客户信息", difficulty: "中等", url: "https://www.nowcoder.com/practice/5b4018c47dfd401d87a5afb5ebf35dfd?tpId=375&tqId=10858425", done: false, stage: "待完成", note: "连续区间识别" },
+    { id: "w6", title: "SQL45 统计所有课程参加培训人次", difficulty: "中等", url: "https://www.nowcoder.com/practice/98aad5807cf34a3b960cc8a70ce03f53?tpId=375&tqId=10858426", done: false, stage: "待完成", note: "聚合统计热身" },
+    { id: "w7", title: "SQL46 查询培训指定课程的员工信息", difficulty: "简单", url: "https://www.nowcoder.com/practice/a0ef4574056e4a219ee7d651ba82efef?tpId=375&tqId=10858427", done: false, stage: "待完成", note: "用于热身和收尾" },
+    { id: "w8", title: "SQL47 推荐内容准确的用户平均评分", difficulty: "中等", url: "https://www.nowcoder.com/practice/2dcac73b647247f0aef0b261ed76b47e?tpId=375&tqId=10858428", done: false, stage: "待完成", note: "评分口径与过滤" },
+    { id: "w9", title: "SQL48 每个商品的销售总额", difficulty: "中等", url: "https://www.nowcoder.com/practice/6d796e885ee44a9cb599f47b16a02ea4?tpId=375&tqId=10824294", done: false, stage: "待完成", note: "配合 GROUP BY 与排序" },
+    { id: "w10", title: "SQL49 统计各岗位员工平均工作时长", difficulty: "简单", url: "https://www.nowcoder.com/practice/b7220791a95a4cd092801069aefa1cae?tpId=375&tqId=2452517", done: false, stage: "待完成", note: "适合快速完成" },
+    { id: "w11", title: "SQL50 查询连续登陆的用户", difficulty: "较难", url: "https://www.nowcoder.com/practice/9944210610ec417e94140ac09512a3f5?tpId=375&tqId=2371138", done: false, stage: "待完成", note: "连续登录与窗口技巧" },
+    { id: "w12", title: "SQL74 下单最多的商品", difficulty: "简单", url: "https://www.nowcoder.com/practice/d7c93e3a3d5b4087896539121d32d367?tpId=375&tqId=11136042", done: false, stage: "待完成", note: "做成每日小题" },
+  ];
   return {
-    total: 12,
+    total: items.length,
     title: "牛客网 SQL 刷题周计划",
     platform: "nowcoder",
     topic: "SQL篇 / 大厂笔试真题",
-    items: [
-      { id: "w1", title: "SQL40 每个月 Top3 的周杰伦歌曲", difficulty: "较难", url: "https://www.nowcoder.com/practice/4ab6d198ea8447fe9b6a1cad1f671503?tpId=375&tqId=10737572", done: false, stage: "今日", note: "优先练窗口函数与分组统计" },
-      { id: "w2", title: "SQL41 最长连续登录天数", difficulty: "困难", url: "https://www.nowcoder.com/practice/cb8bc687046e4d32ad38de62c48ad79b?tpId=375&tqId=10737573", done: false, stage: "待完成", note: "连续性问题，适合周中攻克" },
-      { id: "w3", title: "SQL42 分析客户逾期情况", difficulty: "中等", url: "https://www.nowcoder.com/practice/22633632da344e2492973ecf555e10c9?tpId=375&tqId=10497698", done: false, stage: "待完成", note: "重点练条件聚合与分组" },
-      { id: "w4", title: "SQL46 查询培训指定课程的员工信息", difficulty: "简单", url: "https://www.nowcoder.com/practice/a0ef4574056e4a219ee7d651ba82efef?tpId=375&tqId=10858427", done: false, stage: "待完成", note: "用于热身和收尾" },
-      { id: "w5", title: "SQL48 每个商品的销售总额", difficulty: "中等", url: "https://www.nowcoder.com/practice/6d796e885ee44a9cb599f47b16a02ea4?tpId=375&tqId=10824294", done: false, stage: "待完成", note: "配合 GROUP BY 与排序" },
-      { id: "w6", title: "SQL74 下单最多的商品", difficulty: "简单", url: "https://www.nowcoder.com/practice/d7c93e3a3d5b4087896539121d32d367?tpId=375&tqId=11136042", done: false, stage: "待完成", note: "做成每日小题" },
-    ],
+    items,
     updatedAt: nowIso(),
   };
 }
@@ -404,6 +411,7 @@ function renderHomeSnippets() {
           <div class="weeklyBoard__summaryCard">
             <div class="weeklyBoard__splitTitle">本周摘要</div>
             <div class="weeklyBoard__summaryText" id="weeklySummaryText">简单 0 · 中等 0 · 难题 0</div>
+            <div class="weeklyBoard__compactTags" id="weeklyDifficultyTags"></div>
           </div>
           <div class="weeklyBoard__summaryCard">
             <div class="weeklyBoard__splitTitle">今日重点</div>
@@ -438,49 +446,62 @@ function renderHomeSnippets() {
   setText("#diffMediumNum", `${weeklyStats.medium}`);
   setText("#diffHardNum", `${weeklyStats.hard}`);
   if (weeklyBoardHint) weeklyBoardHint.textContent = `${weeklyStats.total} 题 · ${weeklyStats.completed} 已完成`;
+  const difficultyTags = document.querySelector("#weeklyDifficultyTags");
+  if (difficultyTags) {
+    difficultyTags.innerHTML = `
+      <span class="compactTag">简单 ${weeklyStats.simple}</span>
+      <span class="compactTag">中等 ${weeklyStats.medium}</span>
+      <span class="compactTag">较难/困难 ${weeklyStats.hard}</span>
+    `;
+  }
 
   if (weeklyList) {
     const statusText = weeklyStats.rate >= 80 ? "节奏很稳" : weeklyStats.rate >= 50 ? "稳步推进" : "开始推进";
+    const todayCount = Math.max(1, Math.ceil(weeklyStats.total / 4));
+    const items = weekly.items.length ? weekly.items : defaultWeekly().items;
     const timeline = document.querySelector("#weeklyTrack");
     if (timeline) {
-      timeline.innerHTML = weekly.items.length
-        ? `
-          <div class="weeklyTimeline">
-            <div class="weeklyTimeline__rail"></div>
-            ${weekly.items.map((it, idx) => {
-              const state = it.done ? "done" : idx === 0 ? "today" : "todo";
-              return `
-                <button class="weeklyTimeline__step state-${state}" data-weekly-toggle="${escapeHtml(it.id)}" type="button">
-                  <div class="weeklyTimeline__node">
-                    <span class="weeklyTimeline__day">${String(idx + 1).padStart(2, "0")}</span>
-                  </div>
-                  <div class="weeklyTimeline__content">
-                    <div class="weeklyTimeline__title">${escapeHtml(it.title)}</div>
-                    <div class="weeklyTimeline__meta">${escapeHtml(it.difficulty)} · ${escapeHtml(state === "done" ? "已完成" : state === "today" ? "今日重点" : statusText)}</div>
-                  </div>
-                </button>
-              `;
-            }).join("")}
-          </div>
-        `
-        : `<div class="muted" style="font-size:13px">还没有本周目标，点击“编辑周计划”添加。</div>`;
+      timeline.innerHTML = `
+        <div class="weeklyTimeline">
+          <div class="weeklyTimeline__rail"></div>
+          ${items.map((it, idx) => {
+            const state = it.done ? "done" : idx < todayCount ? "today" : "todo";
+            return `
+              <button class="weeklyTimeline__step state-${state}" data-weekly-toggle="${escapeHtml(it.id)}" type="button">
+                <div class="weeklyTimeline__node">
+                  <span class="weeklyTimeline__day">${String(idx + 1).padStart(2, "0")}</span>
+                </div>
+                <div class="weeklyTimeline__content">
+                  <div class="weeklyTimeline__title">${escapeHtml(it.title)}</div>
+                  <div class="weeklyTimeline__meta"><span class="difficultyTag difficultyTag--${difficultyLabel(it.difficulty)}">${escapeHtml(difficultyLabel(it.difficulty))}</span> ${escapeHtml(state === "done" ? "已完成" : state === "today" ? "今日重点" : statusText)}</div>
+                </div>
+              </button>
+            `;
+          }).join("")}
+        </div>
+      `;
     }
-    weeklyList.innerHTML = weekly.items.length
-      ? weekly.items.map((it, idx) => {
-          const state = it.done ? "done" : idx === 0 ? "today" : "todo";
+    weeklyList.innerHTML = `
+      <div class="weeklyCompactGrid">
+        ${items.map((it, idx) => {
+          const state = it.done ? "done" : idx < todayCount ? "today" : "todo";
           return `
-            <button class="weeklyGoal state-${state}" data-weekly-toggle="${escapeHtml(it.id)}" type="button">
-              <div class="weeklyGoal__index">${String(idx + 1).padStart(2, "0")}</div>
-              <div class="weeklyGoal__main">
-                <div class="weeklyGoal__title">${escapeHtml(it.title)}</div>
-                <div class="weeklyGoal__meta">${escapeHtml(difficultyLabel(it.difficulty))} · ${escapeHtml(state === "done" ? "已完成" : state === "today" ? "今日重点" : statusText)}</div>
-                ${it.note ? `<div class="weeklyGoal__note">${escapeHtml(it.note)}</div>` : ""}
+            <button class="weeklyCompactCard state-${state}" data-weekly-toggle="${escapeHtml(it.id)}" type="button">
+              <div class="weeklyCompactCard__top">
+                <span class="weeklyCompactCard__index">${String(idx + 1).padStart(2, "0")}</span>
+                <span class="difficultyTag difficultyTag--${difficultyLabel(it.difficulty)}">${escapeHtml(difficultyLabel(it.difficulty))}</span>
               </div>
-              ${it.url ? `<a class="weeklyGoal__link" href="${escapeHtml(it.url)}" target="_blank" rel="noreferrer">原题</a>` : ""}
+              <div class="weeklyCompactCard__title">${escapeHtml(it.title)}</div>
+              <div class="weeklyCompactCard__meta">${escapeHtml(it.note || "")}</div>
+              <div class="weeklyCompactCard__foot">
+                <span>${escapeHtml(state === "done" ? "已完成" : state === "today" ? "今日重点" : "待完成")}</span>
+                ${it.url ? `<a href="${escapeHtml(it.url)}" target="_blank" rel="noreferrer" onclick="event.stopPropagation()">原题</a>` : ""}
+              </div>
             </button>
           `;
-        }).join("")
-      : `<div class="muted" style="font-size:13px">还没有本周目标，点击“编辑周计划”添加。</div>`;
+        }).join("")}
+      </div>
+    `;
     const bar = document.querySelector("#kpiBar");
     if (bar) bar.style.width = `${weeklyStats.rate}%`;
     const ring = document.querySelector(".weeklyHero__meterRing");
@@ -493,7 +514,7 @@ function renderHomeSnippets() {
     if (status) status.textContent = statusText;
     const today = document.querySelector("#weeklyToday");
     if (today) {
-      const current = weeklyStats.today;
+      const current = weeklyStats.today || items[0];
       today.innerHTML = current ? `
         <div class="weeklyTodayCard">
           <div class="weeklyTodayCard__tag">今日重点</div>
