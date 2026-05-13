@@ -8,6 +8,8 @@ const STORAGE_KEYS = {
   weeklyPlan: "learnsite.weeklyPlan.v1",
   answers: "learnsite.answers.v1",
   notes: "learnsite.notes.v1",
+  notesBackup: "learnsite.notes.backup.v1",
+  notesHistory: "learnsite.notes.history.v1",
   importedDocs: "learnsite.importedDocs.v1",
   llm: "learnsite.llm.v1",
 };
@@ -729,30 +731,43 @@ function defaultNotes() {
   ];
 }
 
+function snapshotNotes(notes) {
+  const history = readJson(STORAGE_KEYS.notesHistory, []);
+  const nextHistory = [...history.slice(-19), { at: nowIso(), notes }];
+  writeJson(STORAGE_KEYS.notesBackup, notes);
+  writeJson(STORAGE_KEYS.notesHistory, nextHistory);
+}
+
 function getNotes() {
   const notes = readJson(STORAGE_KEYS.notes, null);
-  const backup = readJson("learnsite.notes.backup.v1", null);
+  const backup = readJson(STORAGE_KEYS.notesBackup, null);
+  const history = readJson(STORAGE_KEYS.notesHistory, []);
   const imported = getLocalKnowledgeEntries();
   if (Array.isArray(notes) && notes.length) return notes;
   if (Array.isArray(backup) && backup.length) {
     writeJson(STORAGE_KEYS.notes, backup);
     return backup;
   }
+  const latestHistory = Array.isArray(history) && history.length ? history[history.length - 1]?.notes : null;
+  if (Array.isArray(latestHistory) && latestHistory.length) {
+    writeJson(STORAGE_KEYS.notes, latestHistory);
+    return latestHistory;
+  }
   if (imported.length) {
     const restored = imported.map((n, idx) => mapEntryToNote(normalizeImportedEntry(n), idx));
     writeJson(STORAGE_KEYS.notes, restored);
-    writeJson("learnsite.notes.backup.v1", restored);
+    snapshotNotes(restored);
     return restored;
   }
   const d = defaultNotes();
   writeJson(STORAGE_KEYS.notes, d);
-  writeJson("learnsite.notes.backup.v1", d);
+  snapshotNotes(d);
   return d;
 }
 
 function saveNotes(notes) {
   writeJson(STORAGE_KEYS.notes, notes);
-  writeJson("learnsite.notes.backup.v1", notes);
+  snapshotNotes(notes);
 }
 
 function normalizeImportedEntry(entry) {
@@ -1738,7 +1753,7 @@ function renderAll() {
 }
 
 function boot() {
-  const currentBuild = "20260511-4";
+  const currentBuild = "20260511-5";
   const existing = getAssetVersion();
   if (!existing || existing.v !== currentBuild) setAssetVersion(currentBuild);
   setText("#buildInfo", `build ${new Date().toISOString().slice(0, 10)} · ${currentBuild}`);
