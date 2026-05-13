@@ -675,25 +675,23 @@ function defaultNotes() {
 
 function getNotes() {
   const notes = readJson(STORAGE_KEYS.notes, null);
-  if (!notes || !Array.isArray(notes) || notes.length === 0) {
-    const backup = readJson("learnsite.notes.backup.v1", null);
-    if (backup && Array.isArray(backup) && backup.length) {
-      writeJson(STORAGE_KEYS.notes, backup);
-      return backup;
-    }
-    const imported = getLocalKnowledgeEntries();
-    if (imported.length) {
-      const restored = imported.map((n, idx) => mapEntryToNote(normalizeImportedEntry(n), idx));
-      writeJson(STORAGE_KEYS.notes, restored);
-      writeJson("learnsite.notes.backup.v1", restored);
-      return restored;
-    }
-    const d = defaultNotes();
-    writeJson(STORAGE_KEYS.notes, d);
-    writeJson("learnsite.notes.backup.v1", d);
-    return d;
+  const backup = readJson("learnsite.notes.backup.v1", null);
+  const imported = getLocalKnowledgeEntries();
+  if (Array.isArray(notes) && notes.length) return notes;
+  if (Array.isArray(backup) && backup.length) {
+    writeJson(STORAGE_KEYS.notes, backup);
+    return backup;
   }
-  return notes;
+  if (imported.length) {
+    const restored = imported.map((n, idx) => mapEntryToNote(normalizeImportedEntry(n), idx));
+    writeJson(STORAGE_KEYS.notes, restored);
+    writeJson("learnsite.notes.backup.v1", restored);
+    return restored;
+  }
+  const d = defaultNotes();
+  writeJson(STORAGE_KEYS.notes, d);
+  writeJson("learnsite.notes.backup.v1", d);
+  return d;
 }
 
 function saveNotes(notes) {
