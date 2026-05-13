@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>我的学习站｜信息技术 × 金融</title>
     <meta name="description" content="研究生阶段个人学习网站：SQL、AI/大模型、金融就业知识与练习。" />
-    <link rel="stylesheet" href="./styles.css?v=20260511-1" />
+    <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
     <div class="bg"></div>
@@ -80,8 +80,7 @@
               </div>
               <div class="goalCard__actions">
                 <div class="goalCard__meta" id="weeklyMeta">本周主线推进</div>
-                <button id="btnImportWeekly" class="btn btn--ghost btn--sm" type="button">智能导入题单</button>
-                <button id="btnEditWeekly" class="btn btn--primary btn--sm" type="button">编辑周计划</button>
+                <button id="btnEditWeekly" class="btn btn--primary btn--sm" type="button">编辑周目标</button>
               </div>
             </div>
             <div class="weeklyHero">
@@ -96,47 +95,28 @@
               </div>
               <div class="weeklyHero__meter">
                 <div class="weeklyHero__meterTop">
-                  <span>周目标完成度</span>
+                  <span>总进度</span>
                   <strong id="kpiRate">0%</strong>
                 </div>
                 <div class="weeklyHero__meterVisual">
-                  <div class="weeklyHero__meterRing"><div class="weeklyHero__meterCenter">本周</div></div>
+                  <div class="weeklyHero__meterRing"><div class="weeklyHero__meterCenter">周进度</div></div>
                   <div class="weeklyHero__meterBody">
                     <div class="progressbar progressbar--weekly" aria-label="weekly progress">
                       <div class="progressbar__fill weeklyBar" id="kpiBar" style="width: 0%"></div>
                     </div>
-                    <div class="weeklyHero__legend">
-                      <span class="state-done">已完成</span>
-                      <span class="state-today">今日</span>
-                      <span class="state-todo">待完成</span>
-                    </div>
                     <div class="weeklyHero__stats">
                       <div class="weeklyStat"><span>已完成</span><strong id="kpiCompleted">0</strong></div>
                       <div class="weeklyStat"><span>总任务</span><strong id="kpiTotal">0</strong></div>
-                      <div class="weeklyStat"><span>剩余</span><strong id="kpiRemaining">0</strong></div>
-                    </div>
-                    <div class="weeklyHero__statusbar">
-                      <div class="weeklyHero__statusdot"></div>
-                      <div id="weeklyStatus">开始推进</div>
+                      <div class="weeklyStat"><span>状态</span><strong id="weeklyStatus">开始推进</strong></div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
             <div class="weeklyTrackWrap">
-              <div class="weeklyBlockTitle">
-                <span>本周推进时间轴</span>
-                <small>点击卡片即可切换完成状态</small>
-              </div>
               <div class="weeklyTrack" id="weeklyTrack"></div>
             </div>
-            <div class="weeklyTaskPanel">
-              <div class="weeklyBlockTitle">
-                <span>任务清单</span>
-                <small>今日重点会自动高亮</small>
-              </div>
-              <div id="weeklyList" class="weekly__list"></div>
-            </div>
+            <div id="weeklyList" class="weekly__list"></div>
           </section>
         </div>
 
@@ -173,7 +153,7 @@
       </div>
     </footer>
 
-    <script type="module" src="./app.js?v=20260511-1"></script>
+    <script type="module" src="./app.js"></script>
 
     <dialog id="dailyDialog" class="modal">
       <form method="dialog" class="modal__card">

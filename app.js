@@ -141,6 +141,30 @@ function parseWeeklyText(text) {
   return { items, updatedAt: nowIso() };
 }
 
+function parseNowcoderPlanText(text) {
+  const lines = String(text || "").split(/\r?\n/).map((s) => s.trim()).filter(Boolean);
+  const items = [];
+  for (const line of lines) {
+    if (/^#|^牛客|^SQL篇|^格式/.test(line)) continue;
+    const m = line.match(/^(SQL\d+)?\s*[-：:]?\s*(.+?)\s*[|]\s*(简单|中等|较难|困难)?\s*[|]\s*(https?:\/\/\S+)?\s*[|]?\s*(.*)$/i);
+    if (m) {
+      items.push({
+        id: (m[1] || `w${items.length + 1}`).toLowerCase(),
+        title: m[2].trim(),
+        difficulty: m[3] || "中等",
+        url: m[4] || "",
+        note: m[5] || "",
+        done: false,
+        stage: items.length === 0 ? "今日" : "待完成",
+      });
+    } else {
+      const title = line.replace(/^\[(x| )\]\s*/i, "").trim();
+      if (title) items.push({ id: `w${items.length + 1}`, title, difficulty: "中等", url: "", note: "", done: false, stage: items.length === 0 ? "今日" : "待完成" });
+    }
+  }
+  return items.length ? { items, total: items.length, updatedAt: nowIso() } : defaultWeekly();
+}
+
 function weeklyToText(w) {
   const items = w?.items || [];
   return items.map((it) => `[${it.done ? "x" : " "}] ${it.title || it.text}`).join("\n");
@@ -1522,14 +1546,9 @@ async function ensureAuth() {
   if (btnDailySave) btnDailySave.addEventListener("click", () => { if (!dailyTextarea) return; const items = String(dailyTextarea.value || "").split(/\r?\n/).map((line, idx) => { const [text, note = ""] = line.split("|").map((s) => s.trim()); return text ? { id: `d${idx + 1}`, text, note, done: false } : null; }).filter(Boolean); setDailyTasks({ weekday: ["周日", "周一", "周二", "周三", "周四", "周五", "周六"][new Date().getDay()], items: items.length ? items : defaultDaily().items }); renderAll(); toast("已保存", "每日任务已更新"); });
   if (btnWeeklyReset) btnWeeklyReset.addEventListener("click", () => { const d = defaultWeekly(); setWeekly(d); if (weeklyTextarea) weeklyTextarea.value = weeklyToText(d); renderAll(); toast("已恢复默认", "你可以继续编辑"); });
   if (btnWeeklySave) btnWeeklySave.addEventListener("click", () => { if (!weeklyTextarea) return; const text = String(weeklyTextarea.value || "");
-    if (text.includes("# 格式：题目标题 | 难度 | 链接 | 备注")) {
-      const items = text.split(/\r?\n/).map((line, idx) => line.trim()).filter((line) => line && !line.startsWith("#")).map((line, idx) => {
-        const parts = line.split("|").map((s) => s.trim());
-        const [title = "", difficulty = "中等", url = "", note = ""] = parts;
-        return title ? { id: `w${idx + 1}`, title, difficulty, url, note, done: false, stage: idx === 0 ? "今日" : "待完成" } : null;
-      }).filter(Boolean);
-      const next = { ...getWeekly(), items: items.length ? items : defaultWeekly().items, title: "牛客网 SQL 刷题周计划", platform: "nowcoder", topic: "SQL篇 / 大厂笔试真题" };
-      setWeekly(next);
+    if (text.includes("# 格式：题目标题 | 难度 | 链接 | 备注") || text.includes("SQL")) {
+      const next = parseNowcoderPlanText(text);
+      setWeekly({ ...getWeekly(), ...next, title: "牛客网 SQL 刷题周计划", platform: "nowcoder", topic: "SQL篇 / 大厂笔试真题" });
     } else {
       const next = parseWeeklyText(text);
       setWeekly(next);
