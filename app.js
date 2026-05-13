@@ -117,6 +117,18 @@ function weeklyStorageKey() {
   return STORAGE_KEYS.weeklyPlan || "learnsite.weeklyPlan.v1";
 }
 
+function assetVersionKey() {
+  return "learnsite.assetVersion.v1";
+}
+
+function getAssetVersion() {
+  return readJson(assetVersionKey(), null);
+}
+
+function setAssetVersion(v) {
+  writeJson(assetVersionKey(), { v, at: nowIso() });
+}
+
 function getWeekly() {
   const w = readJson(weeklyStorageKey(), null) || readJson(STORAGE_KEYS.weekly, null);
   return autoScheduleWeeklyPlan(normalizeWeeklyPlan(w));
@@ -1607,7 +1619,10 @@ function renderAll() {
 }
 
 function boot() {
-  setText("#buildInfo", `build ${new Date().toISOString().slice(0, 10)}`);
+  const currentBuild = "20260511-2";
+  const existing = getAssetVersion();
+  if (!existing || existing.v !== currentBuild) setAssetVersion(currentBuild);
+  setText("#buildInfo", `build ${new Date().toISOString().slice(0, 10)} · ${currentBuild}`);
   ensureAuth().then(() => {
     renderAll();
     bindKnowledgeBaseEvents();
