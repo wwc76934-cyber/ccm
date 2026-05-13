@@ -156,7 +156,19 @@ body{
 .weeklyCompactCard__foot{display:flex; justify-content:space-between; gap:10px; align-items:center; margin-top:10px; font-size:12px; color:var(--muted2)}
 .weeklyCompactCard__foot a{color:var(--primary); text-decoration:none; font-weight:700}
 .weeklyCompactCard__foot a:hover{text-decoration:underline}
-.weeklyProgressRow{display:grid; grid-template-columns:70px 1fr auto; gap:10px; align-items:center; margin-top:10px}
+.weeklyBoard__summary{display:grid; grid-template-columns:1.2fr .8fr; gap:12px; margin-top:12px}
+.weeklyBoard__summaryCard{padding:14px; border-radius:18px; background:rgba(255,255,255,.74); border:1px solid rgba(20,30,60,.08)}
+.weeklyBoard__splitTitle{font-weight:900; margin-bottom:8px}
+.weeklyBoard__summaryText{font-size:13px; color:var(--muted)}
+.weeklyBoard__compactTags{display:flex; gap:8px; flex-wrap:wrap; margin-top:10px}
+.compactTag{padding:5px 9px; border-radius:999px; background:rgba(255,255,255,.86); border:1px solid rgba(20,30,60,.08); font-size:11px; color:var(--muted2)}
+.weeklyBoard__phaseProgress{margin-top:12px}
+.weeklyPhaseBar{height:14px; border-radius:999px; background:rgba(20,30,60,.06); overflow:hidden; box-shadow:inset 0 0 0 1px rgba(255,255,255,.4)}
+.weeklyPhaseBar__fill{height:100%; border-radius:999px; background:linear-gradient(90deg, rgba(91,108,255,.95), rgba(42,169,255,.88))}
+.weeklyPhaseBar__meta{margin-top:8px; font-size:12px; color:var(--muted2)}
+.weeklyBoard__phaseHint{margin-top:8px; font-size:12px; color:var(--muted2); line-height:1.5}
+.weeklyProgressRows{margin-top:12px; display:flex; flex-direction:column; gap:10px}
+.weeklyProgressRow{display:grid; grid-template-columns:70px 1fr auto; gap:10px; align-items:center}
 .weeklyProgressRow span{font-size:12px; color:var(--muted2)}
 .weeklyProgressRow strong{font-size:12px; color:var(--muted2); white-space:nowrap}
 .weeklyProgressBar{height:10px; border-radius:999px; background:rgba(20,30,60,.06); overflow:hidden; box-shadow:inset 0 0 0 1px rgba(255,255,255,.4)}
