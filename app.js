@@ -119,11 +119,11 @@ function weeklyStorageKey() {
 
 function getWeekly() {
   const w = readJson(weeklyStorageKey(), null) || readJson(STORAGE_KEYS.weekly, null);
-  return normalizeWeeklyPlan(w);
+  return autoScheduleWeeklyPlan(normalizeWeeklyPlan(w));
 }
 
 function setWeekly(next) {
-  writeJson(weeklyStorageKey(), { ...normalizeWeeklyPlan(next), updatedAt: nowIso() });
+  writeJson(weeklyStorageKey(), { ...autoScheduleWeeklyPlan(normalizeWeeklyPlan(next)), updatedAt: nowIso() });
 }
 
 function parseWeeklyText(text) {
@@ -142,27 +142,40 @@ function parseWeeklyText(text) {
 }
 
 function parseNowcoderPlanText(text) {
-  const lines = String(text || "").split(/\r?\n/).map((s) => s.trim()).filter(Boolean);
+  const rawLines = String(text || "").split(/\r?\n/).map((s) => s.trim()).filter(Boolean);
   const items = [];
-  for (const line of lines) {
-    if (/^#|^牛客|^SQL篇|^格式/.test(line)) continue;
-    const m = line.match(/^(SQL\d+)?\s*[-：:]?\s*(.+?)\s*[|]\s*(简单|中等|较难|困难)?\s*[|]\s*(https?:\/\/\S+)?\s*[|]?\s*(.*)$/i);
-    if (m) {
+  for (const line of rawLines) {
+    if (/^#|^牛客|^SQL篇|^格式|^page=|^tab=|^topicId=|^\d+$/.test(line)) continue;
+    const linkMatch = line.match(/https?:\/\/\S+/);
+    const url = linkMatch ? linkMatch[0] : "";
+    const cleaned = line.replace(/https?:\/\/\S+/g, "").replace(/\s+/g, " ").trim();
+    const tokenMatch = cleaned.match(/(SQL\d+)/i);
+    const titleMatch = cleaned.match(/(?:SQL\d+\s*[-：:]\s*)?(.+?)(?:\s+(简单|中等|较难|困难)\b|\s*[|]\s*(简单|中等|较难|困难)\b|$)/i);
+    const difficultyMatch = cleaned.match(/(简单|中等|较难|困难)/i);
+    const title = titleMatch?.[1]?.trim() || cleaned;
+    const difficulty = difficultyMatch?.[1] || "中等";
+    if (title && /[\u4e00-\u9fa5A-Za-z0-9]/.test(title)) {
       items.push({
-        id: (m[1] || `w${items.length + 1}`).toLowerCase(),
-        title: m[2].trim(),
-        difficulty: m[3] || "中等",
-        url: m[4] || "",
-        note: m[5] || "",
+        id: (tokenMatch?.[1] || `w${items.length + 1}`).toLowerCase(),
+        title: title.replace(/^[\d\s：:-]+/, "").trim(),
+        difficulty,
+        url,
+        note: cleaned.replace(title, "").replace(difficulty, "").replace(/^[\s|：:-]+|[\s|：:-]+$/g, "").trim(),
         done: false,
         stage: items.length === 0 ? "今日" : "待完成",
       });
-    } else {
-      const title = line.replace(/^\[(x| )\]\s*/i, "").trim();
-      if (title) items.push({ id: `w${items.length + 1}`, title, difficulty: "中等", url: "", note: "", done: false, stage: items.length === 0 ? "今日" : "待完成" });
     }
   }
   return items.length ? { items, total: items.length, updatedAt: nowIso() } : defaultWeekly();
+}
+
+function autoScheduleWeeklyPlan(plan) {
+  const items = (plan.items || []).map((it, idx) => ({
+    ...it,
+    stage: it.done ? "已完成" : idx === 0 ? "今日" : idx < 3 ? "今日" : "待完成",
+  }));
+  const today = items.find((it) => it.stage === "今日") || items[0] || null;
+  return { ...plan, items, todayId: today?.id || null };
 }
 
 function weeklyToText(w) {
@@ -359,6 +372,7 @@ function renderHomeSnippets() {
             <div class="weeklyBoard__subtitle">记录题目总数、难度分布和每天推进节奏</div>
           </div>
           <div class="weeklyBoard__actions">
+            <button class="btn btn--ghost btn--sm" type="button" data-import-weekly>智能导入题单</button>
             <button id="btnWeeklyEditFromBoard" class="btn btn--primary btn--sm" type="button">编辑周计划</button>
           </div>
         </div>
@@ -374,17 +388,13 @@ function renderHomeSnippets() {
           </div>
           <div class="weeklyBoard__status" id="weeklyStatus">开始推进</div>
         </div>
-        <div class="weeklyBoard__split">
-          <div class="weeklyBoard__splitCard">
-            <div class="weeklyBoard__splitTitle">难度分布</div>
-            <div class="difficultyBars">
-              <div class="difficultyRow"><span>简单</span><div class="difficultyBar"><div id="diffSimple" class="difficultyBar__fill difficultyBar__fill--simple" style="width:0%"></div></div><strong id="diffSimpleNum">0</strong></div>
-              <div class="difficultyRow"><span>中等</span><div class="difficultyBar"><div id="diffMedium" class="difficultyBar__fill difficultyBar__fill--medium" style="width:0%"></div></div><strong id="diffMediumNum">0</strong></div>
-              <div class="difficultyRow"><span>较难</span><div class="difficultyBar"><div id="diffHard" class="difficultyBar__fill difficultyBar__fill--hard" style="width:0%"></div></div><strong id="diffHardNum">0</strong></div>
-            </div>
+        <div class="weeklyBoard__summary">
+          <div class="weeklyBoard__summaryCard">
+            <div class="weeklyBoard__splitTitle">本周摘要</div>
+            <div class="weeklyBoard__summaryText" id="weeklySummaryText">简单 0 · 中等 0 · 难题 0</div>
           </div>
-          <div class="weeklyBoard__splitCard">
-            <div class="weeklyBoard__splitTitle">今日推进</div>
+          <div class="weeklyBoard__summaryCard">
+            <div class="weeklyBoard__splitTitle">今日重点</div>
             <div class="weeklyBoard__today" id="weeklyToday"></div>
           </div>
         </div>
