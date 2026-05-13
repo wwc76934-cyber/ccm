@@ -79,6 +79,11 @@ function getProgress() {
   });
 }
 
+function runtimeStatus(text) {
+  const el = document.querySelector("#runtimeStatus");
+  if (el) el.textContent = text;
+}
+
 function defaultWeekly() {
   const items = [
     { id: "w1", title: "SQL40 每个月 Top3 的周杰伦歌曲", difficulty: "较难", url: "https://www.nowcoder.com/practice/4ab6d198ea8447fe9b6a1cad1f671503?tpId=375&tqId=10737572", done: false, stage: "今日", note: "优先练窗口函数与分组统计" },
@@ -1753,14 +1758,24 @@ function renderAll() {
 }
 
 function boot() {
-  const currentBuild = "20260511-5";
+  const currentBuild = "20260511-6";
   const existing = getAssetVersion();
   if (!existing || existing.v !== currentBuild) setAssetVersion(currentBuild);
   setText("#buildInfo", `build ${new Date().toISOString().slice(0, 10)} · ${currentBuild}`);
+  runtimeStatus(`资源版本 ${existing?.v || "none"} → ${currentBuild}`);
   ensureAuth().then(() => {
-    renderAll();
-    bindKnowledgeBaseEvents();
-    bindAssistantEvents();
+    try {
+      renderAll();
+      bindKnowledgeBaseEvents();
+      bindAssistantEvents();
+      runtimeStatus(`渲染完成 · ${currentBuild}`);
+    } catch (e) {
+      console.error(e);
+      runtimeStatus(`渲染失败：${e?.message || e}`);
+    }
+  }).catch((e) => {
+    console.error(e);
+    runtimeStatus(`启动失败：${e?.message || e}`);
   });
 }
 
