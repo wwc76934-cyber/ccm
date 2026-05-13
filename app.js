@@ -90,7 +90,30 @@ function defaultWeekly() {
     { id: "w9", title: "SQL48 每个商品的销售总额", difficulty: "中等", url: "https://www.nowcoder.com/practice/6d796e885ee44a9cb599f47b16a02ea4?tpId=375&tqId=10824294", done: false, stage: "待完成", note: "配合 GROUP BY 与排序" },
     { id: "w10", title: "SQL49 统计各岗位员工平均工作时长", difficulty: "简单", url: "https://www.nowcoder.com/practice/b7220791a95a4cd092801069aefa1cae?tpId=375&tqId=2452517", done: false, stage: "待完成", note: "适合快速完成" },
     { id: "w11", title: "SQL50 查询连续登陆的用户", difficulty: "较难", url: "https://www.nowcoder.com/practice/9944210610ec417e94140ac09512a3f5?tpId=375&tqId=2371138", done: false, stage: "待完成", note: "连续登录与窗口技巧" },
-    { id: "w12", title: "SQL74 下单最多的商品", difficulty: "简单", url: "https://www.nowcoder.com/practice/d7c93e3a3d5b4087896539121d32d367?tpId=375&tqId=11136042", done: false, stage: "待完成", note: "做成每日小题" },
+    { id: "w12", title: "SQL51 统计商家不同会员每日访问人次及访问人数", difficulty: "简单", url: "https://www.nowcoder.com/practice/0017dc22426b495889da3304dcf254d1?tpId=375&tqId=10222179", done: false, stage: "待完成", note: "日粒度统计" },
+    { id: "w13", title: "SQL52 统计各等级会员用户下订单总额", difficulty: "简单", url: "https://www.nowcoder.com/practice/48dd35a3dd8c4e1494db36b097a03300?tpId=375&tqId=10221977", done: false, stage: "待完成", note: "会员等级汇总" },
+    { id: "w14", title: "SQL53 查询下订单用户访问次数", difficulty: "中等", url: "https://www.nowcoder.com/practice/32bc1e0fce2343ad934b76a025e09fc5?tpId=375&tqId=10221975", done: false, stage: "待完成", note: "访问到下单路径" },
+    { id: "w15", title: "SQL54 统计用户从访问到下单的转化率", difficulty: "较难", url: "https://www.nowcoder.com/practice/eaff8684aed74e208300f2737edbb083?tpId=375&tqId=10220087", done: false, stage: "待完成", note: "漏斗转化逻辑" },
+    { id: "w16", title: "SQL55 统计员工薪资扣除比例", difficulty: "简单", url: "https://www.nowcoder.com/practice/08db6f0135664ca598b579f8d53dc486?tpId=375&tqId=2480313", done: false, stage: "待完成", note: "规则统计" },
+    { id: "w17", title: "SQL56 统计用户获得积分", difficulty: "简单", url: "https://www.nowcoder.com/practice/22ed0cd240824bb597b3130fef389cea?tpId=375&tqId=10819551", done: false, stage: "待完成", note: "积分累加" },
+    { id: "w18", title: "SQL57 更新用户积分信息", difficulty: "中等", url: "https://www.nowcoder.com/practice/ef1f2fda4338460b948810f3f7e7a68e?tpId=375&tqId=10223707", done: false, stage: "待完成", note: "更新类题型" },
+    { id: "w19", title: "SQL58 查询单日多次下订单的用户信息", difficulty: "简单", url: "https://www.nowcoder.com/practice/9958aed1e74a49b795dfe2cb9d54ee12?tpId=375&tqId=10221993", done: false, stage: "待完成", note: "单日聚合" },
+    { id: "w20", title: "SQL59 统计各个部门平均薪资", difficulty: "简单", url: "https://www.nowcoder.com/practice/4722fdf89a4c43eebb58d61a19ccab31?tpId=375&tqId=2473552", done: false, stage: "待完成", note: "部门维度" },
+    { id: "w21", title: "SQL60 统计加班员工占比", difficulty: "中等", url: "https://www.nowcoder.com/practice/6c0a521c36e14c7599eaef858f6f8233?tpId=375&tqId=2455222", done: false, stage: "待完成", note: "比例计算" },
+    { id: "w22", title: "SQL61 每天登陆最早的用户的内容喜好", difficulty: "中等", url: "https://www.nowcoder.com/practice/24bb13a28267486ba86c1d21459fa90a?tpId=375&tqId=2440462", done: false, stage: "待完成", note: "每天第一名" },
+    { id: "w23", title: "SQL62 支付间隔平均值", difficulty: "中等", url: "https://www.nowcoder.com/practice/847431ad931e45348eb1ab5657144c28?tpId=375&tqId=2358395", done: false, stage: "待完成", note: "时间间隔统计" },
+    { id: "w24", title: "SQL63 网易云音乐推荐", difficulty: "较难", url: "https://www.nowcoder.com/practice/048ed413ac0e4cf4a774b906fc87e0e7?tpId=375&tqId=1262829", done: false, stage: "待完成", note: "综合分析题" },
+    { id: "w25", title: "SQL64 商品交易", difficulty: "简单", url: "https://www.nowcoder.com/practice/f257dfc1b55e42e19eec004aa3cb4174?tpId=375&tqId=1262828", done: false, stage: "待完成", note: "基础交易聚合" },
+    { id: "w26", title: "SQL65 计算粉丝 CTR", difficulty: "中等", url: "https://www.nowcoder.com/practice/853a6567cf524f63bab0879b8d0bfe62?tpId=375&tqId=10858285", done: false, stage: "待完成", note: "CTR 计算" },
+    { id: "w27", title: "SQL66 查询成绩", difficulty: "简单", url: "https://www.nowcoder.com/practice/ef30689ae065434c89c129e9dfe1b4cd?tpId=375&tqId=10825311", done: false, stage: "待完成", note: "基础查询" },
+    { id: "w28", title: "SQL67 被重复观看次数最多的 3 个视频", difficulty: "中等", url: "https://www.nowcoder.com/practice/b75fa2412659422c96369976ee1f9504?tpId=375&tqId=10960094", done: false, stage: "待完成", note: "TopN 分析" },
+    { id: "w29", title: "SQL68 直播间晚上 11-12 点在线人数", difficulty: "中等", url: "https://www.nowcoder.com/practice/38f5febc9dac4e9e84ed5891a3e4ca05?tpId=375&tqId=10960121", done: false, stage: "待完成", note: "时间区间分析" },
+    { id: "w30", title: "SQL69 淘宝店铺的实际销售额与客单价", difficulty: "简单", url: "https://www.nowcoder.com/practice/ce116419a1f141568094b5eab70e5ce8?tpId=375&tqId=2349978", done: false, stage: "待完成", note: "销售与客单价" },
+    { id: "w31", title: "SQL70 完成员工考核试卷突出员工", difficulty: "较难", url: "https://www.nowcoder.com/practice/422dcd6ae72c49c9bbec1aff90d69806?tpId=375&tqId=2349979", done: false, stage: "待完成", note: "综合筛选" },
+    { id: "w32", title: "SQL71 查询产生理赔费用的快递信息", difficulty: "简单", url: "https://www.nowcoder.com/practice/d22eab8a0001443fba7c5757e7cbcaea?tpId=375&tqId=11136039", done: false, stage: "待完成", note: "业务筛选" },
+    { id: "w33", title: "SQL72 统计快递运输时长", difficulty: "中等", url: "https://www.nowcoder.com/practice/bb4196936f15424dbabe76a501186d91?tpId=375&tqId=11136040", done: false, stage: "待完成", note: "时长计算" },
+    { id: "w34", title: "SQL73 统计快递从创建订单到发出间隔时长", difficulty: "简单", url: "https://www.nowcoder.com/practice/be3e56c950724b27aa79b79309147443?tpId=375&tqId=11136041", done: false, stage: "待完成", note: "创建到发出" },
+    { id: "w35", title: "SQL74 下单最多的商品", difficulty: "简单", url: "https://www.nowcoder.com/practice/d7c93e3a3d5b4087896539121d32d367?tpId=375&tqId=11136042", done: false, stage: "待完成", note: "做成每日小题" },
   ];
   return {
     total: items.length,
@@ -211,7 +234,12 @@ function weeklyPlanStats(plan) {
   const hard = items.filter((it) => /(较难|困难)/.test(it.difficulty)).length;
   const today = items.find((it) => it.stage === "今日") || items[0] || null;
   const remaining = Math.max(0, total - completed);
-  return { total, completed, remaining, rate: total ? Math.round((completed / total) * 100) : 0, simple, medium, hard, today };
+  const doneByDifficulty = {
+    simple: items.filter((it) => /简单/.test(it.difficulty) && it.done).length,
+    medium: items.filter((it) => /中等/.test(it.difficulty) && it.done).length,
+    hard: items.filter((it) => /(较难|困难)/.test(it.difficulty) && it.done).length,
+  };
+  return { total, completed, remaining, rate: total ? Math.round((completed / total) * 100) : 0, simple, medium, hard, today, doneByDifficulty };
 }
 
 function difficultyLabel(d) {
@@ -387,8 +415,8 @@ function renderHomeSnippets() {
         <div class="weeklyBoard__header">
           <div>
             <div class="weeklyBoard__eyebrow">Weekly Progress</div>
-            <div class="weeklyBoard__title">牛客网 SQL 周计划</div>
-            <div class="weeklyBoard__subtitle">记录题目总数、难度分布和每天推进节奏</div>
+            <div class="weeklyBoard__title">牛客网 SQL 阶段计划</div>
+            <div class="weeklyBoard__subtitle">阶段题单总览 + 本周抽样执行 + 难度分布可视化</div>
           </div>
           <div class="weeklyBoard__actions">
             <button class="btn btn--ghost btn--sm" type="button" data-import-weekly>智能导入题单</button>
@@ -409,9 +437,10 @@ function renderHomeSnippets() {
         </div>
         <div class="weeklyBoard__summary">
           <div class="weeklyBoard__summaryCard">
-            <div class="weeklyBoard__splitTitle">本周摘要</div>
+            <div class="weeklyBoard__splitTitle">阶段总览</div>
             <div class="weeklyBoard__summaryText" id="weeklySummaryText">简单 0 · 中等 0 · 难题 0</div>
             <div class="weeklyBoard__compactTags" id="weeklyDifficultyTags"></div>
+            <div class="weeklyBoard__progressRows" id="weeklyDifficultyBreakdown"></div>
           </div>
           <div class="weeklyBoard__summaryCard">
             <div class="weeklyBoard__splitTitle">今日重点</div>
@@ -419,11 +448,11 @@ function renderHomeSnippets() {
           </div>
         </div>
         <div class="weeklyBoard__trackWrap">
-          <div class="weeklyBlockTitle"><span>时间轴</span><small>今日 / 已完成 / 待完成</small></div>
+          <div class="weeklyBlockTitle"><span>阶段进度</span><small>整体题单按难度分层呈现</small></div>
           <div class="weeklyTrack" id="weeklyTrack"></div>
         </div>
         <div class="weeklyBoard__listWrap">
-          <div class="weeklyBlockTitle"><span>题目清单</span><small>点击即可切换完成状态</small></div>
+          <div class="weeklyBlockTitle"><span>本周抽样任务</span><small>只显示本周要做的子集</small></div>
           <div id="weeklyList" class="weekly__list"></div>
         </div>
       </div>
@@ -452,6 +481,21 @@ function renderHomeSnippets() {
       <span class="compactTag">简单 ${weeklyStats.simple}</span>
       <span class="compactTag">中等 ${weeklyStats.medium}</span>
       <span class="compactTag">较难/困难 ${weeklyStats.hard}</span>
+    `;
+  }
+  const difficultyBreakdown = document.querySelector("#weeklyDifficultyBreakdown");
+  if (difficultyBreakdown) {
+    const total = weeklyStats.total || 1;
+    const simplePct = Math.round((weeklyStats.simple / total) * 100);
+    const mediumPct = Math.round((weeklyStats.medium / total) * 100);
+    const hardPct = Math.round((weeklyStats.hard / total) * 100);
+    const doneSimplePct = Math.round((weeklyStats.doneByDifficulty.simple / (weeklyStats.simple || 1)) * 100);
+    const doneMediumPct = Math.round((weeklyStats.doneByDifficulty.medium / (weeklyStats.medium || 1)) * 100);
+    const doneHardPct = Math.round((weeklyStats.doneByDifficulty.hard / (weeklyStats.hard || 1)) * 100);
+    difficultyBreakdown.innerHTML = `
+      <div class="weeklyProgressRow"><span>简单</span><div class="weeklyProgressBar"><div class="weeklyProgressBar__fill weeklyProgressBar__fill--simple" style="width:${simplePct}%"></div></div><strong>${weeklyStats.simple} 题 / ${doneSimplePct}% 完成</strong></div>
+      <div class="weeklyProgressRow"><span>中等</span><div class="weeklyProgressBar"><div class="weeklyProgressBar__fill weeklyProgressBar__fill--medium" style="width:${mediumPct}%"></div></div><strong>${weeklyStats.medium} 题 / ${doneMediumPct}% 完成</strong></div>
+      <div class="weeklyProgressRow"><span>较难/困难</span><div class="weeklyProgressBar"><div class="weeklyProgressBar__fill weeklyProgressBar__fill--hard" style="width:${hardPct}%"></div></div><strong>${weeklyStats.hard} 题 / ${doneHardPct}% 完成</strong></div>
     `;
   }
 
@@ -483,7 +527,7 @@ function renderHomeSnippets() {
     }
     weeklyList.innerHTML = `
       <div class="weeklyCompactGrid">
-        ${items.map((it, idx) => {
+        ${items.slice(0, 12).map((it, idx) => {
           const state = it.done ? "done" : idx < todayCount ? "today" : "todo";
           return `
             <button class="weeklyCompactCard state-${state}" data-weekly-toggle="${escapeHtml(it.id)}" type="button">

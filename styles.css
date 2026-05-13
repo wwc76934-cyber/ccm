@@ -156,6 +156,14 @@ body{
 .weeklyCompactCard__foot{display:flex; justify-content:space-between; gap:10px; align-items:center; margin-top:10px; font-size:12px; color:var(--muted2)}
 .weeklyCompactCard__foot a{color:var(--primary); text-decoration:none; font-weight:700}
 .weeklyCompactCard__foot a:hover{text-decoration:underline}
+.weeklyProgressRow{display:grid; grid-template-columns:70px 1fr auto; gap:10px; align-items:center; margin-top:10px}
+.weeklyProgressRow span{font-size:12px; color:var(--muted2)}
+.weeklyProgressRow strong{font-size:12px; color:var(--muted2); white-space:nowrap}
+.weeklyProgressBar{height:10px; border-radius:999px; background:rgba(20,30,60,.06); overflow:hidden; box-shadow:inset 0 0 0 1px rgba(255,255,255,.4)}
+.weeklyProgressBar__fill{height:100%; border-radius:999px}
+.weeklyProgressBar__fill--simple{background:linear-gradient(90deg, rgba(22,163,74,.85), rgba(34,197,94,.95))}
+.weeklyProgressBar__fill--medium{background:linear-gradient(90deg, rgba(42,169,255,.85), rgba(91,108,255,.95))}
+.weeklyProgressBar__fill--hard{background:linear-gradient(90deg, rgba(244,114,182,.82), rgba(239,68,68,.95))}
 .weeklyHero__legend .state-done{background:rgba(22,163,74,.12); color:rgba(22,163,74,.95)}
 .weeklyHero__legend span{padding:5px 9px; border-radius:999px; font-size:11px; border:1px solid rgba(20,30,60,.08); background:rgba(255,255,255,.76); color:var(--muted)}
 .weeklyHero__legend .state-done{background:rgba(22,163,74,.12); color:rgba(22,163,74,.95)}
