@@ -159,9 +159,33 @@ function setAssetVersion(v) {
   writeJson(assetVersionKey(), { v, at: nowIso() });
 }
 
+function buildNowcoderSqlStagePlan() {
+  const base = normalizeWeeklyPlan(readJson(weeklyStorageKey(), null) || readJson(STORAGE_KEYS.weekly, null));
+  const existing = new Map((base.items || []).map((it) => [String(it.title || "").match(/SQL(\d+)/)?.[1] || it.id, it]));
+  const items = [];
+  for (let n = 40; n <= 148; n++) {
+    const key = String(n);
+    const found = [...existing.values()].find((it) => String(it.title || "").includes(`SQL${n}`) || String(it.id || "").includes(`w${n - 39}`));
+    if (found) {
+      items.push({ ...found, stage: found.done ? "已完成" : n <= 44 ? "今日" : n <= 52 ? "待完成" : found.stage || "待完成" });
+      continue;
+    }
+    const difficulty = difficultyForSqlIndex(n);
+    items.push({
+      id: `sql-${n}`,
+      title: `SQL${n}`,
+      difficulty,
+      url: `https://www.nowcoder.com/practice/?tpId=375&tqId=${n}`,
+      done: false,
+      stage: n <= 44 ? "今日" : "待完成",
+      note: "牛客 SQL 阶段题",
+    });
+  }
+  return autoScheduleWeeklyPlan({ ...base, items, total: items.length, title: "牛客网 SQL 刷题周计划", platform: "nowcoder", topic: "SQL篇 / 大厂笔试真题" });
+}
+
 function getWeekly() {
-  const w = readJson(weeklyStorageKey(), null) || readJson(STORAGE_KEYS.weekly, null);
-  return autoScheduleWeeklyPlan(normalizeWeeklyPlan(w));
+  return buildNowcoderSqlStagePlan();
 }
 
 function setWeekly(next) {
@@ -571,18 +595,32 @@ function renderHomeSnippets() {
   }
 
   if (milestoneList) {
-    milestoneList.innerHTML = milestones.items.length
-      ? milestones.items.map((m) => `
-        <div class="milestone">
-          <div class="milestone__top">
-            <div class="milestone__title">${escapeHtml(m.title)}</div>
-            <div class="milestone__pct">${m.progress}%</div>
-          </div>
-          <div class="progressbar progressbar--thin"><div class="progressbar__fill" style="width:${m.progress}%"></div></div>
-          <div class="milestone__desc">${escapeHtml(m.desc)}</div>
+    const stageStats = weeklyStats;
+    const total = stageStats.total || 1;
+    const donePct = stageStats.rate;
+    const simpleTotal = stageStats.simple;
+    const mediumTotal = stageStats.medium;
+    const hardTotal = stageStats.hard;
+    const simpleDone = stageStats.doneByDifficulty.simple;
+    const mediumDone = stageStats.doneByDifficulty.medium;
+    const hardDone = stageStats.doneByDifficulty.hard;
+    milestoneList.innerHTML = `
+      <div class="stageGoal__meta">
+        <div class="stageSummary">
+          <div class="stageSummary__card"><div class="stageSummary__label">总题量</div><div class="stageSummary__value">${total}</div><div class="stageSummary__sub">SQL40 - SQL148</div></div>
+          <div class="stageSummary__card"><div class="stageSummary__label">已完成</div><div class="stageSummary__value">${stageStats.completed}</div><div class="stageSummary__sub">完成率 ${donePct}%</div></div>
+          <div class="stageSummary__card"><div class="stageSummary__label">剩余</div><div class="stageSummary__value">${stageStats.remaining}</div><div class="stageSummary__sub">持续推进中</div></div>
+          <div class="stageSummary__card"><div class="stageSummary__label">今日重点</div><div class="stageSummary__value">${stageStats.today ? 1 : 0}</div><div class="stageSummary__sub">按阶段自动排班</div></div>
         </div>
-      `).join("")
-      : `<div class="muted" style="font-size:13px">还没有阶段目标，点击“编辑阶段”添加。</div>`;
+        <div class="stageGoal__strip"><div class="stageGoal__stripFill" style="width:${donePct}%"></div></div>
+        <div class="stageGoal__hint">阶段进度：${donePct}%｜当前总览覆盖 SQL40 - SQL148 的全部题目，按难度分层管理。</div>
+        <div class="stageDifficulty">
+          <div class="stageDifficulty__row"><span>简单</span><div class="stageDifficulty__bar"><div class="stageDifficulty__fill stageDifficulty__fill--simple" style="width:${Math.round((simpleTotal / total) * 100)}%"></div></div><strong>${simpleDone}/${simpleTotal}</strong></div>
+          <div class="stageDifficulty__row"><span>中等</span><div class="stageDifficulty__bar"><div class="stageDifficulty__fill stageDifficulty__fill--medium" style="width:${Math.round((mediumTotal / total) * 100)}%"></div></div><strong>${mediumDone}/${mediumTotal}</strong></div>
+          <div class="stageDifficulty__row"><span>较难/困难</span><div class="stageDifficulty__bar"><div class="stageDifficulty__fill stageDifficulty__fill--hard" style="width:${Math.round((hardTotal / total) * 100)}%"></div></div><strong>${hardDone}/${hardTotal}</strong></div>
+        </div>
+      </div>
+    `;
   }
   const avg = milestones.items.length ? Math.round(milestones.items.reduce((s, m) => s + m.progress, 0) / milestones.items.length) : 0;
   if (stageBar) stageBar.style.width = `${avg}%`;
@@ -1682,7 +1720,7 @@ function renderAll() {
 }
 
 function boot() {
-  const currentBuild = "20260511-2";
+  const currentBuild = "20260511-3";
   const existing = getAssetVersion();
   if (!existing || existing.v !== currentBuild) setAssetVersion(currentBuild);
   setText("#buildInfo", `build ${new Date().toISOString().slice(0, 10)} · ${currentBuild}`);
