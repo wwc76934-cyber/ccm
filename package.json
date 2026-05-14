@@ -1,0 +1,9 @@
+{
+  "name": "ccm",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "python3 -m http.server 8000",
+    "serve": "python3 -m http.server 8000"
+  }
+}
