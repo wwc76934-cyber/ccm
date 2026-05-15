@@ -460,7 +460,7 @@ function renderHomeSnippets() {
   const weeklyBoardHint = document.querySelector("#weeklyBoardHint");
 
   if (dailyMeta) dailyMeta.textContent = `${daily.weekday} · ${daily.items.length} 项`;
-  if (weeklyMeta) weeklyMeta.textContent = `${weeklyStats.total} 项计划`;
+  if (weeklyMeta) weeklyMeta.textContent = `${weeklyStats.total} 项本周抽样`;
   if (milestoneMeta) milestoneMeta.textContent = `${stageStats.total} 题 · SQL40-SQL148 阶段总览`;
   if (stageMeta) stageMeta.textContent = `总题量 ${stageStats.total} · 已完成 ${stageStats.completed}`;
   if (stageTitle) stageTitle.textContent = "建立一套小而精的学习系统";
@@ -550,7 +550,7 @@ function renderHomeSnippets() {
   setText("#diffSimpleNum", `${weeklyStats.simple}`);
   setText("#diffMediumNum", `${weeklyStats.medium}`);
   setText("#diffHardNum", `${weeklyStats.hard}`);
-  if (weeklyBoardHint) weeklyBoardHint.textContent = `${weeklyStats.total} 题 · ${weeklyStats.completed} 已完成`;
+  if (weeklyBoardHint) weeklyBoardHint.textContent = `${weeklyStats.total} 题 · ${weeklyStats.completed} 已完成 · 含复习题与新题`;
   const difficultyTags = document.querySelector("#weeklyDifficultyTags");
   if (difficultyTags) {
     difficultyTags.innerHTML = `
@@ -1784,7 +1784,7 @@ function renderAll() {
 }
 
 function boot() {
-  const currentBuild = "20260511-7";
+  const currentBuild = "20260511-8";
   const existing = getAssetVersion();
   if (!existing || existing.v !== currentBuild) setAssetVersion(currentBuild);
   setText("#buildInfo", `build ${new Date().toISOString().slice(0, 10)} · ${currentBuild}`);
