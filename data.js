@@ -1,3 +1,9 @@
+function difficultyForSqlIndex(n) {
+  if (n <= 55) return n % 10 < 3 ? "简单" : n % 10 < 7 ? "中等" : n % 2 === 0 ? "较难" : "困难";
+  if (n <= 95) return n % 12 < 4 ? "简单" : n % 12 < 9 ? "中等" : n % 2 === 0 ? "较难" : "困难";
+  return n % 14 < 4 ? "简单" : n % 14 < 10 ? "中等" : n % 2 === 0 ? "较难" : "困难";
+}
+
 export const catalog = {
   it: {
     title: "信息技术路线",
