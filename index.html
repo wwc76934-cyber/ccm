@@ -228,14 +228,19 @@
     </dialog>
 
     <dialog id="weeklyDialog" class="modal">
-      <form method="dialog" class="modal__card">
+      <form method="dialog" class="modal__card modal__card--wide">
         <div class="modal__head">
           <div>
             <div class="modal__title">编辑本周目标</div>
-            <div class="modal__desc">每行一个目标；以 <span class="kbd">[x]</span> 开头表示已完成（可留空）。</div>
+            <div class="modal__desc">从阶段题单里自由勾选本周要刷的题目；也可保留文本编辑模式。</div>
           </div>
           <button class="btn btn--ghost btn--sm" value="cancel" type="submit">关闭</button>
         </div>
+        <div class="weeklyEditorTabs" id="weeklyEditorTabs">
+          <button class="btn btn--ghost btn--sm is-active" type="button" data-weekly-mode="pick">题目选择器</button>
+          <button class="btn btn--ghost btn--sm" type="button" data-weekly-mode="text">文本编辑</button>
+        </div>
+        <div id="weeklyPickerHost"></div>
         <textarea id="weeklyTextarea" class="textarea" rows="10" placeholder="例如：&#10;[ ] 牛客网代码题 10 题&#10;[ ] 复盘窗口函数 3 题&#10;[ ] 看完一篇财务报表速读"></textarea>
         <div class="modal__actions">
           <button id="btnWeeklyReset" class="btn btn--ghost" type="button">恢复默认</button>

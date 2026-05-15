@@ -242,6 +242,28 @@ function buildPlanFromImportedItems(items) {
   return { stage, weekly };
 }
 
+function getWeeklyMode() {
+  return readJson("learnsite.weeklyMode.v1", "pick");
+}
+function setWeeklyMode(mode) {
+  writeJson("learnsite.weeklyMode.v1", mode);
+}
+function getWeeklySelectedIds() {
+  return readJson("learnsite.weeklySelected.v1", []);
+}
+function setWeeklySelectedIds(ids) {
+  writeJson("learnsite.weeklySelected.v1", ids);
+}
+function syncWeeklyFromSelection(stagePlan, selectedIds) {
+  const selectedSet = new Set(selectedIds);
+  const items = stagePlan.filter((it) => selectedSet.has(it.id)).map((it, idx) => ({
+    ...it,
+    stage: idx === 0 ? "今日" : idx < 4 ? "今日" : "待完成",
+  }));
+  setWeekly({ title: "每周任务", platform: "nowcoder", topic: "阶段题单抽样", items });
+  return items;
+}
+
 function pickWeeklySubset(stagePlan) {
   const target = 12;
   const done = stagePlan.filter((it) => it.done);
@@ -1753,6 +1775,8 @@ async function ensureAuth() {
 
   const btnEditDaily = document.querySelector("#btnEditDaily");
   const btnEditWeekly = document.querySelector("#btnEditWeekly");
+  const weeklyPickerHost = document.querySelector("#weeklyPickerHost");
+  const weeklyEditorTabs = document.querySelector("#weeklyEditorTabs");
   const btnImportWeekly = document.querySelector("#btnImportWeekly");
   const btnEditMilestone = document.querySelector("#btnEditMilestone");
   const btnEditStageDirect = document.querySelector("#btnEditStageDirect");
@@ -1780,9 +1804,21 @@ async function ensureAuth() {
     dailyTextarea.value = getDailyTasks().items.map((it) => `${it.text} | ${it.note || ""}`).join("\n");
     dailyDialog.showModal();
   }
+  function renderWeeklyEditor() {
+    if (!weeklyPickerHost) return;
+    const stagePlan = buildNowcoderSqlStagePlan();
+    const selectedIds = getWeeklySelectedIds().length ? getWeeklySelectedIds() : getWeekly().items.map((it) => it.id).slice(0, 12);
+    const limit = Math.max(1, Number(readJson("learnsite.weeklyLimit.v1", 12)) || 12);
+    const mode = getWeeklyMode();
+    weeklyPickerHost.style.display = mode === "pick" ? "block" : "none";
+    if (weeklyTextarea) weeklyTextarea.style.display = mode === "text" ? "block" : "none";
+    renderWeeklyPicker(weeklyPickerHost, stagePlan, selectedIds, limit);
+  }
+
   function openWeeklyDialog() {
     if (!weeklyDialog || !weeklyTextarea) return;
     weeklyTextarea.value = weeklyToText(getWeekly());
+    renderWeeklyEditor();
     weeklyDialog.showModal();
   }
 
@@ -1808,6 +1844,62 @@ async function ensureAuth() {
   if (btnImportPlan) btnImportPlan.addEventListener("click", openPlanImportDialog);
   if (btnEditWeekly) btnEditWeekly.addEventListener("click", openWeeklyDialog);
   if (btnImportWeekly) btnImportWeekly.addEventListener("click", openWeeklyImportDialog);
+  if (weeklyEditorTabs) {
+    weeklyEditorTabs.addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-weekly-mode]");
+      if (!btn) return;
+      const mode = btn.dataset.weeklyMode;
+      setWeeklyMode(mode);
+      weeklyEditorTabs.querySelectorAll("[data-weekly-mode]").forEach((b) => b.classList.toggle("is-active", b === btn));
+      renderWeeklyEditor();
+    });
+  }
+  if (weeklyPickerHost) {
+    weeklyPickerHost.addEventListener("click", (e) => {
+      const pickBtn = e.target.closest("[data-weekly-pick]");
+      const removeBtn = e.target.closest("[data-weekly-remove]");
+      const clearBtn = e.target.closest("[data-weekly-clear]");
+      const diffBtn = e.target.closest("[data-weekly-diff]");
+      const searchEl = e.target.closest("[data-weekly-picker-search]");
+      const limitEl = e.target.closest("[data-weekly-limit]");
+      if (pickBtn) {
+        const id = pickBtn.dataset.weeklyPick;
+        const selected = getWeeklySelectedIds();
+        if (!selected.includes(id)) selected.push(id);
+        setWeeklySelectedIds(selected);
+        syncWeeklyFromSelection(buildNowcoderSqlStagePlan(), selected);
+        renderWeeklyEditor();
+        renderAll();
+      }
+      if (removeBtn) {
+        const id = removeBtn.dataset.weeklyRemove;
+        const selected = getWeeklySelectedIds().filter((x) => x !== id);
+        setWeeklySelectedIds(selected);
+        syncWeeklyFromSelection(buildNowcoderSqlStagePlan(), selected);
+        renderWeeklyEditor();
+        renderAll();
+      }
+      if (clearBtn) {
+        setWeeklySelectedIds([]);
+        syncWeeklyFromSelection(buildNowcoderSqlStagePlan(), []);
+        renderWeeklyEditor();
+        renderAll();
+      }
+      if (diffBtn) {
+        const mode = diffBtn.dataset.weeklyDiff;
+        const selected = getWeeklySelectedIds();
+        renderWeeklyPicker(weeklyPickerHost, buildNowcoderSqlStagePlan(), selected, Number(readJson("learnsite.weeklyLimit.v1", 12)) || 12, searchEl?.value || "", mode);
+      }
+      if (searchEl) {
+        const selected = getWeeklySelectedIds();
+        const mode = weeklyPickerHost.querySelector("[data-weekly-diff].is-active")?.dataset.weeklyDiff || "all";
+        renderWeeklyPicker(weeklyPickerHost, buildNowcoderSqlStagePlan(), selected, Number(readJson("learnsite.weeklyLimit.v1", 12)) || 12, searchEl.value || "", mode);
+      }
+      if (limitEl) {
+        writeJson("learnsite.weeklyLimit.v1", Math.max(1, Number(limitEl.value) || 12));
+      }
+    });
+  }
   if (planImportDialog && planImportTextarea) {
     if (planImportFile) planImportFile.addEventListener("change", async () => {
       const f = planImportFile.files?.[0];
@@ -1845,8 +1937,15 @@ async function ensureAuth() {
 
   if (btnDailyReset) btnDailyReset.addEventListener("click", () => { const d = defaultDaily(); setDailyTasks(d); if (dailyTextarea) dailyTextarea.value = d.items.map((it) => `${it.text} | ${it.note}`).join("\n"); renderAll(); toast("已恢复默认", "你可以继续编辑"); });
   if (btnDailySave) btnDailySave.addEventListener("click", () => { if (!dailyTextarea) return; const items = String(dailyTextarea.value || "").split(/\r?\n/).map((line, idx) => { const [text, note = ""] = line.split("|").map((s) => s.trim()); return text ? { id: `d${idx + 1}`, text, note, done: false } : null; }).filter(Boolean); setDailyTasks({ weekday: ["周日", "周一", "周二", "周三", "周四", "周五", "周六"][new Date().getDay()], items: items.length ? items : defaultDaily().items }); renderAll(); toast("已保存", "每日任务已更新"); });
-  if (btnWeeklyReset) btnWeeklyReset.addEventListener("click", () => { const d = defaultWeekly(); setWeekly(d); if (weeklyTextarea) weeklyTextarea.value = weeklyToText(d); renderAll(); toast("已恢复默认", "你可以继续编辑"); });
+  if (btnWeeklyReset) btnWeeklyReset.addEventListener("click", () => { const d = defaultWeekly(); setWeekly(d); setWeeklySelectedIds(d.items.map((it) => it.id)); if (weeklyTextarea) weeklyTextarea.value = weeklyToText(d); renderAll(); toast("已恢复默认", "你可以继续编辑"); });
   if (btnWeeklySave) btnWeeklySave.addEventListener("click", () => { if (!weeklyTextarea) return; const text = String(weeklyTextarea.value || "");
+    if (getWeeklyMode() === "pick") {
+      const selected = getWeeklySelectedIds();
+      syncWeeklyFromSelection(buildNowcoderSqlStagePlan(), selected);
+      renderAll();
+      toast("已保存", "本周任务已按选择器更新");
+      return;
+    }
     if (text.includes("# 格式：题目标题 | 难度 | 链接 | 备注") || text.includes("SQL")) {
       const next = parseNowcoderPlanText(text);
       setWeekly({ ...getWeekly(), ...next, title: "牛客网 SQL 刷题周计划", platform: "nowcoder", topic: "SQL篇 / 大厂笔试真题" });
