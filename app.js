@@ -1758,11 +1758,17 @@ function renderAll() {
 }
 
 function boot() {
-  const currentBuild = "20260511-6";
+  const currentBuild = "20260511-7";
   const existing = getAssetVersion();
   if (!existing || existing.v !== currentBuild) setAssetVersion(currentBuild);
   setText("#buildInfo", `build ${new Date().toISOString().slice(0, 10)} · ${currentBuild}`);
   runtimeStatus(`资源版本 ${existing?.v || "none"} → ${currentBuild}`);
+  window.addEventListener("error", (e) => {
+    runtimeStatus(`脚本错误：${e.message || "unknown"}`);
+  });
+  window.addEventListener("unhandledrejection", (e) => {
+    runtimeStatus(`异步错误：${e.reason?.message || String(e.reason || "unknown")}`);
+  });
   ensureAuth().then(() => {
     try {
       renderAll();

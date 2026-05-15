@@ -154,7 +154,18 @@
       </div>
     </footer>
 
-    <script type="module" src="./app.js?v=20260511-6"></script>
+    <script>
+      window.__bootStatus = "正在启动...";
+      window.addEventListener("error", (e) => {
+        const el = document.querySelector("#runtimeStatus");
+        if (el) el.textContent = `页面错误：${e.message || "unknown"}`;
+      });
+      window.addEventListener("unhandledrejection", (e) => {
+        const el = document.querySelector("#runtimeStatus");
+        if (el) el.textContent = `页面错误：${e.reason?.message || String(e.reason || "unknown")}`;
+      });
+    </script>
+    <script type="module" src="./app.js?v=20260511-7"></script>
 
     <dialog id="dailyDialog" class="modal">
       <form method="dialog" class="modal__card">
