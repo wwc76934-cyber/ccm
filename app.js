@@ -173,32 +173,52 @@ function setAssetVersion(v) {
 }
 
 function buildNowcoderSqlStagePlan() {
-  const base = normalizeWeeklyPlan(readJson(weeklyStorageKey(), null) || readJson(STORAGE_KEYS.weekly, null));
-  const existing = new Map((base.items || []).map((it) => [String(it.title || "").match(/SQL(\d+)/)?.[1] || it.id, it]));
-  const items = [];
-  for (let n = 40; n <= 148; n++) {
-    const key = String(n);
-    const found = [...existing.values()].find((it) => String(it.title || "").includes(`SQL${n}`) || String(it.id || "").includes(`w${n - 39}`));
-    if (found) {
-      items.push({ ...found, stage: found.done ? "已完成" : n <= 44 ? "今日" : n <= 52 ? "待完成" : found.stage || "待完成" });
-      continue;
-    }
-    const difficulty = difficultyForSqlIndex(n);
-    items.push({
-      id: `sql-${n}`,
-      title: `SQL${n}`,
-      difficulty,
-      url: `https://www.nowcoder.com/practice/?tpId=375&tqId=${n}`,
-      done: false,
-      stage: n <= 44 ? "今日" : "待完成",
-      note: "牛客 SQL 阶段题",
-    });
+  const progress = getProgress();
+  const stagePlan = (catalog.sqlStagePlan || []).map((it) => ({ ...it, done: Boolean(progress.completed[it.id]) }));
+  return stagePlan;
+}
+
+function pickWeeklySubset(stagePlan) {
+  const target = 12;
+  const done = stagePlan.filter((it) => it.done);
+  const undone = stagePlan.filter((it) => !it.done);
+  const reviewPool = [
+    ...done.filter((it) => /简单/.test(it.difficulty)).slice(-2),
+    ...done.filter((it) => /中等/.test(it.difficulty)).slice(-2),
+    ...done.filter((it) => /(较难|困难)/.test(it.difficulty)).slice(-1),
+  ];
+  const reviewItems = reviewPool.slice(0, 5);
+  const needs = { 简单: 3, 中等: 4, 较难: 2, 困难: 1 };
+  const newPool = {
+    简单: undone.filter((it) => /简单/.test(it.difficulty)),
+    中等: undone.filter((it) => /中等/.test(it.difficulty)),
+    较难: undone.filter((it) => /较难/.test(it.difficulty)),
+    困难: undone.filter((it) => /困难/.test(it.difficulty)),
+  };
+  const newItems = [];
+  for (const [key, count] of Object.entries(needs)) {
+    for (let i = 0; i < count && newPool[key].length; i++) newItems.push(newPool[key][i]);
   }
-  return autoScheduleWeeklyPlan({ ...base, items, total: items.length, title: "牛客网 SQL 刷题周计划", platform: "nowcoder", topic: "SQL篇 / 大厂笔试真题" });
+  if (reviewItems.length + newItems.length < target) {
+    const remaining = undone.filter((it) => !newItems.some((x) => x.id === it.id));
+    newItems.push(...remaining.slice(0, target - reviewItems.length - newItems.length));
+  }
+  const combined = [...reviewItems, ...newItems].slice(0, target);
+  return combined.map((it, idx) => ({
+    ...it,
+    stage: idx < reviewItems.length ? "复习" : idx === reviewItems.length ? "今日" : "待完成",
+  }));
 }
 
 function getWeekly() {
-  return buildNowcoderSqlStagePlan();
+  const base = normalizeWeeklyPlan(readJson(weeklyStorageKey(), null) || readJson(STORAGE_KEYS.weekly, null));
+  const stagePlan = buildNowcoderSqlStagePlan();
+  const picked = pickWeeklySubset(stagePlan);
+  const merged = picked.map((it, idx) => {
+    const saved = (base.items || []).find((x) => x.id === it.id) || (base.items || []).find((x) => String(x.title || "") === String(it.title || ""));
+    return saved ? { ...it, ...saved, stage: it.stage } : it;
+  });
+  return autoScheduleWeeklyPlan({ ...base, items: merged, total: merged.length, title: "牛客网 SQL 刷题周计划", platform: "nowcoder", topic: "SQL篇 / 大厂笔试真题" });
 }
 
 function setWeekly(next) {
