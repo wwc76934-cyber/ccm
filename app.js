@@ -178,6 +178,70 @@ function buildNowcoderSqlStagePlan() {
   return stagePlan;
 }
 
+function normalizePlanItem(item, idx = 0) {
+  const title = String(item.title || item.text || item.name || `题目 ${idx + 1}`).trim();
+  const difficulty = difficultyLabel(item.difficulty || item.level || item.difficultyText || item.tag || "中等");
+  const url = item.url || item.link || item.href || "";
+  const stage = item.stage || item.phase || (item.done ? "已完成" : idx === 0 ? "今日" : "待完成");
+  const note = item.note || item.desc || item.description || item.summary || "";
+  return {
+    id: item.id || item.slug || `plan-${idx + 1}`,
+    title,
+    difficulty,
+    url,
+    note,
+    stage,
+    done: Boolean(item.done),
+    source: item.source || "user",
+  };
+}
+
+function detectPlanFormat(text) {
+  const t = String(text || "");
+  if (/leetcode|hot\s*100|hot100/i.test(t)) return "leetcode";
+  if (/nowcoder|牛客|SQL\d+/i.test(t)) return "nowcoder";
+  if (/[|,]/.test(t) && /title|name|difficulty|url|link/i.test(t)) return "table";
+  return "plain";
+}
+
+function parsePlanText(text) {
+  const rawLines = String(text || "").split(/\r?\n/).map((s) => s.trim()).filter(Boolean);
+  const items = [];
+  const format = detectPlanFormat(text);
+  for (const line of rawLines) {
+    if (/^#|^\-|^\*|^计划|^阶段|^周计划|^topicId=|^page=|^tab=/.test(line)) continue;
+    const linkMatch = line.match(/https?:\/\/\S+/);
+    const url = linkMatch ? linkMatch[0] : "";
+    const cleaned = line.replace(/https?:\/\/\S+/g, "").replace(/\s+/g, " ").trim();
+    const parts = cleaned.split(/[|,，]/).map((s) => s.trim()).filter(Boolean);
+    let title = "";
+    let difficulty = "中等";
+    let note = "";
+    if (parts.length >= 2) {
+      [title, difficulty, note] = [parts[0], parts[1], parts.slice(2).join(" ")];
+    } else {
+      title = cleaned;
+      const diff = cleaned.match(/(简单|中等|较难|困难|Easy|Medium|Hard)/i);
+      if (diff) difficulty = /easy/i.test(diff[1]) ? "简单" : /hard/i.test(diff[1]) ? "困难" : /medium/i.test(diff[1]) ? "中等" : diff[1];
+    }
+    if (title) items.push(normalizePlanItem({ title, difficulty, url, note, source: format }, items.length));
+  }
+  return items;
+}
+
+function buildPlanFromImportedItems(items) {
+  const normalized = items.map((it, idx) => normalizePlanItem(it, idx));
+  const stage = normalized.map((it, idx) => ({
+    ...it,
+    stage: idx < 3 ? "今日" : idx < 10 ? "待完成" : "后续",
+  }));
+  const weekly = stage.slice(0, Math.min(12, stage.length)).map((it, idx) => ({
+    ...it,
+    stage: idx === 0 ? "今日" : idx < 4 ? "今日" : "待完成",
+  }));
+  return { stage, weekly };
+}
+
 function pickWeeklySubset(stagePlan) {
   const target = 12;
   const done = stagePlan.filter((it) => it.done);
@@ -219,6 +283,11 @@ function getWeekly() {
     return saved ? { ...it, ...saved, stage: it.stage } : it;
   });
   return autoScheduleWeeklyPlan({ ...base, items: merged, total: merged.length, title: "牛客网 SQL 刷题周计划", platform: "nowcoder", topic: "SQL篇 / 大厂笔试真题" });
+}
+
+function getStagePlan() {
+  const progress = getProgress();
+  return (catalog.sqlStagePlan || []).map((it) => ({ ...it, done: Boolean(progress.completed[it.id]) }));
 }
 
 function setWeekly(next) {
@@ -426,7 +495,7 @@ function renderHomeSnippets() {
   const weekly = getWeekly();
   const milestones = getMilestones();
   const weeklyStats = weeklyPlanStats(weekly);
-  const stagePlan = catalog.sqlStagePlan || [];
+  const stagePlan = getStagePlan();
   const stageStats = stagePlan.reduce((acc, it) => {
     acc.total += 1;
     if (it.done) acc.completed += 1;
@@ -1687,6 +1756,12 @@ async function ensureAuth() {
   const btnImportWeekly = document.querySelector("#btnImportWeekly");
   const btnEditMilestone = document.querySelector("#btnEditMilestone");
   const btnEditStageDirect = document.querySelector("#btnEditStageDirect");
+  const btnImportPlan = document.querySelector("#btnImportPlan");
+  const planImportDialog = document.querySelector("#planImportDialog");
+  const planImportTextarea = document.querySelector("#planImportTextarea");
+  const planImportFile = document.querySelector("#planImportFile");
+  const btnPlanImportReset = document.querySelector("#btnPlanImportReset");
+  const btnPlanImportSave = document.querySelector("#btnPlanImportSave");
   const dailyDialog = document.querySelector("#dailyDialog");
   const dailyTextarea = document.querySelector("#dailyTextarea");
   const btnDailyReset = document.querySelector("#btnDailyReset");
@@ -1723,9 +1798,48 @@ async function ensureAuth() {
     milestoneDialog.showModal();
   }
 
+  function openPlanImportDialog() {
+    if (!planImportDialog || !planImportTextarea) return;
+    planImportTextarea.value = `# 你可以粘贴 LeetCode Hot 100、牛客 SQL 题单、或者你自己的学习计划\n# 支持每行一个题目，或 title | difficulty | url | note\nSQL40 每个月 Top3 的周杰伦歌曲 | 较难 | https://www.nowcoder.com/practice/4ab6d198ea8447fe9b6a1cad1f671503?tpId=375&tqId=10737572 | 窗口函数与分组统计\nSQL41 最长连续登录天数 | 困难 | https://www.nowcoder.com/practice/cb8bc687046e4d32ad38de62c48ad79b?tpId=375&tqId=10737573 | 连续性问题`;
+    planImportDialog.showModal();
+  }
+
   if (btnEditDaily) btnEditDaily.addEventListener("click", openDailyDialog);
+  if (btnImportPlan) btnImportPlan.addEventListener("click", openPlanImportDialog);
   if (btnEditWeekly) btnEditWeekly.addEventListener("click", openWeeklyDialog);
   if (btnImportWeekly) btnImportWeekly.addEventListener("click", openWeeklyImportDialog);
+  if (planImportDialog && planImportTextarea) {
+    if (planImportFile) planImportFile.addEventListener("change", async () => {
+      const f = planImportFile.files?.[0];
+      if (!f) return;
+      const text = await f.text();
+      planImportTextarea.value = text;
+      runtimeStatus(`已加载文件：${f.name}`);
+    });
+    if (btnPlanImportReset) btnPlanImportReset.addEventListener("click", () => {
+      openPlanImportDialog();
+      runtimeStatus("已恢复示例题单");
+    });
+    if (btnPlanImportSave) btnPlanImportSave.addEventListener("click", () => {
+      const text = String(planImportTextarea.value || "");
+      const parsed = parsePlanText(text);
+      if (!parsed.length) {
+        toast("未识别题单", "请粘贴有效的题目列表或上传文件");
+        return;
+      }
+      const { stage, weekly } = buildPlanFromImportedItems(parsed);
+      const stageKey = "learnsite.stagePlan.v1";
+      writeJson(stageKey, { title: "阶段大目标", items: stage, updatedAt: nowIso(), source: detectPlanFormat(text) });
+      writeJson(weeklyStorageKey(), { title: "每周任务", items: weekly, updatedAt: nowIso(), source: detectPlanFormat(text) });
+      const progress = getProgress();
+      progress.updatedAt = nowIso();
+      writeJson(STORAGE_KEYS.progress, progress);
+      renderAll();
+      runtimeStatus(`已导入 ${parsed.length} 项并同步阶段/周计划`);
+      toast("导入成功", `已生成 ${stage.length} 个阶段目标与 ${weekly.length} 个周任务`);
+      planImportDialog.close();
+    });
+  }
   if (btnEditMilestone) btnEditMilestone.addEventListener("click", openMilestoneDialog);
   if (btnEditStageDirect) btnEditStageDirect.addEventListener("click", openMilestoneDialog);
 

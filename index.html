@@ -49,6 +49,7 @@
             <button id="btnEditDaily" class="btn btn--ghost" type="button">编辑每日</button>
             <button id="btnEditWeekly" class="btn btn--ghost" type="button">编辑每周</button>
             <button id="btnEditMilestone" class="btn btn--ghost" type="button">编辑阶段</button>
+            <button id="btnImportPlan" class="btn btn--primary btn--sm" type="button">导入题单 / 计划</button>
           </div>
         </div>
 
@@ -197,6 +198,31 @@
         <div class="modal__actions">
           <button id="btnMilestoneReset" class="btn btn--ghost" type="button">恢复默认</button>
           <button id="btnMilestoneSave" class="btn btn--primary" value="ok" type="submit">保存</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="planImportDialog" class="modal">
+      <form method="dialog" class="modal__card">
+        <div class="modal__head">
+          <div>
+            <div class="modal__title">导入题单 / 计划单</div>
+            <div class="modal__desc">支持粘贴文本，也支持上传 JSON / CSV / TXT 文件；导入后可自动生成阶段目标和每周任务。</div>
+          </div>
+          <button class="btn btn--ghost btn--sm" value="cancel" type="submit">关闭</button>
+        </div>
+        <div class="planImportTabs" id="planImportTabs">
+          <button class="btn btn--ghost btn--sm is-active" type="button" data-plan-source="paste">粘贴文本</button>
+          <button class="btn btn--ghost btn--sm" type="button" data-plan-source="file">上传文件</button>
+        </div>
+        <textarea id="planImportTextarea" class="textarea" rows="12" placeholder="粘贴你的网站题单文本、Markdown 列表、题目链接或计划单内容"></textarea>
+        <div class="filebtnRow">
+          <label class="btn btn--ghost filebtn">选择文件<input id="planImportFile" type="file" accept=".json,.csv,.txt,.md" /></label>
+          <div class="muted" style="font-size:12px">支持 LeetCode Hot 100、牛客、以及你自己的计划单。</div>
+        </div>
+        <div class="modal__actions">
+          <button id="btnPlanImportReset" class="btn btn--ghost" type="button">恢复示例</button>
+          <button id="btnPlanImportSave" class="btn btn--primary" value="ok" type="submit">导入并生成计划</button>
         </div>
       </form>
     </dialog>
